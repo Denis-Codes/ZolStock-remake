@@ -1,0 +1,28 @@
+.welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    background-image: url(https://zolstock.co.il/wp-content/uploads/2019/04/welcome.jpg);
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+
+    padding: 1rem;
+    margin-top: 0.5rem;
+
+    h1 {
+        color: $clr2;
+    }
+
+    p {
+        text-align: center;
+    }
+}
+
+.gallery {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
