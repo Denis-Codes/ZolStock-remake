@@ -85,15 +85,19 @@ button:hover {
 
 .branches-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 2rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem;
 }
 
-.branches {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.branches-menu,
+.map-container {
+    flex: 1;        
+    min-width: 0;   
+}
 
-    padding: 1rem;
-    height: 32rem;
+.map {
+    width: 100%;
+    height: rem(536px);  
 }

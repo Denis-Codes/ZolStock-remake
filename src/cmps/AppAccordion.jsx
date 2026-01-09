@@ -1,3 +1,4 @@
+// 
 import * as React from 'react'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -15,14 +16,15 @@ export function AppAccordion({
   sx = {},                   // style for accordion
   summarySx = {},
   detailsSx = {},
+  maxDetailsHeight = null,   // NEW: max height for scrollable details (e.g., '300px')
 }) {
-//   const [expanded, setExpanded] = React.useState(
-//     allowMultiple ? new Set(defaultExpandedId ? [defaultExpandedId] : []) : (defaultExpandedId || '')
-//   )
+const [expanded, setExpanded] = React.useState(() => {
+  if (allowMultiple) {
+    return defaultExpandedId ? new Set([defaultExpandedId]) : new Set()
+  }
+  return defaultExpandedId ?? ''
+})
 
-const [expanded, setExpanded] = React.useState(
-  allowMultiple ? new Set() : ''
-)
 
   function handleChange(id) {
     return (_, isExpanded) => {
@@ -38,6 +40,11 @@ const [expanded, setExpanded] = React.useState(
       }
     }
   }
+
+  // Merge scroll styles with detailsSx
+  const finalDetailsSx = maxDetailsHeight
+    ? { maxHeight: maxDetailsHeight, overflowY: 'auto', ...detailsSx }
+    : detailsSx
 
   return (
     <div dir="rtl">
@@ -64,7 +71,7 @@ const [expanded, setExpanded] = React.useState(
               )}
             </AccordionSummary>
 
-            <AccordionDetails sx={{ ...detailsSx }}>
+            <AccordionDetails sx={finalDetailsSx}>
               {renderDetails ? renderDetails(item) : null}
             </AccordionDetails>
           </Accordion>

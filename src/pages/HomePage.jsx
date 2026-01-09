@@ -4,28 +4,7 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
-
-const regions = [
-    {
-        id: 'sharon',
-        name: 'שרון',
-        branches: [
-            {
-                title: 'סניף קרני שומרון',
-                address: 'רחבעם זאבי 1, קניון קרני שומרון',
-                hours: ['א׳–ה׳ 09:00–19:30', 'ו׳ 09:00–14:00'],
-            },
-            {
-                title: 'סניף ראש העין',
-                address: 'שרבי 12 ראש העין',
-                hours: ['א׳–ה׳ 09:00–21:00', 'ו׳–ערבי חג 08:00–14:00'],
-            },
-        ],
-    },
-    { id: 'north', name: 'צפון', branches: [] },
-    { id: 'center', name: 'מרכז', branches: [] },
-    { id: 'jerusalem', name: 'ירושלים', branches: [] },
-]
+import regions from '../data/branches.json'
 
 
 export function HomePage() {
@@ -51,18 +30,20 @@ export function HomePage() {
             </div>
             <div className="welcome">
                 <h1>ברוכים הבאים לרשת זול סטוק!</h1>
-                <p>רשת זול סטוק מציעה חוויית קנייה משתלמת עם מגוון עצום של מוצרי צריכה לבית ולמשפחה במחירים זולים במיוחד. ברשת תוכלו למצוא צעצועים, כלי בית, טקסטיל, מוצרי פארם וניקיון, ציוד משרדי, מוצרי חשמל ועוד – הכול מתחדש באופן קבוע. בזול סטוק שמים את הלקוח והמחיר במרכז, עם שירות מקצועי והתאמה לכל תקציב. <strong>“זול סטוק – כשמחיר וחוויה נפגשים”</strong></p>
+                <p>רשת זול סטוק מציעה חוויית קנייה משתלמת עם מגוון עצום של מוצרי צריכה לבית ולמשפחה במחירים זולים במיוחד. ברשת תוכלו למצוא צעצועים, כלי בית, טקסטיל, מוצרי פארם וניקיון, ציוד משרדי, מוצרי חשמל ועוד – הכול מתחדש באופן קבוע. בזול סטוק שמים את הלקוח והמחיר במרכז, עם שירות מקצועי והתאמה לכל תקציב. <strong>"זול סטוק – כשמחיר וחוויה נפגשים"</strong></p>
             </div>
             <div className="section-separator">
                 <h2>הסניפים שלנו</h2>
             </div>
             <div className="branches-container">
-                <div className="branches">
+                {/* Accordion - left side */}
+                <div className="branches-menu">
                     <AppAccordion
                         items={regions}
                         allowMultiple={false}
                         defaultExpandedId="sharon"
                         getId={(r) => r.id}
+                        maxDetailsHeight="248px"
                         sx={{ border: '1px solid #ddd' }}
                         renderSummary={(region) => (
                             <Typography sx={{ fontWeight: 700 }}>{region.name}</Typography>
@@ -89,14 +70,14 @@ export function HomePage() {
                             </>
                         )}
                     />
+                </div>
 
+                <div className="map-container">
                     <div className="map">
                         <MyComponent />
                     </div>
                 </div>
             </div>
-        </section >
-
+        </section>
     )
 }
-
