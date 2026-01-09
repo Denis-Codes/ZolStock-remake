@@ -1,5 +1,32 @@
 import { EmblaCarousel } from '../cmps/EmblaCarousel.jsx'
 import { PauseOnHover } from '../cmps/SlickCarousel.jsx'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
+import { AppAccordion } from '../cmps/AppAccordion'
+import { MyComponent } from '../cmps/MapsCmp.jsx'
+
+const regions = [
+    {
+        id: 'sharon',
+        name: 'שרון',
+        branches: [
+            {
+                title: 'סניף קרני שומרון',
+                address: 'רחבעם זאבי 1, קניון קרני שומרון',
+                hours: ['א׳–ה׳ 09:00–19:30', 'ו׳ 09:00–14:00'],
+            },
+            {
+                title: 'סניף ראש העין',
+                address: 'שרבי 12 ראש העין',
+                hours: ['א׳–ה׳ 09:00–21:00', 'ו׳–ערבי חג 08:00–14:00'],
+            },
+        ],
+    },
+    { id: 'north', name: 'צפון', branches: [] },
+    { id: 'center', name: 'מרכז', branches: [] },
+    { id: 'jerusalem', name: 'ירושלים', branches: [] },
+]
+
 
 export function HomePage() {
     return (
@@ -26,7 +53,50 @@ export function HomePage() {
                 <h1>ברוכים הבאים לרשת זול סטוק!</h1>
                 <p>רשת זול סטוק מציעה חוויית קנייה משתלמת עם מגוון עצום של מוצרי צריכה לבית ולמשפחה במחירים זולים במיוחד. ברשת תוכלו למצוא צעצועים, כלי בית, טקסטיל, מוצרי פארם וניקיון, ציוד משרדי, מוצרי חשמל ועוד – הכול מתחדש באופן קבוע. בזול סטוק שמים את הלקוח והמחיר במרכז, עם שירות מקצועי והתאמה לכל תקציב. <strong>“זול סטוק – כשמחיר וחוויה נפגשים”</strong></p>
             </div>
+            <div className="section-separator">
+                <h2>הסניפים שלנו</h2>
+            </div>
+            <div className="branches-container">
+                <div className="branches">
+                    <AppAccordion
+                        items={regions}
+                        allowMultiple={false}
+                        defaultExpandedId="sharon"
+                        getId={(r) => r.id}
+                        sx={{ border: '1px solid #ddd' }}
+                        renderSummary={(region) => (
+                            <Typography sx={{ fontWeight: 700 }}>{region.name}</Typography>
+                        )}
+                        renderDetails={(region) => (
+                            <>
+                                {region.branches.length === 0 ? (
+                                    <Typography sx={{ opacity: 0.7 }}>אין סניפים להצגה</Typography>
+                                ) : (
+                                    region.branches.map((b, idx) => (
+                                        <div key={b.title}>
+                                            <Typography sx={{ fontWeight: 700 }}>{b.title}</Typography>
+                                            <Typography>{b.address}</Typography>
+                                            {b.hours.map((line) => (
+                                                <Typography key={line}>{line}</Typography>
+                                            ))}
+
+                                            {idx !== region.branches.length - 1 && (
+                                                <Divider sx={{ my: 2 }} />
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </>
+                        )}
+                    />
+
+                    <div className="map">
+                        <MyComponent />
+                    </div>
+                </div>
+            </div>
         </section >
+
     )
 }
 
