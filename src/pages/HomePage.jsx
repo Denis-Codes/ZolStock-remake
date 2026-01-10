@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { EmblaCarousel } from '../cmps/EmblaCarousel.jsx'
 import Divider from '@mui/material/Divider'
@@ -8,6 +9,8 @@ import { MyComponent } from '../cmps/MapsCmp.jsx'
 import regions from '../data/branches.withLatLng.json'
 
 export function HomePage() {
+  const location = useLocation()
+
   const [selectedRegionId, setSelectedRegionId] = useState('sharon')
   const [selectedBranchId, setSelectedBranchId] = useState(null)
   const branchRefs = useRef({})
@@ -41,6 +44,15 @@ export function HomePage() {
     }
     return null
   }
+
+  useEffect(() => {
+    if (location.state?.scrollTo !== 'branches-map') return
+
+    const el = document.getElementById('branches-map')
+    if (!el) return
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [location.state])
 
   useEffect(() => {
     if (!selectedBranchId) return
@@ -96,10 +108,6 @@ export function HomePage() {
           alt="new-products6"
         />
       </div>
-{/* 
-      <div className="all-products-btn">
-        <button>לכל המוצרים</button>
-      </div> */}
 
       <div className="welcome">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
@@ -115,8 +123,8 @@ export function HomePage() {
       <div className="section-separator">
         <h2>הסניפים שלנו</h2>
       </div>
-
-      <div className="branches-container">
+ 
+      <div className="branches-container" id="branches-map">
         <div className="branches-menu">
           <AppAccordion
             items={regions}
@@ -190,4 +198,3 @@ export function HomePage() {
     </section>
   )
 }
-
