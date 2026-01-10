@@ -7,26 +7,32 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 export function AppAccordion({
   items = [],
-  allowMultiple = false,     // false = only one open
+  allowMultiple = false,
   defaultExpandedId = null,
+  expandedId = null,
+
   getId = (item) => item.id,
-  renderSummary,             // (item) => JSX
-  renderDetails,             // (item) => JSX
-  sx = {},                   // style for accordion
+  renderSummary,
+  renderDetails,
+  sx = {},
   summarySx = {},
   detailsSx = {},
-  maxDetailsHeight = null,   // NEW: max height for scrollable details (e.g., '300px')
-  onExpandedChange = null,   // NEW: callback when expanded changes (id) => void
+  maxDetailsHeight = null,
+  onExpandedChange = null,
 }) {
+  const isControlled = !allowMultiple && expandedId !== null
+
   const [expanded, setExpanded] = React.useState(
     allowMultiple ? new Set(defaultExpandedId ? [defaultExpandedId] : []) : (defaultExpandedId || '')
   )
-  
+
+  const effectiveExpanded = isControlled ? expandedId : expanded
+
   React.useEffect(() => {
-    if (onExpandedChange && defaultExpandedId && !allowMultiple) {
+    if (onExpandedChange && defaultExpandedId && !allowMultiple && !isControlled) {
       onExpandedChange(defaultExpandedId)
     }
-  }, []) 
+  }, []) // eslint-disable-line
 
   function handleChange(id) {
     return (_, isExpanded) => {
@@ -39,8 +45,8 @@ export function AppAccordion({
         })
       } else {
         const newId = isExpanded ? id : ''
-        setExpanded(newId)
-        
+        if (!isControlled) setExpanded(newId)
+
         if (onExpandedChange && isExpanded) {
           onExpandedChange(id)
         }
@@ -48,7 +54,6 @@ export function AppAccordion({
     }
   }
 
-  
   const finalDetailsSx = maxDetailsHeight
     ? { maxHeight: maxDetailsHeight, overflowY: 'auto', ...detailsSx }
     : detailsSx
@@ -57,7 +62,7 @@ export function AppAccordion({
     <div dir="rtl">
       {items.map((item) => {
         const id = getId(item)
-        const isOpen = allowMultiple ? expanded.has(id) : expanded === id
+        const isOpen = allowMultiple ? effectiveExpanded.has(id) : effectiveExpanded === id
 
         return (
           <Accordion

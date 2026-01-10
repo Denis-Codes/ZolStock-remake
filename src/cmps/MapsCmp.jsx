@@ -12,7 +12,12 @@ const loaderOptions = {
   region: 'IL',
 }
 
-export function MyComponent({ selectedRegion, selectedBranchId, onBranchSelect }) {
+export function MyComponent({
+  regions = [],
+  selectedRegionId,
+  selectedBranchId,
+  onSelectFromMap, // ({ regionId, branchId }) => void
+}) {
   const { isLoaded } = useJsApiLoader(loaderOptions)
 
   const mapRef = React.useRef(null)
@@ -28,27 +33,51 @@ export function MyComponent({ selectedRegion, selectedBranchId, onBranchSelect }
     setIsMapReady(false)
   }, [])
 
+  const allMarkers = React.useMemo(() => {
+    const out = []
+    for (const region of regions) {
+      for (const b of region.branches ?? []) {
+        const lat = typeof b.lat === 'string' ? parseFloat(b.lat) : b.lat
+        const lng = typeof b.lng === 'string' ? parseFloat(b.lng) : b.lng
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue
+
+        out.push({
+          ...b,
+          lat,
+          lng,
+          _regionId: region.id,
+          _regionCenter: region.center,
+          _regionZoom: region.zoom,
+        })
+      }
+    }
+    return out
+  }, [regions])
+
   React.useEffect(() => {
     if (!isMapReady) return
     const map = mapRef.current
     if (!map) return
 
-    const target = selectedRegion?.center ?? israelCenter
+    const region = regions.find((r) => r.id === selectedRegionId)
+    if (!region) return
+
+    const target = region.center ?? israelCenter
     map.panTo(target)
-    map.setZoom(selectedRegion?.zoom ?? 10)
-  }, [isMapReady, selectedRegion])
+    map.setZoom(region.zoom ?? 10)
+  }, [isMapReady, regions, selectedRegionId])
 
-  const branches = selectedRegion?.branches ?? []
+  React.useEffect(() => {
+    if (!isMapReady || !selectedBranchId) return
+    const map = mapRef.current
+    if (!map) return
 
-  const markers = React.useMemo(() => {
-    return branches
-      .map((b) => ({
-        ...b,
-        lat: typeof b.lat === 'string' ? parseFloat(b.lat) : b.lat,
-        lng: typeof b.lng === 'string' ? parseFloat(b.lng) : b.lng,
-      }))
-      .filter((b) => Number.isFinite(b.lat) && Number.isFinite(b.lng))
-  }, [branches])
+    const found = allMarkers.find((b) => b._placeId === selectedBranchId)
+    if (!found) return
+
+    map.panTo({ lat: found.lat, lng: found.lng })
+    map.setZoom(Math.max(found._regionZoom ?? 10, 13))
+  }, [isMapReady, selectedBranchId, allMarkers])
 
   const pinIcon = React.useMemo(() => {
     if (!isLoaded || !window.google) return null
@@ -68,17 +97,6 @@ export function MyComponent({ selectedRegion, selectedBranchId, onBranchSelect }
     }
   }, [isLoaded])
 
-  // כשבוחרים סניף מהאקורדיון → קפיצה לנעץ
-  React.useEffect(() => {
-    if (!isMapReady || !selectedBranchId) return
-    const found = markers.find((b) => b._placeId === selectedBranchId)
-    if (!found) return
-
-    const map = mapRef.current
-    map.panTo({ lat: found.lat, lng: found.lng })
-    map.setZoom(Math.max(selectedRegion?.zoom ?? 10, 13))
-  }, [isMapReady, selectedBranchId, markers, selectedRegion])
-
   return isLoaded ? (
     <div dir="ltr" style={{ width: '100%', height: '100%' }}>
       <GoogleMap
@@ -88,12 +106,12 @@ export function MyComponent({ selectedRegion, selectedBranchId, onBranchSelect }
         onLoad={onLoad}
         onUnmount={onUnmount}
         options={{ mapTypeControl: false }}
-        onClick={() => onBranchSelect?.(null)}
+        onClick={() => onSelectFromMap?.({ regionId: selectedRegionId, branchId: null })}
       >
         {pinIcon &&
-          markers.map((branch) => {
+          allMarkers.map((branch) => {
             const branchId = branch._placeId || `${branch.title}-${branch.address}`
-            const isActive = selectedBranchId === branch._placeId
+            const isActive = selectedBranchId && branch._placeId === selectedBranchId
 
             return (
               <MarkerF
@@ -102,7 +120,12 @@ export function MyComponent({ selectedRegion, selectedBranchId, onBranchSelect }
                 icon={isActive ? pinIconActive : pinIcon}
                 zIndex={isActive ? 999 : 1}
                 title={branch.title}
-                onClick={() => onBranchSelect?.(branch._placeId)}
+                onClick={() =>
+                  onSelectFromMap?.({
+                    regionId: branch._regionId,
+                    branchId: branch._placeId ?? null,
+                  })
+                }
               />
             )
           })}
