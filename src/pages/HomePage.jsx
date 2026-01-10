@@ -7,14 +7,25 @@ import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
 import regions from '../data/branches.withLatLng.json'
 
-
 export function HomePage() {
   const [selectedRegionId, setSelectedRegionId] = useState('sharon')
+  const [selectedBranchId, setSelectedBranchId] = useState(null) // ✅ חדש: הסניף שנבחר (placeId)
 
   const selectedRegion = useMemo(
     () => regions.find((r) => r.id === selectedRegionId),
     [selectedRegionId]
   )
+
+  function handleRegionChange(id) {
+    setSelectedRegionId(id)
+    setSelectedBranchId(null) // ✅ כשעוברים אזור – מנקים בחירת סניף
+  }
+
+  function handleBranchClick(branch) {
+    // ✅ משתמשים ב-placeId בלי לשנות מבנה
+    const id = branch?._placeId || null
+    setSelectedBranchId(id)
+  }
 
   return (
     <section>
@@ -61,7 +72,7 @@ export function HomePage() {
             allowMultiple={false}
             defaultExpandedId="sharon"
             getId={(r) => r.id}
-            onExpandedChange={(id) => setSelectedRegionId(id)}
+            onExpandedChange={handleRegionChange}
             maxDetailsHeight="248px"
             sx={{ border: '1px solid #ddd' }}
             renderSummary={(region) => (
@@ -72,19 +83,33 @@ export function HomePage() {
                 {region.branches.length === 0 ? (
                   <Typography sx={{ opacity: 0.7 }}>אין סניפים להצגה</Typography>
                 ) : (
-                  region.branches.map((b, idx) => (
-                    <div key={b.title}>
-                      <Typography sx={{ fontWeight: 700 }}>{b.title}</Typography>
-                      <Typography>{b.address}</Typography>
-                      {b.hours.map((line) => (
-                        <Typography key={line}>{line}</Typography>
-                      ))}
+                  region.branches.map((b, idx) => {
+                    const isActive = selectedBranchId && b._placeId === selectedBranchId
 
-                      {idx !== region.branches.length - 1 && (
-                        <Divider sx={{ my: 2 }} />
-                      )}
-                    </div>
-                  ))
+                    return (
+                      <div
+                        key={b._placeId || `${b.title}-${b.address}`}
+                        onClick={() => handleBranchClick(b)}
+                        style={{
+                          cursor: 'pointer',
+                          padding: '10px 10px',
+                          borderRadius: 10,
+                          background: isActive ? '#f2f2f2' : 'transparent',
+                          border: isActive ? '1px solid #d0d0d0' : '1px solid transparent',
+                        }}
+                      >
+                        <Typography sx={{ fontWeight: 700 }}>{b.title}</Typography>
+                        <Typography>{b.address}</Typography>
+                        {b.hours.map((line) => (
+                          <Typography key={line}>{line}</Typography>
+                        ))}
+
+                        {idx !== region.branches.length - 1 && (
+                          <Divider sx={{ my: 2 }} />
+                        )}
+                      </div>
+                    )
+                  })
                 )}
               </>
             )}
@@ -93,7 +118,11 @@ export function HomePage() {
 
         <div className="map-container">
           <div className="map">
-            <MyComponent selectedRegion={selectedRegion} />
+            <MyComponent
+              selectedRegion={selectedRegion}
+              selectedBranchId={selectedBranchId}     // ✅ חדש
+              onBranchSelect={setSelectedBranchId}    // ✅ חדש (כדי שגם קליק על נעץ יעדכן)
+            />
           </div>
         </div>
       </div>
