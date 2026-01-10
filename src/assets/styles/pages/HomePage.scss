@@ -43,7 +43,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
-
+    
     width: 100%;
     max-width: rem(1200px);
     margin: 0 auto;
@@ -71,13 +71,6 @@
     justify-content: center;
 }
 
-button {
-    padding: 1rem;
-    font-size: larger;
-    font-weight: bolder;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    border-radius: 1rem;
-}
 
 button:hover {
     color: $clr2;

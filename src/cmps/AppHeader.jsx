@@ -5,13 +5,12 @@ import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
 import { logout } from '../store/actions/user.actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-	faTiktok,
 	faFacebookF,
 	faInstagram,
-	faYoutube,
-	faLinkedinIn
 } from "@fortawesome/free-brands-svg-icons"
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons"
 import logo from '../assets/styles/img/logo.png'
+import { HeaderNavItem } from './HeaderNavItem'
 
 
 export function AppHeader() {
@@ -31,13 +30,25 @@ export function AppHeader() {
 	return (
 		<>
 			<div className="top-wrap full">
-				<div className="locations">
-					<a href="">סניפים</a>
+				<div className="right-links">
+
+					<div className="about">
+						<NavLink to="about">אודות</NavLink>
+					</div>
+					<div className="nav-link">
+						<NavLink to="chat">צור קשר</NavLink>
+					</div>
 				</div>
 				<span>“זול סטוק – כשמחיר וחוויה נפגשים”</span>
-				<div className="investors">
-					<a href="">דרושים</a>
-					<a href="">זכיינות</a>
+				<div className="left-links">
+					<div className="investors">
+						<div className="drushim">
+							<a href="">דרושים</a>
+						</div>
+						<div className="zakyanut">
+							<a href="">זכיינות</a>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div className="logo-wrap full">
@@ -47,33 +58,29 @@ export function AppHeader() {
 			</div>
 			<header className="app-header full">
 				<nav>
-					<div className="nav-link">
-						<div className="about">
-							<NavLink to="about">אודות</NavLink>
-						</div>
-					</div>
-					<div className="nav-link">
-						<NavLink to="products">מוצרים</NavLink>
-					</div>
-					<div className="nav-link">
-						<NavLink to="chat">צור קשר</NavLink>
-					</div>
-					{/* <NavLink to="review">Review</NavLink> */}
+					<HeaderNavItem to="/furniture" label="רהיטים" />
+					<HeaderNavItem to="/clothing" label="ביגוד" />
+					<HeaderNavItem to="/electronics" label="אלקטרוניקה" />
+					<HeaderNavItem to="/kitchen" label="מטבח" />
+					<HeaderNavItem to="/pets" label="חיות מחמד" />
 
 					{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
-					{/* {!user && <NavLink to="login" className="login-link">Login</NavLink>} */}
 					{user && (
 						<div className="user-info">
-							<Link to={`user/${user._id}`}>
-								{/* {user.imgUrl && <img src={user.imgUrl} />} */}
-								{user.fullname}
-							</Link>
-							{/* <span className="score">{user.score?.toLocaleString()}</span> */}
+							<Link to={`user/${user._id}`}>{user.fullname}</Link>
 							<button onClick={onLogout}>logout</button>
 						</div>
 					)}
 				</nav>
+				<div className="locations">
+					<button className="branches-btn">
+						<span>סניפים</span>
+						<FontAwesomeIcon icon={faLocationDot} />
+
+					</button>
+				</div>
+
 				<div className="socials">
 					<a href="https://www.facebook.com/zolstock/"
 						target="_blank"

@@ -96,10 +96,10 @@ export function HomePage() {
           alt="new-products6"
         />
       </div>
-
+{/* 
       <div className="all-products-btn">
         <button>לכל המוצרים</button>
-      </div>
+      </div> */}
 
       <div className="welcome">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
