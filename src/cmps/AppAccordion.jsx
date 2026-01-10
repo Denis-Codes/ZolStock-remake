@@ -17,6 +17,7 @@ export function AppAccordion({
   summarySx = {},
   detailsSx = {},
   maxDetailsHeight = null,   // NEW: max height for scrollable details (e.g., '300px')
+   onExpandedChange,
 }) {
 const [expanded, setExpanded] = React.useState(() => {
   if (allowMultiple) {
@@ -26,20 +27,40 @@ const [expanded, setExpanded] = React.useState(() => {
 })
 
 
-  function handleChange(id) {
-    return (_, isExpanded) => {
-      if (allowMultiple) {
-        setExpanded((prev) => {
-          const next = new Set(prev)
-          if (isExpanded) next.add(id)
-          else next.delete(id)
-          return next
-        })
-      } else {
-        setExpanded(isExpanded ? id : '')
-      }
+//   function handleChange(id) {
+//     return (_, isExpanded) => {
+//       if (allowMultiple) {
+//         setExpanded((prev) => {
+//           const next = new Set(prev)
+//           if (isExpanded) next.add(id)
+//           else next.delete(id)
+//           return next
+//         })
+//       } else {
+//         setExpanded(isExpanded ? id : '')
+//       }
+//     }
+//   }
+
+function handleChange(id) {
+  return (_, isExpanded) => {
+    if (!allowMultiple && isExpanded) {
+      onExpandedChange?.(id) // ✅ חדש: כשנפתח אזור → מעדכנים בחוץ
+    }
+
+    if (allowMultiple) {
+      setExpanded((prev) => {
+        const next = new Set(prev)
+        if (isExpanded) next.add(id)
+        else next.delete(id)
+        return next
+      })
+    } else {
+      setExpanded(isExpanded ? id : '')
     }
   }
+}
+
 
   // Merge scroll styles with detailsSx
   const finalDetailsSx = maxDetailsHeight

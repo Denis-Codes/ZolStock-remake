@@ -3,50 +3,52 @@ import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
-const containerStyle = {
-  width: '100%',
-  height: '100%',
+const israelCenter = { lat: 31.0461, lng: 34.8516 }
+
+const loaderOptions = {
+  id: 'google-map-script',
+  googleMapsApiKey: apiKey,
+  language: 'he',
+  region: 'IL',
 }
 
-const center = {
-  lat: -3.745,
-  lng: -38.523,
-}
+export function MyComponent({ selectedRegion }) {
+  const { isLoaded } = useJsApiLoader(loaderOptions)
 
-export function MyComponent() {
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: apiKey,
-  })
+  const mapRef = React.useRef(null)
 
-  const [map, setMap] = React.useState(null)
+  const [isMapReady, setIsMapReady] = React.useState(false)
 
-  const onLoad = React.useCallback(function callback(map) {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
-    const bounds = new window.google.maps.LatLngBounds(center)
-    map.fitBounds(bounds)
-
-    setMap(map)
+  const onLoad = React.useCallback((map) => {
+    mapRef.current = map
+    setIsMapReady(true) 
   }, [])
 
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null)
+  const onUnmount = React.useCallback(() => {
+    mapRef.current = null
+    setIsMapReady(false) 
   }, [])
+
+  React.useEffect(() => {
+    if (!isMapReady) return
+    const map = mapRef.current
+    if (!map) return
+
+    const target = selectedRegion?.center ?? israelCenter
+    map.panTo(target)
+    map.setZoom(selectedRegion?.zoom ?? 10)
+  }, [isMapReady, selectedRegion])
 
   return isLoaded ? (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={10}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-    >
-      {/* Child components, such as markers, info windows, etc. */}
-      <></>
-    </GoogleMap>
-  ) : (
-    <></>
-  )
+    <div dir="ltr" style={{ width: '100%', height: '100%' }}>
+      <GoogleMap
+        mapContainerStyle={{ width: '100%', height: '100%' }}
+        center={israelCenter}
+        zoom={7}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        options={{ mapTypeControl: false }}
+      />
+    </div>
+  ) : null
 }
-
-// export default React.memo(MyComponent)

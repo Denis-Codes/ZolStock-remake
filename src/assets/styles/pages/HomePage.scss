@@ -88,16 +88,16 @@ button:hover {
     gap: 2rem;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1rem 10rem 1rem 10rem;
 }
 
 .branches-menu,
 .map-container {
-    flex: 1;        
-    min-width: 0;   
+    flex: 1;
+    min-width: 0;
 }
 
 .map {
     width: 100%;
-    height: rem(536px);  
+    height: rem(536px);
 }
