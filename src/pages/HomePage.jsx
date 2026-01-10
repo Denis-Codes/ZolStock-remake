@@ -5,7 +5,8 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
-import regions from '../data/branches.json'
+import regions from '../data/branches.withLatLng.json'
+
 
 export function HomePage() {
   const [selectedRegionId, setSelectedRegionId] = useState('sharon')

@@ -1,4 +1,3 @@
-// 
 import * as React from 'react'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -17,52 +16,39 @@ export function AppAccordion({
   summarySx = {},
   detailsSx = {},
   maxDetailsHeight = null,   // NEW: max height for scrollable details (e.g., '300px')
-   onExpandedChange,
+  onExpandedChange = null,   // NEW: callback when expanded changes (id) => void
 }) {
-const [expanded, setExpanded] = React.useState(() => {
-  if (allowMultiple) {
-    return defaultExpandedId ? new Set([defaultExpandedId]) : new Set()
-  }
-  return defaultExpandedId ?? ''
-})
-
-
-//   function handleChange(id) {
-//     return (_, isExpanded) => {
-//       if (allowMultiple) {
-//         setExpanded((prev) => {
-//           const next = new Set(prev)
-//           if (isExpanded) next.add(id)
-//           else next.delete(id)
-//           return next
-//         })
-//       } else {
-//         setExpanded(isExpanded ? id : '')
-//       }
-//     }
-//   }
-
-function handleChange(id) {
-  return (_, isExpanded) => {
-    if (!allowMultiple && isExpanded) {
-      onExpandedChange?.(id) // ✅ חדש: כשנפתח אזור → מעדכנים בחוץ
+  const [expanded, setExpanded] = React.useState(
+    allowMultiple ? new Set(defaultExpandedId ? [defaultExpandedId] : []) : (defaultExpandedId || '')
+  )
+  
+  React.useEffect(() => {
+    if (onExpandedChange && defaultExpandedId && !allowMultiple) {
+      onExpandedChange(defaultExpandedId)
     }
+  }, []) 
 
-    if (allowMultiple) {
-      setExpanded((prev) => {
-        const next = new Set(prev)
-        if (isExpanded) next.add(id)
-        else next.delete(id)
-        return next
-      })
-    } else {
-      setExpanded(isExpanded ? id : '')
+  function handleChange(id) {
+    return (_, isExpanded) => {
+      if (allowMultiple) {
+        setExpanded((prev) => {
+          const next = new Set(prev)
+          if (isExpanded) next.add(id)
+          else next.delete(id)
+          return next
+        })
+      } else {
+        const newId = isExpanded ? id : ''
+        setExpanded(newId)
+        
+        if (onExpandedChange && isExpanded) {
+          onExpandedChange(id)
+        }
+      }
     }
   }
-}
 
-
-  // Merge scroll styles with detailsSx
+  
   const finalDetailsSx = maxDetailsHeight
     ? { maxHeight: maxDetailsHeight, overflowY: 'auto', ...detailsSx }
     : detailsSx
