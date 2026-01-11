@@ -11,7 +11,7 @@ export function HeaderNavDropdown({ to, label, subcats = [] }) {
           {subcats.map(({ subCategory, labelHe }) => (
             <NavLink
               key={subCategory}
-              to={`${to}?sub=${encodeURIComponent(subCategory)}`}
+              to={`${to}/${subCategory}`}
               className="dropdown-item"
             >
               {labelHe}
