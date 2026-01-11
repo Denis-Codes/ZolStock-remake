@@ -27,7 +27,10 @@
   align-items: center;
 }
 
+/* ============================= */
 /* LOGO */
+/* ============================= */
+
 .logo-wrap {
   display: flex;
   align-items: center;
@@ -41,7 +44,10 @@
   }
 }
 
+/* ============================= */
 /* HEADER */
+/* ============================= */
+
 .app-header {
   display: flex;
   align-items: center;
@@ -56,7 +62,10 @@
   backdrop-filter: blur(50px);
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
+  /* ============================= */
   /* NAV */
+  /* ============================= */
+
   nav {
     display: flex;
     align-items: center;
@@ -65,11 +74,14 @@
     font-size: 0.85rem;
     overflow: visible;
 
+    /* ---------- DROPDOWN WRAPPER ---------- */
+
     .nav-dropdown {
       position: relative;
       display: inline-flex;
       align-items: center;
 
+      /* גשר hover */
       &::after {
         content: "";
         position: absolute;
@@ -98,6 +110,8 @@
       }
     }
 
+    /* ---------- MAIN NAV ITEM ---------- */
+
     .nav-link {
       display: flex;
       align-items: center;
@@ -116,20 +130,24 @@
       font-size: large;
     }
 
-    /* Active שחור רק לקטגוריות הראשיות */
+    /* Active רק לקטגוריות הראשיות */
     .nav-link .nav-item.active {
       color: $clr7;
     }
+
+    /* ============================= */
+    /* DROPDOWN MENU (HORIZONTAL GRID) */
+    /* ============================= */
 
     .dropdown-menu {
       position: absolute;
       top: 100%;
       right: 0;
-
       margin-top: 0.5rem;
 
-      min-width: 13.75rem;
-      padding: 0.5rem 0;
+      min-width: 28rem;
+      max-width: 44rem;
+      padding: 0.75rem;
 
       background: #f5f5f5;
       border: 0.0625rem solid rgba(0, 0, 0, 0.12);
@@ -138,14 +156,26 @@
 
       z-index: 9999;
 
+      /* אנימציה */
       opacity: 0;
       transform: translateY(-0.25rem);
       pointer-events: none;
-
       transition: opacity 160ms ease, transform 180ms ease;
+
+      /* גריד לרוחב */
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(8, auto); // מספר פריטים בעמודה
+      column-gap: 1.25rem;
+      row-gap: 0;
+
+      direction: rtl;
     }
 
+    /* ---------- DROPDOWN ITEM ---------- */
+
     .dropdown-item {
+      position: relative;
       display: flex;
       align-items: center;
 
@@ -154,8 +184,7 @@
 
       color: $clr1;
       font-weight: 500;
-
-      border-top: 0.0625rem solid rgba(0, 0, 0, 0.06);
+      border-radius: 0.5rem;
 
       &:hover {
         background: rgba(31, 59, 139, 0.08);
@@ -164,17 +193,37 @@
       &.active {
         color: $clr1;
       }
+
+      /* קו מפריד */
+      &::after {
+        content: "";
+        position: absolute;
+        right: 0.875rem;
+        left: 0.875rem;
+        bottom: 0;
+        height: 0.0625rem;
+        background: rgba(0, 0, 0, 0.08);
+      }
     }
 
-    .dropdown-menu .dropdown-item:first-child {
-      border-top: none;
+    /* בלי קו על סוף עמודה */
+    .dropdown-item:nth-child(8n)::after {
+      display: none;
     }
   }
+
+  /* ============================= */
+  /* CHEVRON */
+  /* ============================= */
 
   .chevron {
     font-size: 0.7rem;
     transition: transform 200ms ease;
   }
+
+  /* ============================= */
+  /* LOCATIONS BUTTON */
+  /* ============================= */
 
   .locations {
     display: flex;
@@ -196,8 +245,6 @@
       font-weight: 600;
       cursor: pointer;
 
-      box-shadow: none;
-
       &:hover {
         filter: brightness(0.95);
       }
@@ -208,11 +255,14 @@
       }
 
       .svg-inline--fa {
-        color: currentColor;
         height: 1rem;
       }
     }
   }
+
+  /* ============================= */
+  /* SOCIALS */
+  /* ============================= */
 
   .socials {
     display: flex;
@@ -228,6 +278,10 @@
       }
     }
   }
+
+  /* ============================= */
+  /* USER INFO */
+  /* ============================= */
 
   .user-info {
     display: flex;
