@@ -51,3 +51,31 @@ export function loadFromStorage(key) {
     const data = localStorage.getItem(key)
     return (data) ? JSON.parse(data) : undefined
 }
+
+export function buildCategorySubcats(products) {
+  const map = new Map()
+
+  for (const p of products) {
+    const category = p.category
+    const subCategory = p.subCategory
+    if (!category || !subCategory) continue
+
+    if (!map.has(category)) map.set(category, new Map())
+    const subMap = map.get(category)
+
+    const labelHe = p.displaySubCategoryHe || subCategory
+
+    if (!subMap.has(subCategory)) {
+      subMap.set(subCategory, { subCategory, labelHe })
+    }
+  }
+
+  const res = {}
+  for (const [cat, subMap] of map.entries()) {
+    res[cat] = Array.from(subMap.values()).sort((a, b) =>
+      a.labelHe.localeCompare(b.labelHe, "he")
+    )
+  }
+
+  return res
+}
