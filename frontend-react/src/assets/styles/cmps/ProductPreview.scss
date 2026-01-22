@@ -1,0 +1,414 @@
+// // .product-card {
+// //   display: flex;
+// //   flex-direction: column;
+
+// //   position: relative;
+// //   background: $clr4;
+// //   border: 0.1rem solid rgba(0, 0, 0, 0.12);
+// //   padding: 1.6rem 1.2rem 1.2rem;
+// //   min-height: 32rem;
+
+// //   align-items: center;
+// //   text-align: center;
+
+// //   cursor: pointer;
+// //   overflow: hidden;
+
+// //   transition:
+// //     border-color 0.25s ease,
+// //     transform 0.25s ease;
+
+// //   &:hover {
+// //     border-color: rgba(0, 0, 0, 0.28);
+// //     transform: translateY(-0.3rem);
+// //   }
+// // }
+
+// // /* כל הכרטיס לחיץ */
+// // .card-link {
+// //   width: 100%;
+// //   height: 100%;
+
+// //   display: flex;
+// //   flex-direction: column;
+// //   align-items: center;
+// //   text-align: center;
+
+// //   text-decoration: none;
+// //   color: inherit;
+// // }
+
+// // /* תמונה */
+// .img-wrap {
+//   width: 100%;
+//   height: 16rem;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+
+//   margin-top: 0.6rem;
+
+//   img {
+//     width: 100%;
+//     height: 100%;
+//     object-fit: contain;
+//     display: block;
+
+//     transition: transform 0.3s ease;
+//   }
+// }
+
+// // /* Premium zoom */
+// // .product-card:hover .img-wrap img {
+// //   transform: scale(1.06);
+// // }
+
+// /* שם מוצר */
+// .title {
+//   margin: 1.2rem 0 0;
+//   font-size: 2.2rem;
+//   font-weight: 800;
+//   color: $clr3;
+//   line-height: 1.2;
+
+//   min-height: 5.6rem;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+// /* מחיר – נעול נגד RTL */
+// .price-row {
+//   margin-top: auto;
+//   padding-top: 1.2rem;
+
+//   direction: ltr;
+//   display: inline-flex;
+//   align-items: flex-end;
+//   justify-content: center;
+//   gap: 0.6rem;
+//   flex-direction: row-reverse;
+
+//   .ils {
+//     font-size: 4.2rem;
+//     font-weight: 900;
+//     color: $clr3;
+//     line-height: 1;
+//     letter-spacing: -0.03rem;
+//   }
+
+//   .ag {
+//     font-size: 1.6rem;
+//     font-weight: 800;
+//     color: $clr3;
+//     transform: translateY(-0.25rem);
+//     opacity: 0.9;
+//   }
+
+//   .currency {
+//     font-size: 1.8rem;
+//     font-weight: 900;
+//     color: $clr3;
+//     transform: translateY(-0.25rem);
+//   }
+// }
+
+// .product-card {
+//   display: flex;
+//   flex-direction: column;
+
+//   position: relative;
+//   background: $clr4;
+//   border: none;
+//   padding: 2rem 1.6rem 1.6rem;
+//   min-height: 32rem;
+
+//   align-items: center;
+//   text-align: center;
+
+//   cursor: pointer;
+//   overflow: hidden;
+
+//   box-shadow: 
+//     0 0.2rem 0.8rem rgba(0, 0, 0, 0.04),
+//     0 0.4rem 1.6rem rgba(0, 0, 0, 0.06);
+
+//   transition:
+//     box-shadow 0.3s ease,
+//     transform 0.3s ease;
+
+//   &:hover {
+//     box-shadow: 
+//       0 0.4rem 1.2rem rgba(0, 0, 0, 0.08),
+//       0 0.8rem 2.4rem rgba(0, 0, 0, 0.12);
+//     transform: translateY(-0.4rem);
+//   }
+// }
+
+/* ============================= */
+/* PRODUCT PREVIEW (IKEA-ish) */
+/* ============================= */
+
+.product-card {
+  position: relative;
+  background: $clr4;
+  border: rem(1px) solid rgba(0, 0, 0, 0.08);
+  border-radius: rem(18px);
+  overflow: hidden;
+
+  box-shadow: 0 rem(6px) rem(18px) rgba(0, 0, 0, 0.06);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+
+  &:hover {
+    transform: translateY(rem(-2px));
+    box-shadow: 0 rem(12px) rem(26px) rgba(0, 0, 0, 0.12);
+    border-color: rgba($clr1, 0.18);
+  }
+
+  &:focus-within {
+    border-color: rgba($clr1, 0.5);
+    box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12), 0 rem(12px) rem(26px) rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-media {
+  display: block;
+  position: relative;
+  background: rgba($clr3, 0.03);
+
+  /* תמונה אחידה כמו איקאה */
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+
+    transform: scale(1);
+    transition: transform 220ms ease;
+  }
+
+  .product-card:hover & img {
+    transform: scale(1.04);
+  }
+}
+
+.media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+
+  font-size: rem(13px);
+  color: rgba($clr3, 0.6);
+}
+
+/* לב קטן כמו wishlist של איקאה */
+.wish-btn {
+  position: absolute;
+  top: rem(10px);
+  left: rem(10px);
+  z-index: 3;
+
+  width: rem(40px);
+  height: rem(40px);
+
+  border-radius: rem(12px);
+  border: rem(1px) solid rgba(0, 0, 0, 0.10);
+  background: rgba($clr4, 0.92);
+  color: rgba($clr3, 0.85);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: rem(18px);
+  line-height: 1;
+  cursor: pointer;
+
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, color 120ms ease;
+
+  &:hover {
+    transform: translateY(rem(-1px));
+    border-color: rgba($clr1, 0.28);
+    box-shadow: 0 rem(10px) rem(18px) rgba(0, 0, 0, 0.12);
+  }
+
+  &:active {
+    transform: translateY(rem(0px));
+    box-shadow: none;
+  }
+
+  &.active {
+    color: #e53935;
+    border-color: rgba(#e53935, 0.3);
+    background: rgba(#e53935, 0.08);
+  }
+}
+
+/* Out of stock state */
+.product-card.out-of-stock {
+  .card-media img {
+    opacity: 0.6;
+    filter: grayscale(30%);
+  }
+}
+
+.card-body {
+  padding: rem(12px) rem(14px) rem(14px);
+  display: grid;
+  gap: rem(6px);
+}
+
+.card-title {
+  margin: 0;
+  font-size: rem(15px);
+  line-height: rem(20px);
+  font-weight: 700;
+  color: $clr3;
+
+  /* חיתוך נקי לשתי שורות */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-line {
+  margin: 0;
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: rgba($clr3, 0.78);
+
+  &.muted {
+    color: rgba($clr3, 0.55);
+    letter-spacing: rem(0.2px);
+  }
+}
+
+.card-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-price-section {
+  display: flex;
+  align-items: center;
+  gap: rem(8px);
+  margin-top: rem(6px);
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: rem(13px);
+  font-weight: 500;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: rem(2px);
+
+  .currency {
+    font-size: rem(11px);
+  }
+}
+
+.card-price {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  align-items: baseline;
+  gap: rem(4px);
+
+  font-weight: 800;
+  color: $clr3;
+
+  /* תג מחיר קטן עם היילייט צהוב */
+  width: fit-content;
+  padding: rem(6px) rem(10px);
+  border-radius: rem(12px);
+  background: rgba($clr2, 0.20);
+  border: rem(1px) solid rgba($clr2, 0.35);
+
+  .ils {
+    font-size: rem(13px);
+    opacity: 0.9;
+  }
+
+  .whole {
+    font-size: rem(22px);
+    line-height: rem(22px);
+    letter-spacing: rem(-0.4px);
+  }
+
+  .frac {
+    font-size: rem(13px);
+    opacity: 0.85;
+    transform: translateY(rem(-6px));
+  }
+
+  &.sale {
+    background: rgba(#e53935, 0.12);
+    border-color: rgba(#e53935, 0.25);
+    color: #c62828;
+  }
+}
+
+/* רספונסיביות: שומר על תחושה אוורירית */
+@include until($bp-sm) {
+  .product-card {
+    border-radius: rem(16px);
+  }
+
+  .card-body {
+    padding: rem(10px) rem(12px) rem(12px);
+  }
+
+  .wish-btn {
+    top: rem(8px);
+    left: rem(8px);
+    width: rem(38px);
+    height: rem(38px);
+    border-radius: rem(12px);
+  }
+}
+
+/* ============================= */
+/* PRODUCTS GRID */
+/* ============================= */
+
+.product-list {
+  display: grid;
+  gap: rem(18px);
+  padding: 1rem 0;
+
+  /* ✅ קסם: ממלא שורות אוטומטית ולא נופל ל"מוצר בודד" */
+  grid-template-columns: repeat(auto-fit, minmax(rem(220px), 1fr));
+
+  align-items: start;
+}
+
+/* טאבלט */
+@include until($bp-md) {
+  .product-list {
+    gap: rem(14px);
+    grid-template-columns: repeat(auto-fit, minmax(rem(200px), 1fr));
+  }
+}
+
+/* מובייל */
+@include until($bp-sm) {
+  .product-list {
+    gap: rem(12px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* מובייל ממש קטן */
+// @include until($bp-xs) {
+//   .product-list {
+//     grid-template-columns: 1fr;
+//   }
+// }

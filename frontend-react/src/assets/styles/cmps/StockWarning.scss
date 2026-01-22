@@ -1,0 +1,13 @@
+.stock-warning {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 0;
+
+  &.low-stock {
+    color: #f57c00;
+  }
+
+  &.out-of-stock {
+    color: #dc3545;
+  }
+}

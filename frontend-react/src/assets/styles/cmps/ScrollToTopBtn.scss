@@ -1,0 +1,57 @@
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+
+  width: 3.2rem;
+  height: 3.2rem;
+
+  border-radius: 50%;
+  border: none;
+
+  background: $clr1;
+  color: $clr2;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+
+  cursor: pointer;
+  z-index: 999999;
+
+  display: grid;
+  place-items: center;
+
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.2);
+
+  /* מצב מוסתר – מחוץ למסך */
+  opacity: 0;
+  transform: translateX(4rem);
+  pointer-events: none;
+
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background-color: darken($clr1, 5%);
+    box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    transform: translateX(0) scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 0.15rem solid $clr2;
+    outline-offset: 0.2rem;
+  }
+
+  /* מצב גלוי – נכנס פנימה */
+  &.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+}

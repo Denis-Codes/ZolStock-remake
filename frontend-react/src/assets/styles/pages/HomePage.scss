@@ -1,0 +1,224 @@
+/* HomePage.scss (Responsive using central breakpoints) */
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-image: url(https://zolstock.co.il/wp-content/uploads/2019/04/welcome.jpg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+
+  padding: clamp(1rem, 2vw, 2.5rem);
+  margin-top: 1rem;
+
+  /* קצת גובה כדי להרגיש hero */
+  min-height: clamp(16rem, 35vh, 28rem);
+
+  h1 {
+    color: $clr2;
+    text-align: center;
+    margin: 0 0 0.75rem 0;
+    font-size: clamp(1.6rem, 2.2vw, 2.6rem);
+  }
+
+  p {
+    text-align: center;
+    width: min(100%, 50rem);
+    margin: 0;
+    font-size: clamp(1rem, 0.6vw + 0.9rem, 1.125rem);
+    line-height: 1.55;
+  }
+}
+
+/* במובייל/טאץ׳: fixed עושה בעיות ביצועים/באגים */
+@media (pointer: coarse) {
+  .welcome {
+    background-attachment: scroll;
+    font-size: smaller;
+  }
+}
+
+/* ============================= */
+/* GALLERY (generic wrapper) */
+/* ============================= */
+.gallery {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* ============================= */
+/* SECTION SEPARATOR */
+/* ============================= */
+.section-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $clr1;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
+
+  h2 {
+    margin: 0;
+    color: $clr4; /* אם יש לך לבן, אחרת תוריד */
+    font-size: clamp(1.1rem, 1.2vw, 1.6rem);
+    text-align: center;
+  }
+}
+
+/* ============================= */
+/* GALLERY2 (image grid) */
+/* ============================= */
+.gallery2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  /* center+gap יותר יציב מ-space-around */
+  justify-content: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+
+  width: 100%;
+  max-width: rem(1200px);
+  margin: 1rem auto 0;
+
+  min-width: 0;
+
+  img {
+    width: clamp(10rem, 22vw, 20rem);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+
+    margin: 0;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    will-change: transform;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+  }
+}
+
+/* מובייל: תמונות יותר גדולות / פחות “רווח מת” */
+@include until($bp-sm) {
+  .gallery2 img {
+    width: min(100%, rem(360px));
+  }
+}
+
+/* טאבלט: שתי-שלוש בשורה בצורה יציבה */
+@include between($bp-tablet-min, $bp-tablet-max) {
+  .gallery2 img {
+    width: clamp(rem(180px), 28vw, rem(260px));
+  }
+}
+
+/* ============================= */
+/* ALL PRODUCTS BTN */
+/* ============================= */
+.all-products-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+/* עדיף לא לגעת בכל הכפתורים גלובלית,
+   אבל אם זה שלך בעמוד הבית – תשאיר כאן */
+button:hover {
+  color: $clr2;
+}
+
+/* ============================= */
+/* BRANCHES + MAP */
+/* ============================= */
+.branches-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: 1rem 0;
+
+  min-width: 0;
+}
+
+.branches-menu,
+.map-container {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* מפה: גובה נזיל */
+.map {
+  width: 100%;
+  height: clamp(rem(300px), 45vh, rem(536px));
+}
+
+/* מובייל/טאבלט: עמודה אחת (רשימה מעל מפה) */
+@include until($bp-md) {
+  .branches-container {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .map {
+    height: clamp(rem(260px), 40vh, rem(420px));
+  }
+}
+
+/* דסקטופ: קצת יותר גובה למפה אם צריך */
+@include between($bp-desktop-min, $bp-desktop-max) {
+  .map {
+    height: clamp(rem(420px), 50vh, rem(560px));
+  }
+}
+
+/* אולטרה: אפשר לתת עוד רוחב/אוויר (אם תרצה) */
+@include from($bp-ultra-min) {
+  .gallery2 {
+    max-width: rem(1400px);
+  }
+
+  .map {
+    height: clamp(rem(520px), 45vh, rem(640px));
+  }
+}
+
+#branches-map {
+  scroll-margin-top: rem(120px);
+}
+
+/* ============================= */
+/* FULL BLEED (safer) */
+/* ============================= */
+.full-viewport {
+  /* full-bleed בלי “רצועה לבנה” */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+
+  overflow-x: clip;
+}
+
+/* ============================= */
+/* TEXT */
+/* ============================= */
+strong {
+  color: $clr2;
+}
+
+@include until($bp-sm) {
+  .main-container main {
+    // padding-inline: 0; // או rem(16px) אם אתה רוצה קצת מרווח
+  }
+}

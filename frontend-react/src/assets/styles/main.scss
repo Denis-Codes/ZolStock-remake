@@ -1,0 +1,59 @@
+// Setup
+@import "setup/variables";
+@import "setup/functions";
+@import "setup/mixins";
+@import "setup/typography";
+@import "setup/breakpoints";
+
+// Basics
+@import "basics/helpers";
+@import "basics/layout";
+@import "basics/base";
+@import "basics/links";
+@import "basics/forms";
+
+
+// pages
+@import "RootCmp";
+
+@import "pages/AboutUs";
+@import "pages/HomePage";
+@import "pages/ProductIndex";
+@import "pages/ReviewIndex";
+@import "pages/UserDetails";
+@import "pages/TaskDetails";
+@import "pages/LoginSignup";
+@import "pages/ProductDetails";
+@import "pages/CartPage";
+
+// Components
+@import "cmps/list";
+@import "cmps/preview";
+
+@import "cmps/AppHeader";
+@import "cmps/AppFooter";
+@import "cmps/UserMsg";
+
+@import "cmps/CarFilter";
+@import "cmps/ReviewEdit";
+@import "cmps/ReviewList";
+@import "cmps/ReviewPreview";
+@import "cmps/SlickCarousel";
+@import "cmps/ScrollToTopBtn.scss";
+
+@import "slick-carousel/slick/slick.css";
+// @import "slick-carousel/slick/slick-theme.css";
+
+@import "cmps/EmblaCarousel";
+@import "cmps/ProductList";
+@import "cmps/ProductPreview";
+
+// New e-commerce components
+@import "cmps/AddToCartBtn";
+@import "cmps/SaleBadge";
+@import "cmps/StarRating";
+@import "cmps/ProductSkeleton";
+@import "cmps/ImageGallery";
+@import "cmps/VariantSelector";
+@import "cmps/CartIcon";
+@import "cmps/StockWarning";

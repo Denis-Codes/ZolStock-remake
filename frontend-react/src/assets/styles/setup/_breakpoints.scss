@@ -1,0 +1,49 @@
+/* setup/_breakpoints.scss */
+
+/* Screen ranges you want to cover */
+$bp-mobile-min: 20rem;   // 320px
+$bp-mobile-max: 30rem;   // 480px
+
+$bp-tablet-min: 37.5rem; // 600px
+$bp-tablet-max: 64rem;   // 1024px
+
+$bp-desktop-min: 75rem;  // 1200px
+$bp-desktop-max: 120rem; // 1920px
+
+$bp-ultra-min: 160rem;   // 2560px
+
+/* Handy aliases (single points) */
+$bp-sm: $bp-mobile-max;  // up to 480
+$bp-md: $bp-tablet-max;  // up to 1024
+$bp-lg: $bp-desktop-min; // from 1200
+$bp-xl: $bp-ultra-min;   // from 2560
+
+/* Mixins */
+@mixin until($bp) {
+  @media (max-width: ($bp - 0.001rem)) { @content; }
+}
+
+@mixin from($bp) {
+  @media (min-width: $bp) { @content; }
+}
+
+@mixin between($min, $max) {
+  @media (min-width: $min) and (max-width: ($max - 0.001rem)) { @content; }
+}
+
+/* Semantic mixins (readable) */
+@mixin mobile {
+  @include between($bp-mobile-min, $bp-mobile-max) { @content; }
+}
+
+@mixin tablet {
+  @include between($bp-tablet-min, $bp-tablet-max) { @content; }
+}
+
+@mixin desktop {
+  @include between($bp-desktop-min, $bp-desktop-max) { @content; }
+}
+
+@mixin ultra {
+  @include from($bp-ultra-min) { @content; }
+}

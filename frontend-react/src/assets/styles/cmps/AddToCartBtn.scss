@@ -1,0 +1,94 @@
+.add-to-cart-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: $clr1;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.small {
+    padding: 8px 14px;
+    font-size: 13px;
+
+    .cart-icon, .check-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &.medium {
+    padding: 10px 18px;
+    font-size: 14px;
+
+    .cart-icon, .check-icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &.large {
+    padding: 14px 28px;
+    font-size: 16px;
+    width: 100%;
+
+    .cart-icon, .check-icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &:hover:not(:disabled) {
+    background: darken($clr1, 8%);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  &.adding {
+    pointer-events: none;
+  }
+
+  &.success {
+    background: #28a745;
+
+    .check-icon {
+      animation: checkPop 0.3s ease;
+    }
+  }
+
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .cart-icon, .check-icon {
+    flex-shrink: 0;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

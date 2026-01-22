@@ -1,0 +1,52 @@
+// Colors
+$clr1: #1c41b4;
+$clr2: #FFF200;
+$clr3: #333333;
+$clr4: #FFFFFF;
+$clr5: #dff0ea;
+$clr6: #fff;
+$clr7: #222;
+
+$gray1: #ddd;
+$gray2: #aaa;
+$gray3: #777;
+$gray4: #333;
+
+
+// ========== משתני פונטים ==========
+
+// אופציה 1: Assistant (המומלץ!)
+// $font-main: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
+
+// אופציה 2: Heebo
+// $font-main: Heebo, -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: Heebo, -apple-system, BlinkMacSystemFont, sans-serif;
+
+// אופציה 3: Rubik
+// $font-main: Rubik, -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: Rubik, -apple-system, BlinkMacSystemFont, sans-serif;
+
+// אופציה 4: Alef
+// $font-main: Alef, -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: Alef, -apple-system, BlinkMacSystemFont, sans-serif;
+
+// אופציה 5: Open Sans
+// $font-main: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// אופציה 6: Varela Round
+$font-main: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-headings: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// שילוב מומלץ: Assistant + Heebo
+// $font-main: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: Heebo, -apple-system, BlinkMacResourceFont, sans-serif;
+
+// ===================================
+
+// Breakpoints
+$mobile-breakpoint: 460px;
+$narrow-breakpoint: 720px;
+$normal-breakpoint: 960px;
+

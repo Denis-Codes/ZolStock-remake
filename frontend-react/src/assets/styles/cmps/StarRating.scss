@@ -1,0 +1,60 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .star {
+    color: #ffc107;
+
+    &.empty {
+      color: #ddd;
+    }
+  }
+
+  &.small {
+    .star {
+      width: 12px;
+      height: 12px;
+    }
+
+    .review-count, .rating-number {
+      font-size: 11px;
+    }
+  }
+
+  &.medium {
+    .star {
+      width: 16px;
+      height: 16px;
+    }
+
+    .review-count, .rating-number {
+      font-size: 13px;
+    }
+  }
+
+  &.large {
+    .star {
+      width: 20px;
+      height: 20px;
+    }
+
+    .review-count, .rating-number {
+      font-size: 15px;
+    }
+  }
+
+  .review-count {
+    color: #777;
+  }
+
+  .rating-number {
+    font-weight: 600;
+    color: #333;
+  }
+}

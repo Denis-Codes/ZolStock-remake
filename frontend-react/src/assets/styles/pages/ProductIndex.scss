@@ -1,0 +1,332 @@
+.product-index {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-block: .3em;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.3em;
+  }
+
+  button {
+    margin-inline-end: 0;
+  }
+}
+
+.breadcrumbs {
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: rem(8px);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .crumb {
+    list-style: none;
+
+    &+.crumb::before {
+      content: " / ";
+      margin-inline: rem(8px);
+      opacity: 0.7;
+    }
+  }
+}
+
+/* ============================= */
+/* PRODUCT PAGE (IKEA-ish) */
+/* ============================= */
+
+.product-page {
+  direction: rtl;
+  background: $clr4;
+  color: $clr3;
+
+  /* אם full אצלך נותן רוחב מלא - זה בסדר.
+     כאן אנחנו דואגים שה"תוכן" ירגיש כמו קונטיינר של IKEA */
+  // padding: rem(18px) rem(14px) rem(40px);
+
+  .product-page__container {
+    width: min(72rem, 92%);
+    margin: 0 auto;
+  }
+
+  @include until($bp-sm) {
+    // padding: rem(14px) rem(10px) rem(28px);
+  }
+
+  /* TOP ROW: breadcrumbs + filters icon */
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(12px);
+
+    margin-bottom: rem(14px);
+  }
+
+  /* HEADER: title + add button */
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: rem(12px);
+
+    padding: rem(14px) rem(16px);
+    border: rem(1px) solid rgba(0, 0, 0, 0.08);
+    border-radius: rem(16px);
+    background: $clr4;
+
+    box-shadow: 0 rem(6px) rem(18px) rgba(0, 0, 0, 0.06);
+
+    margin-bottom: rem(14px);
+
+    @include until($bp-sm) {
+      align-items: stretch;
+      flex-direction: column;
+      padding: rem(12px);
+      border-radius: rem(14px);
+    }
+  }
+}
+
+/* ============================= */
+/* BREADCRUMBS */
+/* ============================= */
+
+.breadcrumbs {
+  .crumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: rem(8px);
+
+    // padding: 0;
+    padding: 1.125rem 0;
+    margin: 0;
+
+    list-style: none;
+  }
+
+  .crumb {
+    list-style: none;
+    font-size: rem(13px);
+    line-height: rem(18px);
+
+    a {
+      color: rgba($clr3, 0.85);
+      text-decoration: none;
+
+      &:hover {
+        color: $clr1;
+        text-decoration: underline;
+        text-decoration-thickness: rem(2px);
+        text-underline-offset: rem(3px);
+      }
+
+      &.active {
+        color: $clr1;
+        font-weight: 600;
+      }
+    }
+
+    &+.crumb::before {
+      content: " / ";
+      margin-inline: rem(8px);
+      opacity: 0.55;
+    }
+  }
+}
+
+/* ============================= */
+/* FILTERS BUTTON (icon) */
+/* ============================= */
+
+.filters-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: rem(42px);
+  height: rem(42px);
+
+  border-radius: rem(12px);
+  border: rem(1px) solid rgba(0, 0, 0, 0.12);
+  background: $clr4;
+  color: $clr3;
+
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    border-color: rgba($clr1, 0.35);
+    box-shadow: 0 rem(6px) rem(16px) rgba(0, 0, 0, 0.08);
+    transform: translateY(rem(-1px));
+  }
+
+  &:active {
+    transform: translateY(rem(0px));
+    box-shadow: none;
+  }
+}
+
+/* ============================= */
+/* TITLE */
+/* ============================= */
+
+.product-title {
+  margin: 0;
+  font-size: rem(22px);
+  line-height: rem(28px);
+  font-weight: 700;
+  letter-spacing: rem(-0.2px);
+
+  /* "IKEA-ish": קו קטן צהוב מתחת */
+  position: relative;
+  padding-bottom: rem(8px);
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    width: rem(56px);
+    height: rem(4px);
+    border-radius: rem(999px);
+
+    background: $clr2;
+  }
+
+  @include until($bp-sm) {
+    font-size: rem(20px);
+    line-height: rem(26px);
+  }
+}
+
+/* ============================= */
+/* PRIMARY BUTTON */
+/* ============================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: rem(42px);
+  padding-inline: rem(16px);
+
+  border-radius: rem(12px);
+  border: rem(1px) solid rgba(0, 0, 0, 0.08);
+
+  background: $clr1;
+  color: $clr4;
+
+  font-size: rem(14px);
+  font-weight: 600;
+
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+
+  &:hover {
+    box-shadow: 0 rem(10px) rem(20px) rgba(0, 0, 0, 0.14);
+    transform: translateY(rem(-1px));
+  }
+
+  &:active {
+    transform: translateY(rem(0px));
+    box-shadow: none;
+  }
+
+  @include until($bp-sm) {
+    width: 100%;
+  }
+}
+
+/* ============================= */
+/* CONTROLS: sort + search */
+/* ============================= */
+
+.product-controls {
+  display: grid;
+  grid-template-columns: rem(220px) 1fr;
+  gap: rem(12px);
+
+  padding: rem(12px) rem(16px);
+  border: rem(1px) solid rgba(0, 0, 0, 0.08);
+  border-radius: rem(16px);
+  background: $clr4;
+
+  margin-bottom: rem(10px);
+
+  box-shadow: 0 rem(4px) rem(14px) rgba(0, 0, 0, 0.05);
+
+  @include until($bp-sm) {
+    grid-template-columns: 1fr;
+    padding: rem(12px);
+    border-radius: rem(14px);
+  }
+
+  .sort-wrap,
+  .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: rem(10px);
+  }
+
+  select,
+  input[type="search"] {
+    width: 100%;
+    height: rem(44px);
+
+    border-radius: rem(12px);
+    border: rem(1px) solid rgba(0, 0, 0, 0.12);
+    background: $clr4;
+    color: $clr3;
+
+    padding-inline: rem(12px);
+    font-size: rem(14px);
+
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+
+    &:focus {
+      outline: none;
+      border-color: rgba($clr1, 0.55);
+      box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12);
+    }
+  }
+
+  input[type="search"]::placeholder {
+    color: rgba($clr3, 0.55);
+  }
+}
+
+/* ============================= */
+/* RESULTS LINE */
+/* ============================= */
+
+.results-line {
+  margin: 0 0 rem(14px);
+  padding-inline: rem(6px);
+
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: rgba($clr3, 0.72);
+}
+
+/* ============================= */
+/* PRODUCT GRID (wrap ProductList) */
+/* ============================= */
+
+/* אם ProductList כבר עושה grid בפנים,
+   זה עדיין ייראה טוב. אם לא, זה לפחות נותן ריווח סביב */
+.product-page .product-list,
+.product-page .product-list.grid {
+  margin-top: rem(10px);
+}
+
+/* אופציונלי: אם יש לך קלאסים בתוך ProductPreview (כרטיס),
+   תגיד לי מה השמות ואני אתן לך "כרטיס IKEA" מושלם */

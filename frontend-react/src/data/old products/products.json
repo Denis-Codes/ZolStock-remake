@@ -1,0 +1,2516 @@
+[
+  {
+    "id": "p1001",
+    "name": "sofa-nova-3",
+    "displayNameHe": "ספת 3 מושבים \"נובה\"",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "sofa",
+    "displaySubCategoryHe": "ספות",
+    "price": 2490,
+    "currency": "ILS",
+    "brand": "HomeLab",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 6,
+    "rating": 4.6,
+    "tags": [
+      "living-room",
+      "modern",
+      "fabric"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "מודרני",
+      "בד"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 210,
+        "depth": 92,
+        "height": 85
+      },
+      "materialHe": "בד פוליאסטר",
+      "frameMaterialHe": "עץ",
+      "colorHe": "אפור",
+      "weightKg": 48,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1002",
+    "name": "sofa-rio-2",
+    "displayNameHe": "ספה דו מושבית \"ריו\"",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "sofa",
+    "displaySubCategoryHe": "ספות",
+    "price": 1890,
+    "currency": "ILS",
+    "brand": "UrbanNest",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 4,
+    "rating": 4.3,
+    "tags": [
+      "living-room",
+      "compact",
+      "fabric"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "קומפקטי",
+      "בד"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 160,
+        "depth": 88,
+        "height": 82
+      },
+      "materialHe": "בד ארוג",
+      "frameMaterialHe": "עץ",
+      "colorHe": "בז׳",
+      "weightKg": 37,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1003",
+    "name": "dining-table-urban-160",
+    "displayNameHe": "שולחן אוכל \"אורבן\" 160",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "table",
+    "displaySubCategoryHe": "שולחנות",
+    "price": 1590,
+    "currency": "ILS",
+    "brand": "NordicLine",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 3,
+    "rating": 4.4,
+    "tags": [
+      "dining-room",
+      "wood",
+      "minimal"
+    ],
+    "displayTagsHe": [
+      "פינת אוכל",
+      "עץ",
+      "מינימליסטי"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 160,
+        "depth": 90,
+        "height": 75
+      },
+      "materialHe": "אלון מלא",
+      "finishHe": "מט",
+      "extendable": false,
+      "seats": 6
+    }
+  },
+  {
+    "id": "p1004",
+    "name": "coffee-table-round-80",
+    "displayNameHe": "שולחן סלון עגול 80",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "coffee-table",
+    "displaySubCategoryHe": "שולחנות סלון",
+    "price": 349,
+    "currency": "ILS",
+    "brand": "Casa",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 9,
+    "rating": 4.1,
+    "tags": [
+      "living-room",
+      "round",
+      "wood"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "עגול",
+      "עץ"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "diameter": 80,
+        "height": 42
+      },
+      "materialHe": "MDF עם פורניר",
+      "colorHe": "אלון טבעי",
+      "weightKg": 11,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1005",
+    "name": "bookshelf-tall-5",
+    "displayNameHe": "כוננית ספרים גבוהה 5 מדפים",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "shelf",
+    "displaySubCategoryHe": "מדפים וכונניות",
+    "price": 429,
+    "currency": "ILS",
+    "brand": "BuildIt",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 12,
+    "rating": 4.0,
+    "tags": [
+      "storage",
+      "wood",
+      "home-office"
+    ],
+    "displayTagsHe": [
+      "אחסון",
+      "עץ",
+      "משרד ביתי"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 60,
+        "depth": 24,
+        "height": 180
+      },
+      "materialHe": "שבבית דחוסה",
+      "colorHe": "לבן",
+      "maxLoadKgPerShelf": 10,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1006",
+    "name": "night-stand-2drawers",
+    "displayNameHe": "שידת לילה 2 מגירות",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "night-stand",
+    "displaySubCategoryHe": "שידות",
+    "price": 279,
+    "currency": "ILS",
+    "brand": "Casa",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 15,
+    "rating": 4.2,
+    "tags": [
+      "bedroom",
+      "storage",
+      "compact"
+    ],
+    "displayTagsHe": [
+      "חדר שינה",
+      "אחסון",
+      "קומפקטי"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 40,
+        "depth": 35,
+        "height": 50
+      },
+      "materialHe": "MDF",
+      "colorHe": "שחור",
+      "drawers": 2,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1007",
+    "name": "office-chair-ergoflex",
+    "displayNameHe": "כיסא משרד \"ארגו-פלקס\"",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "chair",
+    "displaySubCategoryHe": "כיסאות",
+    "price": 599,
+    "currency": "ILS",
+    "brand": "WorkPro",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 7,
+    "rating": 4.5,
+    "tags": [
+      "home-office",
+      "ergonomic",
+      "mesh"
+    ],
+    "displayTagsHe": [
+      "משרד ביתי",
+      "ארגונומי",
+      "רשת"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 62,
+        "depth": 60,
+        "height": 112
+      },
+      "materialHe": "רשת + פלסטיק מחוזק",
+      "colorHe": "שחור",
+      "maxWeightKg": 120,
+      "adjustable": [
+        "גובה",
+        "משענת",
+        "ידיות"
+      ]
+    }
+  },
+  {
+    "id": "p1008",
+    "name": "dining-chair-set-2",
+    "displayNameHe": "סט 2 כיסאות אוכל",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "chair",
+    "displaySubCategoryHe": "כיסאות",
+    "price": 389,
+    "currency": "ILS",
+    "brand": "NordicLine",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 10,
+    "rating": 4.1,
+    "tags": [
+      "dining-room",
+      "minimal",
+      "easy-clean"
+    ],
+    "displayTagsHe": [
+      "פינת אוכל",
+      "מינימליסטי",
+      "קל לניקוי"
+    ],
+    "specs": {
+      "materialHe": "פלסטיק + רגלי מתכת",
+      "colorHe": "לבן",
+      "maxWeightKg": 110,
+      "seatHeightCm": 45,
+      "pieces": 2
+    }
+  },
+  {
+    "id": "p1009",
+    "name": "wardrobe-2doors",
+    "displayNameHe": "ארון 2 דלתות",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "wardrobe",
+    "displaySubCategoryHe": "ארונות",
+    "price": 999,
+    "currency": "ILS",
+    "brand": "BuildIt",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 5,
+    "rating": 4.0,
+    "tags": [
+      "bedroom",
+      "storage",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "חדר שינה",
+      "אחסון",
+      "בסיסי"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 90,
+        "depth": 52,
+        "height": 190
+      },
+      "materialHe": "שבבית דחוסה",
+      "colorHe": "אלון בהיר",
+      "doors": 2,
+      "hangingRail": true,
+      "shelves": 3,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1010",
+    "name": "tv-stand-140",
+    "displayNameHe": "מזנון טלוויזיה 140",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "tv-stand",
+    "displaySubCategoryHe": "מזנונים",
+    "price": 549,
+    "currency": "ILS",
+    "brand": "Casa",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 8,
+    "rating": 4.2,
+    "tags": [
+      "living-room",
+      "storage",
+      "wood"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "אחסון",
+      "עץ"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 140,
+        "depth": 40,
+        "height": 52
+      },
+      "materialHe": "MDF עם ציפוי",
+      "colorHe": "אגוז",
+      "cableManagement": true,
+      "assemblyRequired": true
+    }
+  },
+  {
+    "id": "p1011",
+    "name": "shoe-rack-3",
+    "displayNameHe": "מתקן נעליים 3 קומות",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "rack",
+    "displaySubCategoryHe": "מתקנים ואחסון",
+    "price": 89,
+    "currency": "ILS",
+    "brand": "QuickHome",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 30,
+    "rating": 4.0,
+    "tags": [
+      "storage",
+      "entryway",
+      "budget"
+    ],
+    "displayTagsHe": [
+      "אחסון",
+      "כניסה לבית",
+      "זול"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 60,
+        "depth": 28,
+        "height": 52
+      },
+      "materialHe": "מתכת",
+      "colorHe": "שחור",
+      "levels": 3,
+      "fitsPairs": 9
+    }
+  },
+  {
+    "id": "p1012",
+    "name": "beanbag-xl",
+    "displayNameHe": "פוף ישיבה XL",
+    "category": "furniture",
+    "displayCategoryHe": "רהיטים",
+    "subCategory": "beanbag",
+    "displaySubCategoryHe": "פופים",
+    "price": 199,
+    "currency": "ILS",
+    "brand": "ChillZone",
+    "images": [
+      "https://images.pexels.com/photos/3932930/pexels-photo-3932930.jpeg?cs=srgb&dl=pexels-fotoaibe-3932930.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 13,
+    "rating": 4.4,
+    "tags": [
+      "living-room",
+      "kids",
+      "soft"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "ילדים",
+      "רך"
+    ],
+    "specs": {
+      "dimensionsCm": {
+        "width": 90,
+        "depth": 90,
+        "height": 70
+      },
+      "materialHe": "בד מיקרופייבר",
+      "colorHe": "כחול",
+      "fillingHe": "כדורי קלקר",
+      "washableCover": true
+    }
+  },
+  {
+    "id": "p2001",
+    "name": "tshirt-classic",
+    "displayNameHe": "חולצת טי כותנה \"קלאסיק\"",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "tshirt",
+    "displaySubCategoryHe": "טי-שירטים",
+    "price": 59,
+    "currency": "ILS",
+    "brand": "BasicWear",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 40,
+    "rating": 4.3,
+    "tags": [
+      "cotton",
+      "everyday"
+    ],
+    "displayTagsHe": [
+      "כותנה",
+      "יומיומי"
+    ],
+    "specs": {
+      "gender": "men",
+      "genderHe": "גברים",
+      "size": "L",
+      "colorHe": "לבן",
+      "fitHe": "רגיל",
+      "materialHe": "100% כותנה",
+      "careHe": [
+        "כביסה עד 30°",
+        "ללא מייבש"
+      ]
+    }
+  },
+  {
+    "id": "p2002",
+    "name": "tshirt-vneck",
+    "displayNameHe": "חולצת טי V",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "tshirt",
+    "displaySubCategoryHe": "טי-שירטים",
+    "price": 49,
+    "currency": "ILS",
+    "brand": "BasicWear",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 35,
+    "rating": 4.1,
+    "tags": [
+      "cotton",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "כותנה",
+      "בסיסי"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "M",
+      "colorHe": "שחור",
+      "fitHe": "צמוד",
+      "materialHe": "כותנה עם אלסטאן",
+      "careHe": [
+        "כביסה עד 30°"
+      ]
+    }
+  },
+  {
+    "id": "p2003",
+    "name": "hoodie-soft",
+    "displayNameHe": "קפוצ׳ון \"סופט\"",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "hoodie",
+    "displaySubCategoryHe": "קפוצ׳ונים",
+    "price": 119,
+    "currency": "ILS",
+    "brand": "StreetCo",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 18,
+    "rating": 4.5,
+    "tags": [
+      "warm",
+      "streetwear"
+    ],
+    "displayTagsHe": [
+      "חמים",
+      "סטריט"
+    ],
+    "specs": {
+      "gender": "men",
+      "genderHe": "גברים",
+      "size": "XL",
+      "colorHe": "אפור",
+      "fitHe": "אוברסייז",
+      "materialHe": "פליז",
+      "careHe": [
+        "כביסה עד 30°",
+        "הפוך לפני כביסה"
+      ]
+    }
+  },
+  {
+    "id": "p2004",
+    "name": "hoodie-zip",
+    "displayNameHe": "קפוצ׳ון רוכסן",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "hoodie",
+    "displaySubCategoryHe": "קפוצ׳ונים",
+    "price": 129,
+    "currency": "ILS",
+    "brand": "StreetCo",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 16,
+    "rating": 4.2,
+    "tags": [
+      "warm",
+      "zip"
+    ],
+    "displayTagsHe": [
+      "חמים",
+      "רוכסן"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "S",
+      "colorHe": "ירוק זית",
+      "fitHe": "רגיל",
+      "materialHe": "פליז",
+      "careHe": [
+        "כביסה עד 30°"
+      ]
+    }
+  },
+  {
+    "id": "p2005",
+    "name": "jeans-slim",
+    "displayNameHe": "ג׳ינס סלים",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "jeans",
+    "displaySubCategoryHe": "ג׳ינסים",
+    "price": 149,
+    "currency": "ILS",
+    "brand": "DenimBox",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 22,
+    "rating": 4.4,
+    "tags": [
+      "denim",
+      "slim"
+    ],
+    "displayTagsHe": [
+      "דנים",
+      "סלים"
+    ],
+    "specs": {
+      "gender": "men",
+      "genderHe": "גברים",
+      "size": "32",
+      "colorHe": "כחול כהה",
+      "fitHe": "סלים",
+      "materialHe": "דנים עם אלסטאן",
+      "careHe": [
+        "כביסה קרה",
+        "ללא מייבש"
+      ]
+    }
+  },
+  {
+    "id": "p2006",
+    "name": "jeans-highwaist",
+    "displayNameHe": "ג׳ינס מותן גבוהה",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "jeans",
+    "displaySubCategoryHe": "ג׳ינסים",
+    "price": 159,
+    "currency": "ILS",
+    "brand": "DenimBox",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 19,
+    "rating": 4.6,
+    "tags": [
+      "denim",
+      "highwaist"
+    ],
+    "displayTagsHe": [
+      "דנים",
+      "מותן גבוהה"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "28",
+      "colorHe": "כחול בהיר",
+      "fitHe": "סקיני",
+      "materialHe": "דנים עם אלסטאן",
+      "careHe": [
+        "כביסה קרה"
+      ]
+    }
+  },
+  {
+    "id": "p2007",
+    "name": "dress-luna",
+    "displayNameHe": "שמלת ערב \"לונה\"",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "dress",
+    "displaySubCategoryHe": "שמלות",
+    "price": 299,
+    "currency": "ILS",
+    "brand": "Moon&Co",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": false,
+    "stockQty": 0,
+    "rating": 4.8,
+    "tags": [
+      "evening",
+      "elegant"
+    ],
+    "displayTagsHe": [
+      "ערב",
+      "אלגנטי"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "M",
+      "colorHe": "שחור",
+      "fitHe": "מחויט",
+      "materialHe": "פוליאסטר+אלסטאן",
+      "careHe": [
+        "ניקוי יבש מומלץ"
+      ]
+    }
+  },
+  {
+    "id": "p2008",
+    "name": "dress-summer",
+    "displayNameHe": "שמלת קיץ פרחונית",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "dress",
+    "displaySubCategoryHe": "שמלות",
+    "price": 139,
+    "currency": "ILS",
+    "brand": "SunnyDay",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 12,
+    "rating": 4.3,
+    "tags": [
+      "summer",
+      "floral"
+    ],
+    "displayTagsHe": [
+      "קיץ",
+      "פרחוני"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "S",
+      "colorHe": "תכלת",
+      "fitHe": "רפוי",
+      "materialHe": "ויסקוזה",
+      "careHe": [
+        "כביסה עדינה"
+      ]
+    }
+  },
+  {
+    "id": "p2009",
+    "name": "sneakers-run",
+    "displayNameHe": "נעלי ספורט ריצה",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "shoes",
+    "displaySubCategoryHe": "נעליים",
+    "price": 219,
+    "currency": "ILS",
+    "brand": "RunUp",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 14,
+    "rating": 4.2,
+    "tags": [
+      "sports",
+      "running"
+    ],
+    "displayTagsHe": [
+      "ספורט",
+      "ריצה"
+    ],
+    "specs": {
+      "gender": "men",
+      "genderHe": "גברים",
+      "size": "43",
+      "colorHe": "שחור-לבן",
+      "materialHe": "בד רשת",
+      "soleHe": "גומי",
+      "seasonHe": "כל השנה"
+    }
+  },
+  {
+    "id": "p2010",
+    "name": "sneakers-casual",
+    "displayNameHe": "נעלי סניקרס יומיומיות",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "shoes",
+    "displaySubCategoryHe": "נעליים",
+    "price": 189,
+    "currency": "ILS",
+    "brand": "UrbanStep",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 20,
+    "rating": 4.1,
+    "tags": [
+      "casual",
+      "everyday"
+    ],
+    "displayTagsHe": [
+      "קז׳ואל",
+      "יומיומי"
+    ],
+    "specs": {
+      "gender": "women",
+      "genderHe": "נשים",
+      "size": "39",
+      "colorHe": "לבן",
+      "materialHe": "סינטטי",
+      "soleHe": "גומי",
+      "seasonHe": "כל השנה"
+    }
+  },
+  {
+    "id": "p2011",
+    "name": "cap-basic",
+    "displayNameHe": "כובע מצחייה בסיסי",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "accessories",
+    "displaySubCategoryHe": "אקססוריז",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "StreetCo",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 50,
+    "rating": 4.0,
+    "tags": [
+      "accessory",
+      "summer"
+    ],
+    "displayTagsHe": [
+      "אקססוריז",
+      "קיץ"
+    ],
+    "specs": {
+      "gender": "unisex",
+      "genderHe": "יוניסקס",
+      "size": "one-size",
+      "colorHe": "שחור",
+      "materialHe": "כותנה",
+      "adjustable": true
+    }
+  },
+  {
+    "id": "p2012",
+    "name": "socks-pack-5",
+    "displayNameHe": "מארז 5 זוגות גרביים",
+    "category": "clothing",
+    "displayCategoryHe": "ביגוד",
+    "subCategory": "socks",
+    "displaySubCategoryHe": "גרביים",
+    "price": 45,
+    "currency": "ILS",
+    "brand": "BasicWear",
+    "images": [
+      "https://images.pexels.com/photos/7679728/pexels-photo-7679728.jpeg?cs=srgb&dl=pexels-robin-7679728.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 60,
+    "rating": 4.4,
+    "tags": [
+      "basic",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "בסיסי",
+      "נוחות"
+    ],
+    "specs": {
+      "gender": "unisex",
+      "genderHe": "יוניסקס",
+      "size": "39-42",
+      "colorHe": "לבן",
+      "materialHe": "כותנה+פוליאסטר",
+      "pieces": 5
+    }
+  },
+  {
+    "id": "p3001",
+    "name": "earbuds-wavepods",
+    "displayNameHe": "אוזניות בלוטות׳ \"WavePods\"",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "headphones",
+    "displaySubCategoryHe": "אוזניות",
+    "price": 349,
+    "currency": "ILS",
+    "brand": "Soundio",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 11,
+    "rating": 4.2,
+    "tags": [
+      "wireless",
+      "noise-canceling"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "סינון רעשים"
+    ],
+    "specs": {
+      "wireless": true,
+      "batteryHours": 28,
+      "noiseCanceling": true,
+      "chargingHe": "USB-C",
+      "waterResistance": "IPX4",
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3002",
+    "name": "headphones-overear",
+    "displayNameHe": "אוזניות קשת Over-Ear",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "headphones",
+    "displaySubCategoryHe": "אוזניות",
+    "price": 279,
+    "currency": "ILS",
+    "brand": "Soundio",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 9,
+    "rating": 4.1,
+    "tags": [
+      "wireless",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "נוחות"
+    ],
+    "specs": {
+      "wireless": true,
+      "batteryHours": 35,
+      "noiseCanceling": false,
+      "chargingHe": "USB-C",
+      "foldable": true,
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3003",
+    "name": "powerbank-10000",
+    "displayNameHe": "סוללת גיבוי 10,000mAh",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "power",
+    "displaySubCategoryHe": "טעינה",
+    "price": 79,
+    "currency": "ILS",
+    "brand": "ChargeIt",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 33,
+    "rating": 4.4,
+    "tags": [
+      "mobile",
+      "travel"
+    ],
+    "displayTagsHe": [
+      "מובייל",
+      "טיולים"
+    ],
+    "specs": {
+      "capacityMah": 10000,
+      "ports": [
+        "USB-A",
+        "USB-C"
+      ],
+      "fastCharge": true,
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3004",
+    "name": "powerbank-20000",
+    "displayNameHe": "סוללת גיבוי 20,000mAh",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "power",
+    "displaySubCategoryHe": "טעינה",
+    "price": 119,
+    "currency": "ILS",
+    "brand": "ChargeIt",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 21,
+    "rating": 4.5,
+    "tags": [
+      "mobile",
+      "fast-charge"
+    ],
+    "displayTagsHe": [
+      "מובייל",
+      "טעינה מהירה"
+    ],
+    "specs": {
+      "capacityMah": 20000,
+      "ports": [
+        "USB-A",
+        "USB-A",
+        "USB-C"
+      ],
+      "fastCharge": true,
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3005",
+    "name": "usb-c-cable-2m",
+    "displayNameHe": "כבל USB-C באורך 2 מטר",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "cables",
+    "displaySubCategoryHe": "כבלים",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "WirePro",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 80,
+    "rating": 4.2,
+    "tags": [
+      "cable",
+      "usb-c"
+    ],
+    "displayTagsHe": [
+      "כבל",
+      "USB-C"
+    ],
+    "specs": {
+      "type": "USB-C",
+      "lengthM": 2,
+      "fastCharge": true,
+      "braided": true
+    }
+  },
+  {
+    "id": "p3006",
+    "name": "wall-charger-20w",
+    "displayNameHe": "מטען קיר 20W",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "chargers",
+    "displaySubCategoryHe": "מטענים",
+    "price": 49,
+    "currency": "ILS",
+    "brand": "ChargeIt",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 55,
+    "rating": 4.3,
+    "tags": [
+      "charger",
+      "usb-c"
+    ],
+    "displayTagsHe": [
+      "מטען",
+      "USB-C"
+    ],
+    "specs": {
+      "powerW": 20,
+      "ports": [
+        "USB-C"
+      ],
+      "fastCharge": true,
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3007",
+    "name": "smartwatch-lite",
+    "displayNameHe": "שעון חכם \"Lite\"",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "wearables",
+    "displaySubCategoryHe": "לבישים",
+    "price": 199,
+    "currency": "ILS",
+    "brand": "FitDay",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 17,
+    "rating": 4.0,
+    "tags": [
+      "fitness",
+      "wearable"
+    ],
+    "displayTagsHe": [
+      "כושר",
+      "לביש"
+    ],
+    "specs": {
+      "screenHe": "1.4 אינץ׳",
+      "batteryDays": 7,
+      "waterResistance": "IP68",
+      "sensorsHe": [
+        "דופק",
+        "שינה",
+        "צעדים"
+      ],
+      "warrantyMonths": 12
+    }
+  },
+  {
+    "id": "p3008",
+    "name": "bluetooth-speaker-mini",
+    "displayNameHe": "רמקול בלוטות׳ מיני",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "audio",
+    "displaySubCategoryHe": "אודיו",
+    "price": 89,
+    "currency": "ILS",
+    "brand": "BeatBox",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 26,
+    "rating": 4.3,
+    "tags": [
+      "wireless",
+      "portable"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "נייד"
+    ],
+    "specs": {
+      "wireless": true,
+      "batteryHours": 10,
+      "waterResistance": "IPX5",
+      "chargingHe": "USB-C"
+    }
+  },
+  {
+    "id": "p3009",
+    "name": "desk-lamp-led",
+    "displayNameHe": "מנורת שולחן לד",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "lighting",
+    "displaySubCategoryHe": "תאורה",
+    "price": 69,
+    "currency": "ILS",
+    "brand": "Brightly",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 44,
+    "rating": 4.1,
+    "tags": [
+      "home-office",
+      "led"
+    ],
+    "displayTagsHe": [
+      "משרד ביתי",
+      "לד"
+    ],
+    "specs": {
+      "powerW": 8,
+      "lightModes": 3,
+      "colorTempHe": "חם/קר",
+      "usbPort": true
+    }
+  },
+  {
+    "id": "p3010",
+    "name": "wireless-mouse",
+    "displayNameHe": "עכבר אלחוטי",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "computer",
+    "displaySubCategoryHe": "מחשבים",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "ClickPro",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 70,
+    "rating": 4.0,
+    "tags": [
+      "wireless",
+      "computer"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "מחשב"
+    ],
+    "specs": {
+      "connectionHe": "דונגל USB",
+      "dpi": 1200,
+      "batteryTypeHe": "AA",
+      "silentClick": false
+    }
+  },
+  {
+    "id": "p3011",
+    "name": "keyboard-hebrew",
+    "displayNameHe": "מקלדת עברית",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "computer",
+    "displaySubCategoryHe": "מחשבים",
+    "price": 79,
+    "currency": "ILS",
+    "brand": "ClickPro",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 32,
+    "rating": 4.2,
+    "tags": [
+      "computer",
+      "hebrew"
+    ],
+    "displayTagsHe": [
+      "מחשב",
+      "עברית"
+    ],
+    "specs": {
+      "layoutHe": "עברית/אנגלית",
+      "connectionHe": "חוטי USB",
+      "backlit": false
+    }
+  },
+  {
+    "id": "p3012",
+    "name": "router-basic",
+    "displayNameHe": "ראוטר ביתי בסיסי",
+    "category": "electronics",
+    "displayCategoryHe": "אלקטרוניקה",
+    "subCategory": "network",
+    "displaySubCategoryHe": "רשת",
+    "price": 129,
+    "currency": "ILS",
+    "brand": "NetHome",
+    "images": [
+      "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg?cs=srgb&dl=pexels-jessbaileydesign-3394653.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 14,
+    "rating": 4.0,
+    "tags": [
+      "wifi",
+      "home"
+    ],
+    "displayTagsHe": [
+      "וויי-פיי",
+      "בית"
+    ],
+    "specs": {
+      "wifiHe": "Wi-Fi 5",
+      "bandsHe": [
+        "2.4GHz",
+        "5GHz"
+      ],
+      "lanPorts": 4,
+      "warrantyMonths": 24
+    }
+  },
+  {
+    "id": "p4001",
+    "name": "knife-set-3",
+    "displayNameHe": "סט סכיני שף 3 חלקים",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "knives",
+    "displaySubCategoryHe": "סכינים",
+    "price": 189,
+    "currency": "ILS",
+    "brand": "ChefPro",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 8,
+    "rating": 4.7,
+    "tags": [
+      "stainless",
+      "cooking"
+    ],
+    "displayTagsHe": [
+      "נירוסטה",
+      "בישול"
+    ],
+    "specs": {
+      "materialHe": "נירוסטה",
+      "pieces": 3,
+      "dishwasherSafe": false,
+      "bladeLengthsCm": [
+        20,
+        15,
+        9
+      ]
+    }
+  },
+  {
+    "id": "p4002",
+    "name": "cutting-board-bamboo",
+    "displayNameHe": "קרש חיתוך במבוק",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "tools",
+    "displaySubCategoryHe": "כלי מטבח",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "KitchenDay",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 45,
+    "rating": 4.3,
+    "tags": [
+      "bamboo",
+      "prep"
+    ],
+    "displayTagsHe": [
+      "במבוק",
+      "הכנות"
+    ],
+    "specs": {
+      "materialHe": "במבוק",
+      "dimensionsCm": {
+        "width": 30,
+        "depth": 20,
+        "height": 1.5
+      },
+      "withHandle": true
+    }
+  },
+  {
+    "id": "p4003",
+    "name": "pan-nonstick-24",
+    "displayNameHe": "מחבת נון-סטיק 24",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "cookware",
+    "displaySubCategoryHe": "בישול",
+    "price": 79,
+    "currency": "ILS",
+    "brand": "HeatMaster",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 27,
+    "rating": 4.2,
+    "tags": [
+      "nonstick",
+      "cooking"
+    ],
+    "displayTagsHe": [
+      "נון-סטיק",
+      "בישול"
+    ],
+    "specs": {
+      "diameterCm": 24,
+      "materialHe": "אלומיניום",
+      "coatingHe": "ציפוי נון-סטיק",
+      "inductionCompatible": true,
+      "dishwasherSafe": false
+    }
+  },
+  {
+    "id": "p4004",
+    "name": "pot-4l",
+    "displayNameHe": "סיר 4 ליטר",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "cookware",
+    "displaySubCategoryHe": "בישול",
+    "price": 99,
+    "currency": "ILS",
+    "brand": "HeatMaster",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 19,
+    "rating": 4.3,
+    "tags": [
+      "cooking",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "בישול",
+      "בסיסי"
+    ],
+    "specs": {
+      "capacityL": 4,
+      "materialHe": "נירוסטה",
+      "lidIncluded": true,
+      "inductionCompatible": true,
+      "dishwasherSafe": true
+    }
+  },
+  {
+    "id": "p4005",
+    "name": "spatula-silicone",
+    "displayNameHe": "מרית סיליקון",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "tools",
+    "displaySubCategoryHe": "כלי מטבח",
+    "price": 15,
+    "currency": "ILS",
+    "brand": "KitchenDay",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 100,
+    "rating": 4.4,
+    "tags": [
+      "silicone",
+      "baking"
+    ],
+    "displayTagsHe": [
+      "סיליקון",
+      "אפייה"
+    ],
+    "specs": {
+      "materialHe": "סיליקון",
+      "heatResistantC": 230,
+      "dishwasherSafe": true,
+      "colorHe": "אדום"
+    }
+  },
+  {
+    "id": "p4006",
+    "name": "measuring-cups-set",
+    "displayNameHe": "סט כוסות מדידה",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "baking",
+    "displaySubCategoryHe": "אפייה",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "BakeIt",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 60,
+    "rating": 4.2,
+    "tags": [
+      "baking",
+      "prep"
+    ],
+    "displayTagsHe": [
+      "אפייה",
+      "הכנות"
+    ],
+    "specs": {
+      "pieces": 5,
+      "materialHe": "פלסטיק קשיח",
+      "unitsHe": [
+        "כוס",
+        "מ״ל"
+      ],
+      "dishwasherSafe": true
+    }
+  },
+  {
+    "id": "p4007",
+    "name": "glass-set-6",
+    "displayNameHe": "סט 6 כוסות זכוכית",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "tableware",
+    "displaySubCategoryHe": "כלי הגשה",
+    "price": 49,
+    "currency": "ILS",
+    "brand": "TableJoy",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 34,
+    "rating": 4.1,
+    "tags": [
+      "glass",
+      "table"
+    ],
+    "displayTagsHe": [
+      "זכוכית",
+      "שולחן"
+    ],
+    "specs": {
+      "pieces": 6,
+      "materialHe": "זכוכית",
+      "capacityMl": 330,
+      "dishwasherSafe": true
+    }
+  },
+  {
+    "id": "p4008",
+    "name": "plates-set-18",
+    "displayNameHe": "סט צלחות 18 חלקים",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "tableware",
+    "displaySubCategoryHe": "כלי הגשה",
+    "price": 129,
+    "currency": "ILS",
+    "brand": "TableJoy",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 12,
+    "rating": 4.3,
+    "tags": [
+      "table",
+      "family"
+    ],
+    "displayTagsHe": [
+      "שולחן",
+      "משפחה"
+    ],
+    "specs": {
+      "pieces": 18,
+      "materialHe": "קרמיקה",
+      "microwaveSafe": true,
+      "dishwasherSafe": true,
+      "colorHe": "לבן"
+    }
+  },
+  {
+    "id": "p4009",
+    "name": "lunchbox-900ml",
+    "displayNameHe": "קופסת אוכל 900 מ״ל",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "storage",
+    "displaySubCategoryHe": "אחסון מזון",
+    "price": 19,
+    "currency": "ILS",
+    "brand": "FreshBox",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 90,
+    "rating": 4.0,
+    "tags": [
+      "storage",
+      "meal-prep"
+    ],
+    "displayTagsHe": [
+      "אחסון",
+      "Meal Prep"
+    ],
+    "specs": {
+      "capacityMl": 900,
+      "materialHe": "פלסטיק BPA Free",
+      "microwaveSafe": true,
+      "dishwasherSafe": true,
+      "leakProof": true
+    }
+  },
+  {
+    "id": "p4010",
+    "name": "bottle-750ml",
+    "displayNameHe": "בקבוק שתייה 750 מ״ל",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "drinkware",
+    "displaySubCategoryHe": "שתייה",
+    "price": 35,
+    "currency": "ILS",
+    "brand": "HydroGo",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 55,
+    "rating": 4.4,
+    "tags": [
+      "sport",
+      "travel"
+    ],
+    "displayTagsHe": [
+      "ספורט",
+      "טיולים"
+    ],
+    "specs": {
+      "capacityMl": 750,
+      "materialHe": "טריטאן",
+      "insulated": false,
+      "colorHe": "שקוף",
+      "withStrap": true
+    }
+  },
+  {
+    "id": "p4011",
+    "name": "mug-ceramic",
+    "displayNameHe": "ספל קרמיקה",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "drinkware",
+    "displaySubCategoryHe": "שתייה",
+    "price": 25,
+    "currency": "ILS",
+    "brand": "TableJoy",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 80,
+    "rating": 4.2,
+    "tags": [
+      "coffee",
+      "home"
+    ],
+    "displayTagsHe": [
+      "קפה",
+      "בית"
+    ],
+    "specs": {
+      "capacityMl": 350,
+      "materialHe": "קרמיקה",
+      "microwaveSafe": true,
+      "dishwasherSafe": true,
+      "colorHe": "לבן"
+    }
+  },
+  {
+    "id": "p4012",
+    "name": "dish-rack",
+    "displayNameHe": "מעמד ייבוש כלים",
+    "category": "kitchen",
+    "displayCategoryHe": "מטבח",
+    "subCategory": "organization",
+    "displaySubCategoryHe": "ארגון",
+    "price": 59,
+    "currency": "ILS",
+    "brand": "QuickHome",
+    "images": [
+      "https://images.pexels.com/photos/211760/pexels-photo-211760.jpeg?cs=srgb&dl=pexels-mikebirdy-211760.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 24,
+    "rating": 4.1,
+    "tags": [
+      "organization",
+      "sink"
+    ],
+    "displayTagsHe": [
+      "ארגון",
+      "כיור"
+    ],
+    "specs": {
+      "materialHe": "מתכת מצופה",
+      "colorHe": "שחור",
+      "withTray": true,
+      "dimensionsCm": {
+        "width": 42,
+        "depth": 30,
+        "height": 14
+      }
+    }
+  },
+  {
+    "id": "p5001",
+    "name": "dog-food-adult-12kg",
+    "displayNameHe": "מזון לכלבים בוגרים 12 ק״ג",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "dog-food",
+    "displaySubCategoryHe": "מזון לכלבים",
+    "price": 239,
+    "currency": "ILS",
+    "brand": "DogLife",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 14,
+    "rating": 4.5,
+    "tags": [
+      "dog",
+      "adult",
+      "chicken"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "בוגר",
+      "עוף"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "lifeStage": "adult",
+      "lifeStageHe": "בוגר",
+      "weightKg": 12,
+      "flavorHe": "עוף",
+      "grainFree": false
+    }
+  },
+  {
+    "id": "p5002",
+    "name": "dog-treats-bones",
+    "displayNameHe": "חטיפי עצמות לכלבים",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "dog-treats",
+    "displaySubCategoryHe": "חטיפים לכלבים",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "DogLife",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 50,
+    "rating": 4.3,
+    "tags": [
+      "dog",
+      "treats"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "חטיפים"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "weightG": 200,
+      "flavorHe": "בקר",
+      "trainingTreats": true
+    }
+  },
+  {
+    "id": "p5003",
+    "name": "dog-leash-5m",
+    "displayNameHe": "רצועה לכלב 5 מטר",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "accessories",
+    "displaySubCategoryHe": "אביזרים",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "PetWalk",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 35,
+    "rating": 4.1,
+    "tags": [
+      "dog",
+      "walk"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "טיול"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "lengthM": 5,
+      "materialHe": "ניילון",
+      "colorHe": "אדום",
+      "reflective": true
+    }
+  },
+  {
+    "id": "p5004",
+    "name": "cat-food-2kg",
+    "displayNameHe": "מזון לחתולים 2 ק״ג",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "cat-food",
+    "displaySubCategoryHe": "מזון לחתולים",
+    "price": 79,
+    "currency": "ILS",
+    "brand": "CatPlus",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 22,
+    "rating": 4.4,
+    "tags": [
+      "cat",
+      "adult"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "בוגר"
+    ],
+    "specs": {
+      "petType": "cat",
+      "petTypeHe": "חתול",
+      "lifeStage": "adult",
+      "lifeStageHe": "בוגר",
+      "weightKg": 2,
+      "flavorHe": "דג",
+      "hairballControl": true
+    }
+  },
+  {
+    "id": "p5005",
+    "name": "cat-litter-10l",
+    "displayNameHe": "חול לחתולים 10 ליטר",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "cat-litter",
+    "displaySubCategoryHe": "חול לחתולים",
+    "price": 45,
+    "currency": "ILS",
+    "brand": "CleanPaws",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 28,
+    "rating": 4.2,
+    "tags": [
+      "cat",
+      "hygiene"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "היגיינה"
+    ],
+    "specs": {
+      "petType": "cat",
+      "petTypeHe": "חתול",
+      "volumeL": 10,
+      "clumping": true,
+      "scented": false
+    }
+  },
+  {
+    "id": "p5006",
+    "name": "cat-scratcher",
+    "displayNameHe": "משטח גירוד לחתול",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "toys",
+    "displaySubCategoryHe": "צעצועים",
+    "price": 35,
+    "currency": "ILS",
+    "brand": "CatPlus",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 40,
+    "rating": 4.6,
+    "tags": [
+      "cat",
+      "scratching"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "גירוד"
+    ],
+    "specs": {
+      "petType": "cat",
+      "petTypeHe": "חתול",
+      "materialHe": "קרטון דחוס",
+      "withCatnip": true,
+      "dimensionsCm": {
+        "width": 45,
+        "depth": 22,
+        "height": 5
+      }
+    }
+  },
+  {
+    "id": "p5007",
+    "name": "dog-shampoo",
+    "displayNameHe": "שמפו לכלבים",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "care",
+    "displaySubCategoryHe": "טיפוח",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "CleanPaws",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 18,
+    "rating": 4.0,
+    "tags": [
+      "dog",
+      "care"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "טיפוח"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "volumeMl": 500,
+      "sensitiveSkin": true,
+      "scentHe": "עדין"
+    }
+  },
+  {
+    "id": "p5008",
+    "name": "dog-bowl-steel",
+    "displayNameHe": "קערת אוכל נירוסטה",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "accessories",
+    "displaySubCategoryHe": "אביזרים",
+    "price": 19,
+    "currency": "ILS",
+    "brand": "PetWalk",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 65,
+    "rating": 4.3,
+    "tags": [
+      "dog",
+      "accessory"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "אביזר"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "materialHe": "נירוסטה",
+      "capacityMl": 900,
+      "nonSlip": true
+    }
+  },
+  {
+    "id": "p5009",
+    "name": "cat-bowl-ceramic",
+    "displayNameHe": "קערה קרמית לחתול",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "accessories",
+    "displaySubCategoryHe": "אביזרים",
+    "price": 25,
+    "currency": "ILS",
+    "brand": "CatPlus",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 38,
+    "rating": 4.4,
+    "tags": [
+      "cat",
+      "accessory"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "אביזר"
+    ],
+    "specs": {
+      "petType": "cat",
+      "petTypeHe": "חתול",
+      "materialHe": "קרמיקה",
+      "capacityMl": 250,
+      "dishwasherSafe": true
+    }
+  },
+  {
+    "id": "p5010",
+    "name": "dog-toy-ball",
+    "displayNameHe": "כדור משחק לכלב",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "toys",
+    "displaySubCategoryHe": "צעצועים",
+    "price": 15,
+    "currency": "ILS",
+    "brand": "PetPlay",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 90,
+    "rating": 4.1,
+    "tags": [
+      "dog",
+      "toy"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "צעצוע"
+    ],
+    "specs": {
+      "petType": "dog",
+      "petTypeHe": "כלב",
+      "materialHe": "גומי",
+      "sizeHe": "בינוני",
+      "squeaky": false
+    }
+  },
+  {
+    "id": "p5011",
+    "name": "cat-toy-wand",
+    "displayNameHe": "חכת משחק לחתול",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "toys",
+    "displaySubCategoryHe": "צעצועים",
+    "price": 19,
+    "currency": "ILS",
+    "brand": "PetPlay",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 55,
+    "rating": 4.6,
+    "tags": [
+      "cat",
+      "toy"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "צעצוע"
+    ],
+    "specs": {
+      "petType": "cat",
+      "petTypeHe": "חתול",
+      "materialHe": "פלסטיק + נוצות",
+      "lengthCm": 60,
+      "withBell": true
+    }
+  },
+  {
+    "id": "p5012",
+    "name": "pet-bed-medium",
+    "displayNameHe": "מיטת חיות בינונית",
+    "category": "pets",
+    "displayCategoryHe": "חיות",
+    "subCategory": "beds",
+    "displaySubCategoryHe": "מיטות",
+    "price": 99,
+    "currency": "ILS",
+    "brand": "CozyPaws",
+    "images": [
+      "https://images.pexels.com/photos/8434633/pexels-photo-8434633.jpeg?cs=srgb&dl=pexels-mart-production-8434633.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 16,
+    "rating": 4.5,
+    "tags": [
+      "dog",
+      "cat",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "חתול",
+      "נוחות"
+    ],
+    "specs": {
+      "petType": "both",
+      "petTypeHe": "כלב/חתול",
+      "sizeHe": "בינוני",
+      "materialHe": "בד רך",
+      "washableCover": true,
+      "dimensionsCm": {
+        "width": 70,
+        "depth": 55,
+        "height": 18
+      }
+    }
+  },
+  {
+    "id": "p6001",
+    "name": "cleaning-spray-multi",
+    "displayNameHe": "ספריי ניקוי רב-תכליתי",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "cleaning",
+    "displaySubCategoryHe": "ניקיון",
+    "price": 19,
+    "currency": "ILS",
+    "brand": "CleanPro",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 120,
+    "rating": 4.2,
+    "tags": [
+      "cleaning",
+      "home"
+    ],
+    "displayTagsHe": [
+      "ניקיון",
+      "בית"
+    ],
+    "specs": {
+      "volumeMl": 750,
+      "scentHe": "לימון",
+      "surfaceHe": "רב-משטחי",
+      "concentrated": false
+    }
+  },
+  {
+    "id": "p6002",
+    "name": "trash-bags-50",
+    "displayNameHe": "שקיות אשפה 50 יח׳",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "supplies",
+    "displaySubCategoryHe": "ציוד לבית",
+    "price": 24,
+    "currency": "ILS",
+    "brand": "HomeBasics",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 90,
+    "rating": 4.1,
+    "tags": [
+      "home",
+      "supplies"
+    ],
+    "displayTagsHe": [
+      "בית",
+      "ציוד"
+    ],
+    "specs": {
+      "pieces": 50,
+      "sizeHe": "60 ליטר",
+      "thicknessHe": "עבה",
+      "scented": false
+    }
+  },
+  {
+    "id": "p6003",
+    "name": "storage-box-45l",
+    "displayNameHe": "קופסת אחסון 45 ליטר",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "storage",
+    "displaySubCategoryHe": "אחסון",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "HomeBasics",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 65,
+    "rating": 4.0,
+    "tags": [
+      "storage",
+      "home"
+    ],
+    "displayTagsHe": [
+      "אחסון",
+      "בית"
+    ],
+    "specs": {
+      "volumeL": 45,
+      "materialHe": "פלסטיק קשיח",
+      "withLid": true,
+      "stackable": true
+    }
+  },
+  {
+    "id": "p6004",
+    "name": "laundry-basket",
+    "displayNameHe": "סל כביסה",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "organization",
+    "displaySubCategoryHe": "ארגון",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "QuickHome",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 40,
+    "rating": 4.1,
+    "tags": [
+      "organization",
+      "home"
+    ],
+    "displayTagsHe": [
+      "ארגון",
+      "בית"
+    ],
+    "specs": {
+      "materialHe": "פלסטיק",
+      "volumeL": 55,
+      "handles": true,
+      "colorHe": "אפור"
+    }
+  },
+  {
+    "id": "p6005",
+    "name": "towel-set-2",
+    "displayNameHe": "סט 2 מגבות",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "textiles",
+    "displaySubCategoryHe": "טקסטיל",
+    "price": 49,
+    "currency": "ILS",
+    "brand": "SoftHome",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 38,
+    "rating": 4.3,
+    "tags": [
+      "bathroom",
+      "cotton"
+    ],
+    "displayTagsHe": [
+      "אמבטיה",
+      "כותנה"
+    ],
+    "specs": {
+      "materialHe": "100% כותנה",
+      "pieces": 2,
+      "sizeHe": "גדול",
+      "colorHe": "לבן"
+    }
+  },
+  {
+    "id": "p6006",
+    "name": "pillow-2pack",
+    "displayNameHe": "מארז 2 כריות",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "textiles",
+    "displaySubCategoryHe": "טקסטיל",
+    "price": 79,
+    "currency": "ILS",
+    "brand": "SoftHome",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 25,
+    "rating": 4.2,
+    "tags": [
+      "bedroom",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "חדר שינה",
+      "נוחות"
+    ],
+    "specs": {
+      "fillHe": "סיבים",
+      "pieces": 2,
+      "firmnessHe": "בינונית",
+      "washable": true
+    }
+  },
+  {
+    "id": "p6007",
+    "name": "extension-cord-3m",
+    "displayNameHe": "כבל מאריך 3 מטר",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "tools",
+    "displaySubCategoryHe": "כלים לבית",
+    "price": 35,
+    "currency": "ILS",
+    "brand": "SafePlug",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 70,
+    "rating": 4.1,
+    "tags": [
+      "electric",
+      "home"
+    ],
+    "displayTagsHe": [
+      "חשמל",
+      "בית"
+    ],
+    "specs": {
+      "lengthM": 3,
+      "sockets": 3,
+      "withSwitch": true,
+      "surgeProtected": false
+    }
+  },
+  {
+    "id": "p6008",
+    "name": "batteries-aa-8",
+    "displayNameHe": "סוללות AA מארז 8",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "supplies",
+    "displaySubCategoryHe": "ציוד לבית",
+    "price": 22,
+    "currency": "ILS",
+    "brand": "PowerMax",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 110,
+    "rating": 4.0,
+    "tags": [
+      "batteries",
+      "supplies"
+    ],
+    "displayTagsHe": [
+      "סוללות",
+      "ציוד"
+    ],
+    "specs": {
+      "type": "AA",
+      "pieces": 8,
+      "rechargeable": false,
+      "chemistryHe": "אלקליין"
+    }
+  },
+  {
+    "id": "p6009",
+    "name": "candles-pack-6",
+    "displayNameHe": "מארז נרות 6",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "decor",
+    "displaySubCategoryHe": "דקורציה",
+    "price": 29,
+    "currency": "ILS",
+    "brand": "CozyHome",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 60,
+    "rating": 4.3,
+    "tags": [
+      "decor",
+      "cozy"
+    ],
+    "displayTagsHe": [
+      "דקורציה",
+      "אווירה"
+    ],
+    "specs": {
+      "pieces": 6,
+      "scented": true,
+      "scentHe": "וניל",
+      "burnTimeHoursEach": 6
+    }
+  },
+  {
+    "id": "p6010",
+    "name": "picture-frame-a4",
+    "displayNameHe": "מסגרת לתמונה A4",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "decor",
+    "displaySubCategoryHe": "דקורציה",
+    "price": 19,
+    "currency": "ILS",
+    "brand": "CozyHome",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 75,
+    "rating": 4.1,
+    "tags": [
+      "decor",
+      "wall"
+    ],
+    "displayTagsHe": [
+      "דקורציה",
+      "קיר"
+    ],
+    "specs": {
+      "sizeHe": "A4",
+      "materialHe": "פלסטיק",
+      "colorHe": "שחור",
+      "mountHe": "קיר/שולחן"
+    }
+  },
+  {
+    "id": "p6011",
+    "name": "umbrella-compact",
+    "displayNameHe": "מטרייה קומפקטית",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "seasonal",
+    "displaySubCategoryHe": "עונתי",
+    "price": 39,
+    "currency": "ILS",
+    "brand": "RainGo",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 48,
+    "rating": 4.0,
+    "tags": [
+      "winter",
+      "travel"
+    ],
+    "displayTagsHe": [
+      "חורף",
+      "נייד"
+    ],
+    "specs": {
+      "typeHe": "קומפקטית",
+      "windResistant": true,
+      "colorHe": "שחור",
+      "openMechanismHe": "אוטומטי"
+    }
+  },
+  {
+    "id": "p6012",
+    "name": "notebook-a5-2pack",
+    "displayNameHe": "מארז 2 מחברות A5",
+    "category": "home",
+    "displayCategoryHe": "לבית",
+    "subCategory": "stationery",
+    "displaySubCategoryHe": "מוצרי כתיבה",
+    "price": 18,
+    "currency": "ILS",
+    "brand": "NoteIt",
+    "images": [
+      "https://images.pexels.com/photos/10481134/pexels-photo-10481134.jpeg?cs=srgb&dl=pexels-gogonano-10481134.jpg&fm=jpg"
+    ],
+    "inStock": true,
+    "stockQty": 95,
+    "rating": 4.2,
+    "tags": [
+      "school",
+      "office"
+    ],
+    "displayTagsHe": [
+      "לימודים",
+      "משרד"
+    ],
+    "specs": {
+      "sizeHe": "A5",
+      "pieces": 2,
+      "pages": 80,
+      "paperHe": "שורות"
+    }
+  }
+]

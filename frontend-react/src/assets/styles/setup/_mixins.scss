@@ -1,0 +1,50 @@
+/* Media  Mixins */
+@mixin aspect-ratio($width, $height) {
+    position: relative;
+    overflow: hidden;
+    &::before {
+      display: block;
+      content: "";
+      width: 100%;
+      padding-top: calc(($height / $width) * 100%);
+    }
+    > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  
+    > img {
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  // Mixin for removing hover efects on iphone screen
+  @mixin hover-supported {    
+    @media not all and (pointer: coarse) {
+        &:hover {
+            @content;
+        }
+    }
+  }
+
+  /* Legacy breakpoint mixins -> mapped to the new single-source breakpoints */
+
+@mixin for-mobile-layout {
+  @include until($bp-mobile-max) { @content; }
+}
+
+@mixin for-narrow-layout {
+  @include between($bp-tablet-min, $bp-tablet-max) { @content; }
+}
+
+@mixin for-normal-layout {
+  @include between($bp-desktop-min, $bp-desktop-max) { @content; }
+}
+
+@mixin for-wide-layout {
+  @include from($bp-ultra-min) { @content; }
+}

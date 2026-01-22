@@ -1,0 +1,133 @@
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 3.5rem;
+
+  padding: rem(10px) clamp(1rem, 3vw, 2rem);
+  background-color: $clr3;
+  background-image: url(https://zolstock.co.il/wp-content/themes/zolstock/images/footerstrip.jpg);
+  background-repeat: repeat-x;
+
+  a {
+    color: $clr4;
+    text-decoration: none;
+
+    &:hover {
+      color: $clr2;
+    }
+  }
+
+  /* ✅ FIX: socials icon sizing (don’t use font-size for FA svg) */
+  .socials {
+    padding-top: 1rem;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: rem(12px);
+
+    /* prevent FA svg scaling by inherited font-size */
+    font-size: 1rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      width: rem(32px);
+      height: rem(32px);
+      flex: 0 0 auto;
+    }
+  }
+
+  p {
+    margin: 0;
+    padding-top: 1rem;
+    font-size: clamp(rem(12px), 1.2vw, rem(14px));
+    color: $clr4;
+    text-align: center;
+  }
+
+  span {
+    font-size: clamp(rem(11px), 1vw, rem(13px));
+
+    &.local-services {
+      color: $clr1;
+    }
+
+    &.remote-services {
+      color: $clr5;
+    }
+  }
+
+  /* ============================= */
+  /* SHORTCUTS (links row) */
+  /* ============================= */
+
+  .shortcuts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-top: rem(1px) solid rgb(87, 87, 87);
+    border-bottom: rem(1px) solid rgb(87, 87, 87);
+
+    margin-top: 1rem;
+
+    /* קריטי: לא לשבור שורה */
+    flex-wrap: nowrap;
+    // white-space: nowrap;
+
+    /* אם אין מקום — גלילה אופקית במקום שבירה */
+    overflow-x: auto;
+    scrollbar-width: none; /* firefox */
+    -webkit-overflow-scrolling: touch;
+
+    /* קצת אוויר בפנים כדי שלא יידבק לקצוות */
+    padding-inline: clamp(rem(6px), 2vw, rem(14px));
+    gap: clamp(rem(6px), 2vw, rem(14px));
+
+    /* חשוב: שלא “יתפוצץ” רוחבית */
+    max-width: 100%;
+  }
+
+  .shortcuts::-webkit-scrollbar {
+    display: none; /* chrome */
+  }
+
+  .shortcuts a {
+    display: none;
+    /* במקום marginים כפולים — gap מנהל ריווחים */
+    margin: 0;
+    padding: rem(8px) rem(10px);
+
+    font-size: clamp(rem(12px), 1.1vw, rem(14px));
+    line-height: 1.2;
+  }
+}
+
+/* ============================= */
+/* Mobile: קצת יותר קומפקט */
+/* ============================= */
+@include until($bp-sm) {
+  .app-footer {
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+
+    .shortcuts a {
+      padding: rem(8px) rem(8px);
+      font-size: 0.5rem;
+    }
+
+    /* ✅ FIX: mobile icon sizing */
+    .socials svg {
+      width: rem(28px);
+      height: rem(28px);
+    }
+  }
+}

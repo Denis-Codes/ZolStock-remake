@@ -1,0 +1,86 @@
+.main-container {
+  display: grid;
+  grid-template-columns: 0 1fr 0;
+
+  // background-color: #F6F4EE;
+  // background-color: #F2F4F7;
+  // background-color: #FBF7E6;
+  // background-color: #ECEFF3;
+  >* {
+    grid-column: 2;
+
+    &.full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* --- Mobile safety net --- */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+  }
+
+  /* כל התמונות והמדיה לא יחרגו */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    font-size: medium;
+  }
+
+  /* קונטיינרים לא יעברו את המסך */
+  .main-container,
+  main {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  main {
+    // padding: 0 10rem;
+    padding-inline: clamp(1rem, 3vw, 3rem);
+  }
+
+  @media (max-width: 40rem) {
+
+    .gallery,
+    .home-page,
+    .home,
+    .container,
+    .main-container main {
+      // width: 100%;
+      // padding-inline: 1rem;
+    }
+
+    /* אם יש כרטיסים/תמונות שמוגדרים עם רוחב קבוע */
+    .gallery img,
+    .hero img,
+    .banner img {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 40rem) {
+
+    .social-bar,
+    .side-social,
+    .floating-social {
+      display: none;
+    }
+  }
+
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 20px;
+  }
+}
