@@ -44,7 +44,7 @@ console.log('MODE:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'BASE_
 
 root.render(
   <Provider store={store}>
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <RootCmp />
     </Router>
   </Provider>
