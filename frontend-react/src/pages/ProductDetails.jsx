@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import productsData from '../data/products.json'
+import { productService } from '../services/product'
 import { ProductList } from '../cmps/ProductList.jsx'
 import { ProductBreadcrumbs } from '../cmps/ProductBreadcrumbs.jsx'
 import { ImageGallery } from '../cmps/ImageGallery.jsx'
@@ -16,12 +16,15 @@ function formatPriceILS(price) {
   return num.toFixed(0)
 }
 
-function getSimilarProducts(curr, all, limit = 8) {
+async function getSimilarProducts(curr, limit = 8) {
   if (!curr) return []
 
   const currCat = curr.category || curr.displayCategoryHe
   const currSub = curr.subCategory || curr.displaySubCategoryHe
   const currTags = new Set(curr.displayTagsHe || [])
+
+  // Get all products
+  const all = await productService.query({})
 
   const scored = all
     .filter(p => p.id !== curr.id)
@@ -52,14 +55,21 @@ export function ProductDetails() {
 
   const [selectedVariant, setSelectedVariant] = useState(null)
   const [quantity, setQuantity] = useState(1)
+  const [product, setProduct] = useState(null)
+  const [similarProducts, setSimilarProducts] = useState([])
 
-  const product = useMemo(() => {
-    return productsData.find(p => String(p.id) === String(productId))
+  useEffect(() => {
+    async function loadProduct() {
+      const prod = await productService.getById(productId)
+      setProduct(prod)
+
+      if (prod) {
+        const similar = await getSimilarProducts(prod, 8)
+        setSimilarProducts(similar)
+      }
+    }
+    loadProduct()
   }, [productId])
-
-  const similarProducts = useMemo(() => {
-    return product ? getSimilarProducts(product, productsData, 8) : []
-  }, [product])
 
   const isWishlisted = product ? wishlist.includes(product.id) : false
 

@@ -14,18 +14,28 @@
     "currency": "ILS",
     "brand": "HomeLab",
     "images": [
-      "assets/img/products/sofa.png",
-      "assets/img/products/sofa-2.png",
-      "assets/img/products/sofa-3.png"
+      "assets/img/products/sofa.png"
     ],
     "inStock": true,
     "stockQty": 6,
     "rating": 4.6,
     "reviewCount": 42,
-    "tags": ["living-room", "modern", "fabric"],
-    "displayTagsHe": ["סלון", "מודרני", "בד"],
+    "tags": [
+      "living-room",
+      "modern",
+      "fabric"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "מודרני",
+      "בד"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 210, "depth": 92, "height": 85 },
+      "dimensionsCm": {
+        "width": 210,
+        "depth": 92,
+        "height": 85
+      },
       "materialHe": "בד פוליאסטר",
       "frameMaterialHe": "עץ",
       "colorHe": "אפור",
@@ -45,17 +55,28 @@
     "currency": "ILS",
     "brand": "UrbanNest",
     "images": [
-      "assets/img/products/sofa.png",
-      "assets/img/products/sofa-2.png"
+      "assets/img/products/sofa.png"
     ],
     "inStock": true,
     "stockQty": 4,
     "rating": 4.3,
     "reviewCount": 28,
-    "tags": ["living-room", "compact", "fabric"],
-    "displayTagsHe": ["סלון", "קומפקטי", "בד"],
+    "tags": [
+      "living-room",
+      "compact",
+      "fabric"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "קומפקטי",
+      "בד"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 160, "depth": 88, "height": 82 },
+      "dimensionsCm": {
+        "width": 160,
+        "depth": 88,
+        "height": 82
+      },
       "materialHe": "בד ארוג",
       "frameMaterialHe": "עץ",
       "colorHe": "בז׳",
@@ -78,17 +99,28 @@
     "currency": "ILS",
     "brand": "NordicLine",
     "images": [
-      "assets/img/products/table.png",
-      "assets/img/products/table-2.png"
+      "assets/img/products/table.png"
     ],
     "inStock": true,
     "stockQty": 3,
     "rating": 4.4,
     "reviewCount": 19,
-    "tags": ["dining-room", "wood", "minimal"],
-    "displayTagsHe": ["פינת אוכל", "עץ", "מינימליסטי"],
+    "tags": [
+      "dining-room",
+      "wood",
+      "minimal"
+    ],
+    "displayTagsHe": [
+      "פינת אוכל",
+      "עץ",
+      "מינימליסטי"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 160, "depth": 90, "height": 75 },
+      "dimensionsCm": {
+        "width": 160,
+        "depth": 90,
+        "height": 75
+      },
       "materialHe": "אלון מלא",
       "finishHe": "מט",
       "extendable": false,
@@ -113,10 +145,21 @@
     "stockQty": 9,
     "rating": 4.1,
     "reviewCount": 34,
-    "tags": ["living-room", "round", "wood"],
-    "displayTagsHe": ["סלון", "עגול", "עץ"],
+    "tags": [
+      "living-room",
+      "round",
+      "wood"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "עגול",
+      "עץ"
+    ],
     "specs": {
-      "dimensionsCm": { "diameter": 80, "height": 42 },
+      "dimensionsCm": {
+        "diameter": 80,
+        "height": 42
+      },
       "materialHe": "MDF עם פורניר",
       "colorHe": "אלון טבעי",
       "weightKg": 11,
@@ -138,17 +181,28 @@
     "currency": "ILS",
     "brand": "BuildIt",
     "images": [
-      "assets/img/products/shelf.png",
-      "assets/img/products/shelf-2.png"
+      "assets/img/products/shelf.png"
     ],
     "inStock": true,
     "stockQty": 2,
-    "rating": 4.0,
+    "rating": 4,
     "reviewCount": 15,
-    "tags": ["storage", "wood", "home-office"],
-    "displayTagsHe": ["אחסון", "עץ", "משרד ביתי"],
+    "tags": [
+      "storage",
+      "wood",
+      "home-office"
+    ],
+    "displayTagsHe": [
+      "אחסון",
+      "עץ",
+      "משרד ביתי"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 60, "depth": 24, "height": 180 },
+      "dimensionsCm": {
+        "width": 60,
+        "depth": 24,
+        "height": 180
+      },
       "materialHe": "שבבית דחוסה",
       "colorHe": "לבן",
       "maxLoadKgPerShelf": 10,
@@ -167,21 +221,36 @@
     "currency": "ILS",
     "brand": "WorkPro",
     "images": [
-      "assets/img/products/chair.png",
-      "assets/img/products/chair-2.png"
+      "assets/img/products/chair.png"
     ],
     "inStock": true,
     "stockQty": 7,
     "rating": 4.5,
     "reviewCount": 67,
-    "tags": ["home-office", "ergonomic", "mesh"],
-    "displayTagsHe": ["משרד ביתי", "ארגונומי", "רשת"],
+    "tags": [
+      "home-office",
+      "ergonomic",
+      "mesh"
+    ],
+    "displayTagsHe": [
+      "משרד ביתי",
+      "ארגונומי",
+      "רשת"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 62, "depth": 60, "height": 112 },
+      "dimensionsCm": {
+        "width": 62,
+        "depth": 60,
+        "height": 112
+      },
       "materialHe": "רשת + פלסטיק מחוזק",
       "colorHe": "שחור",
       "maxWeightKg": 120,
-      "adjustable": ["גובה", "משענת", "ידיות"]
+      "adjustable": [
+        "גובה",
+        "משענת",
+        "ידיות"
+      ]
     }
   },
   {
@@ -202,8 +271,16 @@
     "stockQty": 10,
     "rating": 4.1,
     "reviewCount": 23,
-    "tags": ["dining-room", "minimal", "easy-clean"],
-    "displayTagsHe": ["פינת אוכל", "מינימליסטי", "קל לניקוי"],
+    "tags": [
+      "dining-room",
+      "minimal",
+      "easy-clean"
+    ],
+    "displayTagsHe": [
+      "פינת אוכל",
+      "מינימליסטי",
+      "קל לניקוי"
+    ],
     "specs": {
       "materialHe": "פלסטיק + רגלי מתכת",
       "colorHe": "לבן",
@@ -227,17 +304,28 @@
     "currency": "ILS",
     "brand": "BuildIt",
     "images": [
-      "assets/img/products/wardrobe.png",
-      "assets/img/products/wardrobe-2.png"
+      "assets/img/products/wardrobe.png"
     ],
     "inStock": true,
     "stockQty": 5,
-    "rating": 4.0,
+    "rating": 4,
     "reviewCount": 31,
-    "tags": ["bedroom", "storage", "basic"],
-    "displayTagsHe": ["חדר שינה", "אחסון", "בסיסי"],
+    "tags": [
+      "bedroom",
+      "storage",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "חדר שינה",
+      "אחסון",
+      "בסיסי"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 90, "depth": 52, "height": 190 },
+      "dimensionsCm": {
+        "width": 90,
+        "depth": 52,
+        "height": 190
+      },
       "materialHe": "שבבית דחוסה",
       "colorHe": "אלון בהיר",
       "doors": 2,
@@ -264,10 +352,22 @@
     "stockQty": 8,
     "rating": 4.2,
     "reviewCount": 45,
-    "tags": ["living-room", "storage", "wood"],
-    "displayTagsHe": ["סלון", "אחסון", "עץ"],
+    "tags": [
+      "living-room",
+      "storage",
+      "wood"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "אחסון",
+      "עץ"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 140, "depth": 40, "height": 52 },
+      "dimensionsCm": {
+        "width": 140,
+        "depth": 40,
+        "height": 52
+      },
       "materialHe": "MDF עם ציפוי",
       "colorHe": "אגוז",
       "cableManagement": true,
@@ -295,10 +395,22 @@
     "stockQty": 13,
     "rating": 4.4,
     "reviewCount": 58,
-    "tags": ["living-room", "kids", "soft"],
-    "displayTagsHe": ["סלון", "ילדים", "רך"],
+    "tags": [
+      "living-room",
+      "kids",
+      "soft"
+    ],
+    "displayTagsHe": [
+      "סלון",
+      "ילדים",
+      "רך"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 90, "depth": 90, "height": 70 },
+      "dimensionsCm": {
+        "width": 90,
+        "depth": 90,
+        "height": 70
+      },
       "materialHe": "בד מיקרופייבר",
       "colorHe": "כחול",
       "fillingHe": "כדורי קלקר",
@@ -317,30 +429,80 @@
     "currency": "ILS",
     "brand": "BasicWear",
     "images": [
-      "assets/img/products/tshirt.png",
-      "assets/img/products/tshirt-2.png"
+      "assets/img/products/tshirt.png"
     ],
     "inStock": true,
     "stockQty": 40,
     "rating": 4.3,
     "reviewCount": 89,
-    "tags": ["cotton", "everyday"],
-    "displayTagsHe": ["כותנה", "יומיומי"],
+    "tags": [
+      "cotton",
+      "everyday"
+    ],
+    "displayTagsHe": [
+      "כותנה",
+      "יומיומי"
+    ],
     "variants": [
-      { "size": "S", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 12 },
-      { "size": "M", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 15 },
-      { "size": "L", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 8 },
-      { "size": "XL", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 5 },
-      { "size": "S", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 10 },
-      { "size": "M", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 12 },
-      { "size": "L", "color": "black", "colorHe": "שחור", "inStock": false, "stockQty": 0 }
+      {
+        "size": "S",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 12
+      },
+      {
+        "size": "M",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 15
+      },
+      {
+        "size": "L",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 8
+      },
+      {
+        "size": "XL",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "S",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 10
+      },
+      {
+        "size": "M",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 12
+      },
+      {
+        "size": "L",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": false,
+        "stockQty": 0
+      }
     ],
     "specs": {
       "gender": "men",
       "genderHe": "גברים",
       "fitHe": "רגיל",
       "materialHe": "100% כותנה",
-      "careHe": ["כביסה עד 30°", "ללא מייבש"]
+      "careHe": [
+        "כביסה עד 30°",
+        "ללא מייבש"
+      ]
     }
   },
   {
@@ -364,20 +526,52 @@
     "stockQty": 35,
     "rating": 4.1,
     "reviewCount": 54,
-    "tags": ["cotton", "basic"],
-    "displayTagsHe": ["כותנה", "בסיסי"],
+    "tags": [
+      "cotton",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "כותנה",
+      "בסיסי"
+    ],
     "variants": [
-      { "size": "S", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 10 },
-      { "size": "M", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 12 },
-      { "size": "L", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 8 },
-      { "size": "S", "color": "gray", "colorHe": "אפור", "inStock": true, "stockQty": 5 }
+      {
+        "size": "S",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 10
+      },
+      {
+        "size": "M",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 12
+      },
+      {
+        "size": "L",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 8
+      },
+      {
+        "size": "S",
+        "color": "gray",
+        "colorHe": "אפור",
+        "inStock": true,
+        "stockQty": 5
+      }
     ],
     "specs": {
       "gender": "women",
       "genderHe": "נשים",
       "fitHe": "צמוד",
       "materialHe": "כותנה עם אלסטאן",
-      "careHe": ["כביסה עד 30°"]
+      "careHe": [
+        "כביסה עד 30°"
+      ]
     }
   },
   {
@@ -392,27 +586,59 @@
     "currency": "ILS",
     "brand": "StreetCo",
     "images": [
-      "assets/img/products/hoodie.png",
-      "assets/img/products/hoodie-2.png"
+      "assets/img/products/hoodie.png"
     ],
     "inStock": true,
     "stockQty": 18,
     "rating": 4.5,
     "reviewCount": 76,
-    "tags": ["warm", "streetwear"],
-    "displayTagsHe": ["חמים", "סטריט"],
+    "tags": [
+      "warm",
+      "streetwear"
+    ],
+    "displayTagsHe": [
+      "חמים",
+      "סטריט"
+    ],
     "variants": [
-      { "size": "S", "color": "gray", "colorHe": "אפור", "inStock": true, "stockQty": 4 },
-      { "size": "M", "color": "gray", "colorHe": "אפור", "inStock": true, "stockQty": 6 },
-      { "size": "L", "color": "gray", "colorHe": "אפור", "inStock": true, "stockQty": 5 },
-      { "size": "XL", "color": "gray", "colorHe": "אפור", "inStock": true, "stockQty": 3 }
+      {
+        "size": "S",
+        "color": "gray",
+        "colorHe": "אפור",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "M",
+        "color": "gray",
+        "colorHe": "אפור",
+        "inStock": true,
+        "stockQty": 6
+      },
+      {
+        "size": "L",
+        "color": "gray",
+        "colorHe": "אפור",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "XL",
+        "color": "gray",
+        "colorHe": "אפור",
+        "inStock": true,
+        "stockQty": 3
+      }
     ],
     "specs": {
       "gender": "men",
       "genderHe": "גברים",
       "fitHe": "אוברסייז",
       "materialHe": "פליז",
-      "careHe": ["כביסה עד 30°", "הפוך לפני כביסה"]
+      "careHe": [
+        "כביסה עד 30°",
+        "הפוך לפני כביסה"
+      ]
     }
   },
   {
@@ -436,20 +662,52 @@
     "stockQty": 16,
     "rating": 4.2,
     "reviewCount": 41,
-    "tags": ["warm", "zip"],
-    "displayTagsHe": ["חמים", "רוכסן"],
+    "tags": [
+      "warm",
+      "zip"
+    ],
+    "displayTagsHe": [
+      "חמים",
+      "רוכסן"
+    ],
     "variants": [
-      { "size": "S", "color": "olive", "colorHe": "ירוק זית", "inStock": true, "stockQty": 4 },
-      { "size": "M", "color": "olive", "colorHe": "ירוק זית", "inStock": true, "stockQty": 6 },
-      { "size": "L", "color": "olive", "colorHe": "ירוק זית", "inStock": true, "stockQty": 4 },
-      { "size": "S", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 2 }
+      {
+        "size": "S",
+        "color": "olive",
+        "colorHe": "ירוק זית",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "M",
+        "color": "olive",
+        "colorHe": "ירוק זית",
+        "inStock": true,
+        "stockQty": 6
+      },
+      {
+        "size": "L",
+        "color": "olive",
+        "colorHe": "ירוק זית",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "S",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 2
+      }
     ],
     "specs": {
       "gender": "women",
       "genderHe": "נשים",
       "fitHe": "רגיל",
       "materialHe": "פליז",
-      "careHe": ["כביסה עד 30°"]
+      "careHe": [
+        "כביסה עד 30°"
+      ]
     }
   },
   {
@@ -464,27 +722,59 @@
     "currency": "ILS",
     "brand": "DenimBox",
     "images": [
-      "assets/img/products/jeans.png",
-      "assets/img/products/jeans-2.png"
+      "assets/img/products/jeans.png"
     ],
     "inStock": true,
     "stockQty": 22,
     "rating": 4.4,
     "reviewCount": 63,
-    "tags": ["denim", "slim"],
-    "displayTagsHe": ["דנים", "סלים"],
+    "tags": [
+      "denim",
+      "slim"
+    ],
+    "displayTagsHe": [
+      "דנים",
+      "סלים"
+    ],
     "variants": [
-      { "size": "30", "color": "dark-blue", "colorHe": "כחול כהה", "inStock": true, "stockQty": 5 },
-      { "size": "32", "color": "dark-blue", "colorHe": "כחול כהה", "inStock": true, "stockQty": 8 },
-      { "size": "34", "color": "dark-blue", "colorHe": "כחול כהה", "inStock": true, "stockQty": 6 },
-      { "size": "36", "color": "dark-blue", "colorHe": "כחול כהה", "inStock": true, "stockQty": 3 }
+      {
+        "size": "30",
+        "color": "dark-blue",
+        "colorHe": "כחול כהה",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "32",
+        "color": "dark-blue",
+        "colorHe": "כחול כהה",
+        "inStock": true,
+        "stockQty": 8
+      },
+      {
+        "size": "34",
+        "color": "dark-blue",
+        "colorHe": "כחול כהה",
+        "inStock": true,
+        "stockQty": 6
+      },
+      {
+        "size": "36",
+        "color": "dark-blue",
+        "colorHe": "כחול כהה",
+        "inStock": true,
+        "stockQty": 3
+      }
     ],
     "specs": {
       "gender": "men",
       "genderHe": "גברים",
       "fitHe": "סלים",
       "materialHe": "דנים עם אלסטאן",
-      "careHe": ["כביסה קרה", "ללא מייבש"]
+      "careHe": [
+        "כביסה קרה",
+        "ללא מייבש"
+      ]
     }
   },
   {
@@ -505,20 +795,52 @@
     "stockQty": 19,
     "rating": 4.6,
     "reviewCount": 88,
-    "tags": ["denim", "highwaist"],
-    "displayTagsHe": ["דנים", "מותן גבוהה"],
+    "tags": [
+      "denim",
+      "highwaist"
+    ],
+    "displayTagsHe": [
+      "דנים",
+      "מותן גבוהה"
+    ],
     "variants": [
-      { "size": "26", "color": "light-blue", "colorHe": "כחול בהיר", "inStock": true, "stockQty": 4 },
-      { "size": "28", "color": "light-blue", "colorHe": "כחול בהיר", "inStock": true, "stockQty": 7 },
-      { "size": "30", "color": "light-blue", "colorHe": "כחול בהיר", "inStock": true, "stockQty": 5 },
-      { "size": "32", "color": "light-blue", "colorHe": "כחול בהיר", "inStock": true, "stockQty": 3 }
+      {
+        "size": "26",
+        "color": "light-blue",
+        "colorHe": "כחול בהיר",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "28",
+        "color": "light-blue",
+        "colorHe": "כחול בהיר",
+        "inStock": true,
+        "stockQty": 7
+      },
+      {
+        "size": "30",
+        "color": "light-blue",
+        "colorHe": "כחול בהיר",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "32",
+        "color": "light-blue",
+        "colorHe": "כחול בהיר",
+        "inStock": true,
+        "stockQty": 3
+      }
     ],
     "specs": {
       "gender": "women",
       "genderHe": "נשים",
       "fitHe": "סקיני",
       "materialHe": "דנים עם אלסטאן",
-      "careHe": ["כביסה קרה"]
+      "careHe": [
+        "כביסה קרה"
+      ]
     }
   },
   {
@@ -536,27 +858,58 @@
     "currency": "ILS",
     "brand": "Moon&Co",
     "images": [
-      "assets/img/products/dress.png",
-      "assets/img/products/dress-2.png"
+      "assets/img/products/dress.png"
     ],
     "inStock": true,
     "stockQty": 8,
     "rating": 4.8,
     "reviewCount": 52,
-    "tags": ["evening", "elegant"],
-    "displayTagsHe": ["ערב", "אלגנטי"],
+    "tags": [
+      "evening",
+      "elegant"
+    ],
+    "displayTagsHe": [
+      "ערב",
+      "אלגנטי"
+    ],
     "variants": [
-      { "size": "S", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 2 },
-      { "size": "M", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 3 },
-      { "size": "L", "color": "black", "colorHe": "שחור", "inStock": true, "stockQty": 2 },
-      { "size": "M", "color": "navy", "colorHe": "כחול נייבי", "inStock": true, "stockQty": 1 }
+      {
+        "size": "S",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 2
+      },
+      {
+        "size": "M",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 3
+      },
+      {
+        "size": "L",
+        "color": "black",
+        "colorHe": "שחור",
+        "inStock": true,
+        "stockQty": 2
+      },
+      {
+        "size": "M",
+        "color": "navy",
+        "colorHe": "כחול נייבי",
+        "inStock": true,
+        "stockQty": 1
+      }
     ],
     "specs": {
       "gender": "women",
       "genderHe": "נשים",
       "fitHe": "מחויט",
       "materialHe": "פוליאסטר+אלסטאן",
-      "careHe": ["ניקוי יבש מומלץ"]
+      "careHe": [
+        "ניקוי יבש מומלץ"
+      ]
     }
   },
   {
@@ -577,19 +930,45 @@
     "stockQty": 12,
     "rating": 4.3,
     "reviewCount": 37,
-    "tags": ["summer", "floral"],
-    "displayTagsHe": ["קיץ", "פרחוני"],
+    "tags": [
+      "summer",
+      "floral"
+    ],
+    "displayTagsHe": [
+      "קיץ",
+      "פרחוני"
+    ],
     "variants": [
-      { "size": "S", "color": "light-blue", "colorHe": "תכלת", "inStock": true, "stockQty": 3 },
-      { "size": "M", "color": "light-blue", "colorHe": "תכלת", "inStock": true, "stockQty": 5 },
-      { "size": "L", "color": "light-blue", "colorHe": "תכלת", "inStock": true, "stockQty": 4 }
+      {
+        "size": "S",
+        "color": "light-blue",
+        "colorHe": "תכלת",
+        "inStock": true,
+        "stockQty": 3
+      },
+      {
+        "size": "M",
+        "color": "light-blue",
+        "colorHe": "תכלת",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "L",
+        "color": "light-blue",
+        "colorHe": "תכלת",
+        "inStock": true,
+        "stockQty": 4
+      }
     ],
     "specs": {
       "gender": "women",
       "genderHe": "נשים",
       "fitHe": "רפוי",
       "materialHe": "ויסקוזה",
-      "careHe": ["כביסה עדינה"]
+      "careHe": [
+        "כביסה עדינה"
+      ]
     }
   },
   {
@@ -607,20 +986,49 @@
     "currency": "ILS",
     "brand": "RunUp",
     "images": [
-      "assets/img/products/shoes.png",
-      "assets/img/products/shoes-2.png"
+      "assets/img/products/shoes.png"
     ],
     "inStock": true,
     "stockQty": 14,
     "rating": 4.2,
     "reviewCount": 45,
-    "tags": ["sports", "running"],
-    "displayTagsHe": ["ספורט", "ריצה"],
+    "tags": [
+      "sports",
+      "running"
+    ],
+    "displayTagsHe": [
+      "ספורט",
+      "ריצה"
+    ],
     "variants": [
-      { "size": "40", "color": "black-white", "colorHe": "שחור-לבן", "inStock": true, "stockQty": 3 },
-      { "size": "42", "color": "black-white", "colorHe": "שחור-לבן", "inStock": true, "stockQty": 5 },
-      { "size": "43", "color": "black-white", "colorHe": "שחור-לבן", "inStock": true, "stockQty": 4 },
-      { "size": "44", "color": "black-white", "colorHe": "שחור-לבן", "inStock": true, "stockQty": 2 }
+      {
+        "size": "40",
+        "color": "black-white",
+        "colorHe": "שחור-לבן",
+        "inStock": true,
+        "stockQty": 3
+      },
+      {
+        "size": "42",
+        "color": "black-white",
+        "colorHe": "שחור-לבן",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "43",
+        "color": "black-white",
+        "colorHe": "שחור-לבן",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "44",
+        "color": "black-white",
+        "colorHe": "שחור-לבן",
+        "inStock": true,
+        "stockQty": 2
+      }
     ],
     "specs": {
       "gender": "men",
@@ -648,13 +1056,43 @@
     "stockQty": 20,
     "rating": 4.1,
     "reviewCount": 29,
-    "tags": ["casual", "everyday"],
-    "displayTagsHe": ["קז׳ואל", "יומיומי"],
+    "tags": [
+      "casual",
+      "everyday"
+    ],
+    "displayTagsHe": [
+      "קז׳ואל",
+      "יומיומי"
+    ],
     "variants": [
-      { "size": "37", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 4 },
-      { "size": "38", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 6 },
-      { "size": "39", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 5 },
-      { "size": "40", "color": "white", "colorHe": "לבן", "inStock": true, "stockQty": 5 }
+      {
+        "size": "37",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 4
+      },
+      {
+        "size": "38",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 6
+      },
+      {
+        "size": "39",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 5
+      },
+      {
+        "size": "40",
+        "color": "white",
+        "colorHe": "לבן",
+        "inStock": true,
+        "stockQty": 5
+      }
     ],
     "specs": {
       "gender": "women",
@@ -679,15 +1117,20 @@
     "currency": "ILS",
     "brand": "Soundio",
     "images": [
-      "assets/img/products/headphones.png",
-      "assets/img/products/headphones-2.png"
+      "assets/img/products/headphones.png"
     ],
     "inStock": true,
     "stockQty": 11,
     "rating": 4.2,
     "reviewCount": 94,
-    "tags": ["wireless", "noise-canceling"],
-    "displayTagsHe": ["אלחוטי", "סינון רעשים"],
+    "tags": [
+      "wireless",
+      "noise-canceling"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "סינון רעשים"
+    ],
     "specs": {
       "wireless": true,
       "batteryHours": 28,
@@ -715,8 +1158,14 @@
     "stockQty": 9,
     "rating": 4.1,
     "reviewCount": 38,
-    "tags": ["wireless", "comfort"],
-    "displayTagsHe": ["אלחוטי", "נוחות"],
+    "tags": [
+      "wireless",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "נוחות"
+    ],
     "specs": {
       "wireless": true,
       "batteryHours": 35,
@@ -741,15 +1190,22 @@
     "currency": "ILS",
     "brand": "TechFit",
     "images": [
-      "assets/img/products/smartwatch.png",
-      "assets/img/products/smartwatch-2.png"
+      "assets/img/products/computer.png"
     ],
     "inStock": true,
     "stockQty": 6,
     "rating": 4.4,
     "reviewCount": 112,
-    "tags": ["fitness", "smart", "waterproof"],
-    "displayTagsHe": ["כושר", "חכם", "עמיד מים"],
+    "tags": [
+      "fitness",
+      "smart",
+      "waterproof"
+    ],
+    "displayTagsHe": [
+      "כושר",
+      "חכם",
+      "עמיד מים"
+    ],
     "specs": {
       "screenSizeMm": 44,
       "batteryDays": 7,
@@ -777,8 +1233,14 @@
     "stockQty": 26,
     "rating": 4.3,
     "reviewCount": 67,
-    "tags": ["wireless", "portable"],
-    "displayTagsHe": ["אלחוטי", "נייד"],
+    "tags": [
+      "wireless",
+      "portable"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "נייד"
+    ],
     "specs": {
       "wireless": true,
       "batteryHours": 10,
@@ -804,8 +1266,14 @@
     "stockQty": 44,
     "rating": 4.1,
     "reviewCount": 33,
-    "tags": ["home-office", "led"],
-    "displayTagsHe": ["משרד ביתי", "לד"],
+    "tags": [
+      "home-office",
+      "led"
+    ],
+    "displayTagsHe": [
+      "משרד ביתי",
+      "לד"
+    ],
     "specs": {
       "powerW": 8,
       "lightModes": 3,
@@ -829,10 +1297,16 @@
     ],
     "inStock": true,
     "stockQty": 70,
-    "rating": 4.0,
+    "rating": 4,
     "reviewCount": 45,
-    "tags": ["wireless", "computer"],
-    "displayTagsHe": ["אלחוטי", "מחשב"],
+    "tags": [
+      "wireless",
+      "computer"
+    ],
+    "displayTagsHe": [
+      "אלחוטי",
+      "מחשב"
+    ],
     "specs": {
       "connectionHe": "דונגל USB",
       "dpi": 1200,
@@ -858,8 +1332,14 @@
     "stockQty": 32,
     "rating": 4.2,
     "reviewCount": 28,
-    "tags": ["computer", "hebrew"],
-    "displayTagsHe": ["מחשב", "עברית"],
+    "tags": [
+      "computer",
+      "hebrew"
+    ],
+    "displayTagsHe": [
+      "מחשב",
+      "עברית"
+    ],
     "specs": {
       "layoutHe": "עברית/אנגלית",
       "connectionHe": "חוטי USB",
@@ -881,14 +1361,20 @@
     "currency": "ILS",
     "brand": "PowerUp",
     "images": [
-      "assets/img/products/powerbank.png"
+      "assets/img/products/computer.png"
     ],
     "inStock": true,
     "stockQty": 35,
     "rating": 4.3,
     "reviewCount": 78,
-    "tags": ["portable", "charging"],
-    "displayTagsHe": ["נייד", "טעינה"],
+    "tags": [
+      "portable",
+      "charging"
+    ],
+    "displayTagsHe": [
+      "נייד",
+      "טעינה"
+    ],
     "specs": {
       "capacityMah": 10000,
       "outputPorts": 2,
@@ -908,20 +1394,29 @@
     "currency": "ILS",
     "brand": "ChefPro",
     "images": [
-      "assets/img/products/knives.png",
-      "assets/img/products/knives-2.png"
+      "assets/img/products/knives.png"
     ],
     "inStock": true,
     "stockQty": 8,
     "rating": 4.7,
     "reviewCount": 56,
-    "tags": ["stainless", "cooking"],
-    "displayTagsHe": ["נירוסטה", "בישול"],
+    "tags": [
+      "stainless",
+      "cooking"
+    ],
+    "displayTagsHe": [
+      "נירוסטה",
+      "בישול"
+    ],
     "specs": {
       "materialHe": "נירוסטה",
       "pieces": 3,
       "dishwasherSafe": false,
-      "bladeLengthsCm": [20, 15, 9]
+      "bladeLengthsCm": [
+        20,
+        15,
+        9
+      ]
     }
   },
   {
@@ -939,16 +1434,26 @@
     "currency": "ILS",
     "brand": "NaturalKitchen",
     "images": [
-      "assets/img/products/cutting-board.png"
+      "assets/img/products/cookware.png"
     ],
     "inStock": true,
     "stockQty": 22,
     "rating": 4.4,
     "reviewCount": 41,
-    "tags": ["bamboo", "eco"],
-    "displayTagsHe": ["במבוק", "אקולוגי"],
+    "tags": [
+      "bamboo",
+      "eco"
+    ],
+    "displayTagsHe": [
+      "במבוק",
+      "אקולוגי"
+    ],
     "specs": {
-      "dimensionsCm": { "width": 40, "depth": 30, "height": 2 },
+      "dimensionsCm": {
+        "width": 40,
+        "depth": 30,
+        "height": 2
+      },
       "materialHe": "במבוק טבעי",
       "dishwasherSafe": false
     }
@@ -971,8 +1476,14 @@
     "stockQty": 27,
     "rating": 4.2,
     "reviewCount": 89,
-    "tags": ["nonstick", "cooking"],
-    "displayTagsHe": ["נון-סטיק", "בישול"],
+    "tags": [
+      "nonstick",
+      "cooking"
+    ],
+    "displayTagsHe": [
+      "נון-סטיק",
+      "בישול"
+    ],
     "specs": {
       "diameterCm": 24,
       "materialHe": "אלומיניום",
@@ -999,8 +1510,14 @@
     "stockQty": 19,
     "rating": 4.3,
     "reviewCount": 47,
-    "tags": ["cooking", "basic"],
-    "displayTagsHe": ["בישול", "בסיסי"],
+    "tags": [
+      "cooking",
+      "basic"
+    ],
+    "displayTagsHe": [
+      "בישול",
+      "בסיסי"
+    ],
     "specs": {
       "capacityL": 4,
       "materialHe": "נירוסטה",
@@ -1027,8 +1544,14 @@
     "stockQty": 34,
     "rating": 4.1,
     "reviewCount": 23,
-    "tags": ["glass", "table"],
-    "displayTagsHe": ["זכוכית", "שולחן"],
+    "tags": [
+      "glass",
+      "table"
+    ],
+    "displayTagsHe": [
+      "זכוכית",
+      "שולחן"
+    ],
     "specs": {
       "pieces": 6,
       "materialHe": "זכוכית",
@@ -1054,8 +1577,14 @@
     "stockQty": 3,
     "rating": 4.3,
     "reviewCount": 34,
-    "tags": ["table", "family"],
-    "displayTagsHe": ["שולחן", "משפחה"],
+    "tags": [
+      "table",
+      "family"
+    ],
+    "displayTagsHe": [
+      "שולחן",
+      "משפחה"
+    ],
     "specs": {
       "pieces": 18,
       "materialHe": "קרמיקה",
@@ -1085,8 +1614,16 @@
     "stockQty": 14,
     "rating": 4.5,
     "reviewCount": 87,
-    "tags": ["dog", "adult", "chicken"],
-    "displayTagsHe": ["כלב", "בוגר", "עוף"],
+    "tags": [
+      "dog",
+      "adult",
+      "chicken"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "בוגר",
+      "עוף"
+    ],
     "specs": {
       "petType": "dog",
       "petTypeHe": "כלב",
@@ -1109,14 +1646,22 @@
     "currency": "ILS",
     "brand": "CatLove",
     "images": [
-      "assets/img/products/cat-food.png"
+      "assets/img/products/dog-food.png"
     ],
     "inStock": true,
     "stockQty": 18,
     "rating": 4.6,
     "reviewCount": 64,
-    "tags": ["cat", "premium", "fish"],
-    "displayTagsHe": ["חתול", "פרימיום", "דג"],
+    "tags": [
+      "cat",
+      "premium",
+      "fish"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "פרימיום",
+      "דג"
+    ],
     "specs": {
       "petType": "cat",
       "petTypeHe": "חתול",
@@ -1148,13 +1693,25 @@
     "stockQty": 7,
     "rating": 4.4,
     "reviewCount": 42,
-    "tags": ["dog", "bed", "comfort"],
-    "displayTagsHe": ["כלב", "מיטה", "נוחות"],
+    "tags": [
+      "dog",
+      "bed",
+      "comfort"
+    ],
+    "displayTagsHe": [
+      "כלב",
+      "מיטה",
+      "נוחות"
+    ],
     "specs": {
       "petType": "dog",
       "petTypeHe": "כלב",
       "sizeHe": "גדול",
-      "dimensionsCm": { "width": 90, "depth": 70, "height": 20 },
+      "dimensionsCm": {
+        "width": 90,
+        "depth": 70,
+        "height": 20
+      },
       "materialHe": "פוליאסטר",
       "washable": true
     }
@@ -1171,14 +1728,22 @@
     "currency": "ILS",
     "brand": "CatLove",
     "images": [
-      "assets/img/products/cat-tree.png"
+      "assets/img/products/pet-toy.png"
     ],
     "inStock": true,
     "stockQty": 5,
     "rating": 4.7,
     "reviewCount": 31,
-    "tags": ["cat", "play", "scratch"],
-    "displayTagsHe": ["חתול", "משחק", "גירוד"],
+    "tags": [
+      "cat",
+      "play",
+      "scratch"
+    ],
+    "displayTagsHe": [
+      "חתול",
+      "משחק",
+      "גירוד"
+    ],
     "specs": {
       "petType": "cat",
       "petTypeHe": "חתול",
