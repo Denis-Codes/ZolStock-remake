@@ -8,3 +8,4 @@ dist/
 build/
 *.local
 .cache/
+nul
