@@ -42,6 +42,27 @@ import "slick-carousel/slick/slick.css"
 const root = ReactDOM.createRoot(document.getElementById('root'))
 console.log('MODE:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'BASE_URL:', import.meta.env.BASE_URL)
 
+// Aggressively clear service workers and caches
+;(async () => {
+  try {
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(registrations.map(reg => reg.unregister()))
+      console.log('Service workers unregistered:', registrations.length)
+    }
+
+    // Clear all caches
+    if ('caches' in window) {
+      const names = await caches.keys()
+      await Promise.all(names.map(name => caches.delete(name)))
+      console.log('Caches cleared:', names.length)
+    }
+  } catch (error) {
+    console.error('Error clearing service worker/caches:', error)
+  }
+})()
+
 root.render(
   <Provider store={store}>
     <Router basename={import.meta.env.BASE_URL}>
@@ -49,9 +70,5 @@ root.render(
     </Router>
   </Provider>
 )
-
-// const isGithub = import.meta.env.MODE === 'github'
-// if (!isGithub) serviceWorkerRegistration.register()
-// else serviceWorkerRegistration.unregister()
 
 serviceWorkerRegistration.unregister()
