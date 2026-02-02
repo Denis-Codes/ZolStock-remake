@@ -77,7 +77,7 @@ export function HomePage() {
       <div className="gallery full-viewport">
         <EmblaCarousel />
       </div>
-{/* 
+
       <div className="section-separator full-viewport">
         <h2>חדש על המדף</h2>
       </div>
@@ -107,7 +107,7 @@ export function HomePage() {
           src="https://zolstock.co.il/wp-content/uploads/2025/10/788989.jpg"
           alt="new-products6"
         />
-      </div> */}
+      </div>
 
       <div className="welcome full-viewport">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
