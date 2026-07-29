@@ -45,9 +45,9 @@ export function CategoryPage() {
             <ProductSidebarFilters />
           </aside>
 
-          <main className="products-main">
+          <div className="products-main">
             <ProductList products={products} />
-          </main>
+          </div>
         </section>
       </div>
     </>

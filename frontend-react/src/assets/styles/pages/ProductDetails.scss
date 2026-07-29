@@ -4,8 +4,7 @@
 }
 
 .pd-container {
-  width: min(72rem, 92%);
-  margin: 0 auto;
+  @include page-container;
   // padding: 2rem 0 4rem;
 }
 

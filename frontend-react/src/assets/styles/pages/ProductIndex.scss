@@ -52,8 +52,7 @@
   // padding: rem(18px) rem(14px) rem(40px);
 
   .product-page__container {
-    width: min(72rem, 92%);
-    margin: 0 auto;
+    @include page-container;
   }
 
   @include until($bp-sm) {

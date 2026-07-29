@@ -48,3 +48,19 @@
 @mixin for-wide-layout {
   @include from($bp-ultra-min) { @content; }
 }
+
+/* Shared page gutter + container width (single source of truth,
+   matches AppHeader's padding scale so header/main/banners/pages all align) */
+@mixin page-gutter {
+  padding-inline: clamp(1rem, 4vw, 10rem);
+
+  @include from($bp-ultra-min) {
+    padding-inline: clamp(2rem, 4vw, 12rem);
+  }
+}
+
+@mixin page-container {
+  width: 100%;
+  max-width: rem(1600px);
+  margin-inline: auto;
+}

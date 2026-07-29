@@ -6,7 +6,8 @@
 
   min-height: 3.5rem;
 
-  padding: rem(10px) clamp(1rem, 3vw, 2rem);
+  padding-block: rem(10px);
+  @include page-gutter;
   background-color: $clr3;
   background-image: url(https://zolstock.co.il/wp-content/themes/zolstock/images/footerstrip.jpg);
   background-repeat: repeat-x;

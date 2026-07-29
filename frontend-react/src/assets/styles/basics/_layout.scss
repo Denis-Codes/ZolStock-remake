@@ -45,8 +45,7 @@
   }
 
   main {
-    // padding: 0 10rem;
-    padding-inline: clamp(1rem, 3vw, 3rem);
+    @include page-gutter;
   }
 
   @media (max-width: 40rem) {

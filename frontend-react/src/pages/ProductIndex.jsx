@@ -100,7 +100,7 @@ export function ProductIndex() {
   const canAdd = !!userService.getLoggedinUser()
 
   return (
-    <main className="product-page full">
+    <div className="product-page full">
       <div className="product-page__container">
         <div className="product-page__top">
           <ProductBreadcrumbs
@@ -155,7 +155,7 @@ export function ProductIndex() {
 
         <ProductList products={products} layout="grid" />
       </div>
-    </main>
+    </div>
   )
 }
 
