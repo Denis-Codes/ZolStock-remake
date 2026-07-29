@@ -127,7 +127,7 @@ function HomePage() {
       </div>
 
       <div className="branches-container" id="branches-map">
-        <div className="branches-menu">
+        <div className="branches-menu" data-testid="branch-accordion">
           <AppAccordion
             items={regions}
             allowMultiple={false}
@@ -186,7 +186,7 @@ function HomePage() {
           />
         </div>
 
-        <div className="map-container">
+        <div className="map-container" data-testid="branch-map">
           <div className="map">
             <MyComponent
               regions={regions}
