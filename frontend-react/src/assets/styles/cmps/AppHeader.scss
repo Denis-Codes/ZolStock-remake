@@ -7,7 +7,7 @@
 .top-wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 
   padding: 1rem clamp(1rem, 4vw, 10rem);
 
@@ -21,6 +21,7 @@
 
     &:hover {
       color: $clr2;
+      background-color: $clr1;
     }
   }
 }

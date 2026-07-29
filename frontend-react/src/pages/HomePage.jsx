@@ -74,11 +74,11 @@ function HomePage() {
 
   return (
     <section>
-      <div className="gallery full-viewport">
+      <div className="gallery">
         <EmblaCarousel />
       </div>
 
-      <div className="section-separator full-viewport">
+      <div className="section-separator">
         <h2>חדש על המדף</h2>
       </div>
 
@@ -109,7 +109,7 @@ function HomePage() {
         />
       </div>
 
-      <div className="welcome full-viewport">
+      <div className="welcome">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
         <p>
           רשת זול סטוק מציעה חוויית קנייה משתלמת עם מגוון עצום של מוצרי צריכה לבית
@@ -122,7 +122,7 @@ function HomePage() {
         </h2>
       </div>
 
-      <div className="section-separator full-viewport">
+      <div className="section-separator">
         <h2>הסניפים שלנו</h2>
       </div>
 
