@@ -42,24 +42,38 @@ import "slick-carousel/slick/slick.css"
 const root = ReactDOM.createRoot(document.getElementById('root'))
 console.log('MODE:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'BASE_URL:', import.meta.env.BASE_URL)
 
-// Aggressively clear service workers and caches
+// Version-based cache management - only clear on updates
+const APP_VERSION = '1.0.1'
+
 ;(async () => {
   try {
-    // Unregister all service workers
-    if ('serviceWorker' in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations()
-      await Promise.all(registrations.map(reg => reg.unregister()))
-      console.log('Service workers unregistered:', registrations.length)
-    }
+    const lastVersion = localStorage.getItem('app_version')
 
-    // Clear all caches
-    if ('caches' in window) {
-      const names = await caches.keys()
-      await Promise.all(names.map(name => caches.delete(name)))
-      console.log('Caches cleared:', names.length)
+    // Only clear caches when version updates or first load
+    if (lastVersion !== APP_VERSION) {
+      console.log(`Version update detected: ${lastVersion} → ${APP_VERSION}`)
+
+      // Unregister service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        await Promise.all(registrations.map(reg => reg.unregister()))
+        console.log('Service workers unregistered:', registrations.length)
+      }
+
+      // Clear caches
+      if ('caches' in window) {
+        const names = await caches.keys()
+        await Promise.all(names.map(name => caches.delete(name)))
+        console.log('Caches cleared:', names.length)
+      }
+
+      localStorage.setItem('app_version', APP_VERSION)
+      console.log('Cache cleared successfully')
+    } else {
+      console.log('App version unchanged, using cached resources')
     }
   } catch (error) {
-    console.error('Error clearing service worker/caches:', error)
+    console.error('Error managing service worker/caches:', error)
   }
 })()
 

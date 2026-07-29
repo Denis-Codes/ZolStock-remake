@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { productService } from '../services/product'
@@ -71,7 +71,11 @@ export function ProductDetails() {
     loadProduct()
   }, [productId])
 
-  const isWishlisted = product ? wishlist.includes(product.id) : false
+  // Memoize wishlist check to prevent unnecessary recalculations
+  const isWishlisted = useMemo(
+    () => (product ? wishlist.includes(product.id) : false),
+    [product?.id, wishlist]
+  )
 
   if (!product) {
     return (
@@ -84,21 +88,27 @@ export function ProductDetails() {
     )
   }
 
-  const title = product.displayNameHe || product.name
-  const categoryHe = product.displayCategoryHe
-  const subCategoryHe = product.displaySubCategoryHe
-  const tagsHe = product.displayTagsHe || []
-  const hasVariants = product.variants?.length > 0
-  const hasDiscount = product.discountPercent > 0
+  // Memoize derived product values to prevent recalculation on every render
+  const productInfo = useMemo(() => ({
+    title: product.displayNameHe || product.name,
+    categoryHe: product.displayCategoryHe,
+    subCategoryHe: product.displaySubCategoryHe,
+    tagsHe: product.displayTagsHe || [],
+    hasVariants: product.variants?.length > 0,
+    hasDiscount: product.discountPercent > 0,
+    displayPrice: product.salePrice || product.price,
+    originalPrice: product.originalPrice || product.price
+  }), [product])
 
-  // Calculate display price
-  const displayPrice = product.salePrice || product.price
-  const originalPrice = product.originalPrice || product.price
+  const { title, categoryHe, subCategoryHe, tagsHe, hasVariants, hasDiscount, displayPrice, originalPrice } = productInfo
 
-  // Get stock info based on selected variant or product
-  const stockInfo = selectedVariant
-    ? { inStock: selectedVariant.inStock, stockQty: selectedVariant.stockQty }
-    : { inStock: product.inStock, stockQty: product.stockQty }
+  // Memoize stock info based on selected variant
+  const stockInfo = useMemo(
+    () => selectedVariant
+      ? { inStock: selectedVariant.inStock, stockQty: selectedVariant.stockQty }
+      : { inStock: product.inStock, stockQty: product.stockQty },
+    [selectedVariant, product.inStock, product.stockQty]
+  )
 
   function handleWishlistClick() {
     dispatch(toggleWishlistItem(product.id))

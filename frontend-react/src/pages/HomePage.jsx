@@ -8,7 +8,7 @@ import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
 import regions from '../data/branches.withLatLng.json'
 
-export function HomePage() {
+function HomePage() {
   const location = useLocation()
 
   const [selectedRegionId, setSelectedRegionId] = useState('sharon')
@@ -200,3 +200,5 @@ export function HomePage() {
     </section>
   )
 }
+
+export default HomePage

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleWishlistItem } from '../store/actions/wishlist.actions'
@@ -13,7 +14,7 @@ function formatPriceParts(price) {
   return { whole, frac: String(frac).padStart(2, '0') }
 }
 
-export function ProductPreview({ product }) {
+function ProductPreview({ product }) {
   const dispatch = useDispatch()
   const wishlist = useSelector((storeState) => storeState.wishlistModule.wishlist)
   const isWishlisted = wishlist.includes(product.id)
@@ -102,3 +103,16 @@ export function ProductPreview({ product }) {
     </article>
   )
 }
+
+// Memoize component with custom comparison to prevent unnecessary re-renders
+export default memo(ProductPreview, (prevProps, nextProps) => {
+  // Only re-render if these specific properties change
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.product.price === nextProps.product.price &&
+    prevProps.product.salePrice === nextProps.product.salePrice &&
+    prevProps.product.discountPercent === nextProps.product.discountPercent &&
+    prevProps.product.inStock === nextProps.product.inStock &&
+    prevProps.product.stockQty === nextProps.product.stockQty
+  )
+})
