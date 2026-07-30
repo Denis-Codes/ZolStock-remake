@@ -110,6 +110,10 @@
     transform: translateY(rem(-6px)) scale(0.96);
     pointer-events: none;
 
+    /* cancels the flex `gap` while collapsed, since a width:0 item still
+       consumes one full gap next to it in a flex row */
+    margin-inline-end: -0.875rem;
+
     transition: opacity 260ms ease, transform 260ms ease, width 260ms ease;
     transform-origin: right center;
 
@@ -189,7 +193,7 @@
 
   .nav-wrap {
     display: block;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     min-width: 0;
     max-width: rem(1400px);
 
@@ -209,6 +213,7 @@
   nav {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 1rem;
 
     font-size: clamp(rem(14px), 0.6vw + rem(12px), rem(18px));
@@ -548,6 +553,20 @@
   }
 }
 
+/* Cancel mini-logo's flex gap only where nav is visible (desktop, >= 72rem).
+   A width:0 flex item still consumes one full `gap` next to it, so on
+   mobile (where nav-wrap is hidden anyway) this must NOT apply — it was
+   causing horizontal overflow on phones. */
+@media (min-width: 72rem) {
+  .app-header .mini-logo {
+    margin-inline-end: -0.875rem;
+  }
+
+  .app-header.is-scrolled .mini-logo {
+    margin-inline-end: 0;
+  }
+}
+
 /* ============================= */
 /* RESPONSIVE LAYERS (central breakpoints) */
 /* ============================= */
@@ -596,11 +615,11 @@
 /* <= 480: simplify */
 @include until($bp-sm) {
   .top-wrap {
-    padding: 2rem clamp(1rem, 4vw, 1.5rem);
+    padding: 2rem 0;
   }
 
   .app-header {
-    padding-inline: clamp(1rem, 4vw, 1.5rem);
+    padding-inline: 0;
     gap: rem(8px);
   }
 
@@ -653,7 +672,7 @@
   }
 
   .app-header {
-    padding-inline: clamp(2rem, 4vw, 12rem);
+    padding-inline: clamp(20rem, 4vw, 12rem);
   }
 
   .app-header .nav-wrap {
@@ -662,6 +681,13 @@
 
   .app-header .search-bar {
     max-width: rem(860px);
+  }
+}
+
+/* >= 3840: even more air on true 4K */
+@include from($bp-4k-min) {
+  .app-header {
+    padding-inline: clamp(60rem, 4vw, 12rem);
   }
 }
 
@@ -694,6 +720,19 @@
   .app-header {
     padding-inline: clamp(1rem, 3vw, 3rem);
     gap: rem(10px);
+  }
+}
+
+@media (min-width: 72rem) {
+  .app-header .search-bar {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    flex: none;                 // cancel the flex sizing, no longer needed
+    width: clamp(rem(320px), 30vw, rem(720px));
+    max-width: rem(720px);
   }
 }
 

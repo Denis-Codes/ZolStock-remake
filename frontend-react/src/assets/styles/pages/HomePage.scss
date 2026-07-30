@@ -68,7 +68,8 @@
 
   h2 {
     margin: 0;
-    color: $clr4; /* אם יש לך לבן, אחרת תוריד */
+    color: $clr4;
+    /* אם יש לך לבן, אחרת תוריד */
     font-size: clamp(1.1rem, 1.2vw, 1.6rem);
     text-align: center;
   }
@@ -144,7 +145,7 @@ button:hover {
 /* ============================= */
 .branches-container {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
 
   gap: clamp(1rem, 3vw, 2rem);
@@ -157,12 +158,15 @@ button:hover {
 .map-container {
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-/* מפה: גובה נזיל */
+/* מפה: תמיד תמלא את גובה העמודה (אותו גובה כמו רשימת הסניפים) */
 .map {
   width: 100%;
-  height: clamp(rem(300px), 45vh, rem(536px));
+  height: 100%;
+  min-height: rem(300px); /* רצפת ביטחון כדי שלא יקרוס ל-0 */
 }
 
 /* מובייל/טאבלט: עמודה אחת (רשימה מעל מפה) */
@@ -173,21 +177,7 @@ button:hover {
   }
 
   .map {
-    height: clamp(rem(260px), 40vh, rem(420px));
-  }
-}
-
-/* דסקטופ: קצת יותר גובה למפה אם צריך */
-@include between($bp-desktop-min, $bp-desktop-max) {
-  .map {
-    height: clamp(rem(420px), 50vh, rem(560px));
-  }
-}
-
-/* אולטרה: אפשר לתת עוד רוחב/אוויר (אם תרצה) */
-@include from($bp-ultra-min) {
-  .map {
-    height: clamp(rem(520px), 45vh, rem(640px));
+    min-height: rem(260px);
   }
 }
 

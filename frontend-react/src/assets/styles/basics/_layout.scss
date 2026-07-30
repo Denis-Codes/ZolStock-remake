@@ -46,6 +46,18 @@
 
   main {
     @include page-gutter;
+
+    @include from($bp-ultra-min) {
+      padding-inline: clamp(20rem, 4vw, 12rem);
+    }
+
+    @include from($bp-4k-min) {
+      padding-inline: clamp(60rem, 4vw, 12rem);
+    }
+
+    @include until($bp-sm) {
+      padding-inline: 0;
+    }
   }
 
   @media (max-width: 40rem) {

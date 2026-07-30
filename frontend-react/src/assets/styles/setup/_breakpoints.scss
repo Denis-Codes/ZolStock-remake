@@ -17,6 +17,7 @@ $bp-sm: $bp-mobile-max;  // up to 480
 $bp-md: $bp-tablet-max;  // up to 1024
 $bp-lg: $bp-desktop-min; // from 1200
 $bp-xl: $bp-ultra-min;   // from 2560
+$bp-4k-min: 240rem;      // 3840px
 
 /* Mixins */
 @mixin until($bp) {

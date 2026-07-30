@@ -82,7 +82,7 @@ function HomePage() {
         <h2>חדש על המדף</h2>
       </div>
 
-      <div className="gallery2">
+      {/* <div className="gallery2">
         <img
           src="https://zolstock.co.il/wp-content/uploads/2025/10/456456454565.jpg"
           alt="new-products1"
@@ -107,7 +107,7 @@ function HomePage() {
           src="https://zolstock.co.il/wp-content/uploads/2025/10/788989.jpg"
           alt="new-products6"
         />
-      </div>
+      </div> */}
 
       <div className="welcome">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
