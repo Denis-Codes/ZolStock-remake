@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { ProductIndexPage } from './pages/product-index.page';
-import { ProductDetailsPage } from './pages/product-details.page';
-import { CartPage } from './pages/cart.page';
+import { ProductIndexPage } from '../pages/product-index.page';
+import { ProductDetailsPage } from '../pages/product-details.page';
+import { CartPage } from '../pages/cart.page';
 import productsData from '../../src/data/products.json' with { type: 'json' };
 
 // Picking real products from the actual data source at runtime, rather than
