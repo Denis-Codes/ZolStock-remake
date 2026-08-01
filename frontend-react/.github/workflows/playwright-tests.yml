@@ -1,0 +1,112 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  # Fast tier — the small set of critical happy-path checks. Runs on every
+  # single push, so it gives near-instant feedback without slowing down
+  # the commit-and-push loop as the full suite grows.
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run smoke tests
+        run: npx playwright test --grep @smoke
+        env:
+          CI: true
+
+      - name: Upload Playwright report (smoke)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: playwright-report/
+          retention-days: 14
+
+  # Full tier — everything else: negatives, edge cases, slower/more detailed
+  # flows. Only runs on pull requests, so it doesn't slow down every small
+  # push but still gates anything before it actually merges into main.
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run regression tests
+        run: npx playwright test --grep @regression
+        env:
+          CI: true
+
+      - name: Upload Playwright report (regression)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-regression
+          path: playwright-report/
+          retention-days: 14
+
+  # Safety net — catches any test that wasn't tagged @smoke or @regression.
+  # Without this, an untagged test silently never runs in CI at all, since
+  # --grep only matches tagged tests. Runs on every push/PR, same as smoke,
+  # so a forgotten tag surfaces immediately rather than going unnoticed.
+  untagged:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run untagged tests
+        run: npx playwright test --grep-invert "@smoke|@regression"
+        env:
+          CI: true
+
+      - name: Upload Playwright report (untagged)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-untagged
+          path: playwright-report/
+          retention-days: 14
