@@ -14,6 +14,16 @@ export class ProductIndexPage {
     await this.page.goto(`/search?q=${encodeURIComponent(query)}`);
   }
 
+  // For smoke checks: "did the listing render at least one product",
+  // without needing to know which product specifically.
+  anyProductCard() {
+    return this.page.locator('article.product-card').first();
+  }
+
+  get emptyState() {
+    return this.page.getByText('אין מוצרים להצגה');
+  }
+
   /**
    * Scopes to a single product card by its title text.
    * Cards share no data-testid, so this is the most reliable
