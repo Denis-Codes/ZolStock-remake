@@ -53,6 +53,7 @@ async function query(filterBy = {}) {
       (p.tags && p.tags.some(tag => regex.test(tag))) ||
       (p.displayTagsHe && p.displayTagsHe.some(tag => regex.test(tag)))
     )
+    console.log(txt, products.length)
   }
 
   // מחיר
