@@ -31,6 +31,14 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Global safety net: caps every action (click, fill, etc.) and every
+       navigation at 30s. Without this, a single hung page (e.g. a
+       third-party script that never resolves — see BUG-002) can block a
+       test indefinitely, relying only on the outer CI job timeout to ever
+       notice — which wastes the whole job's time budget on one hang. */
+    actionTimeout: 30_000,
+    navigationTimeout: 30_000,
   },
 
   /* Configure projects for major browsers */
@@ -78,4 +86,3 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
   },
 });
-

@@ -19,7 +19,12 @@ test.describe('Homepage - Smoke Tests', () => {
   });
 
   test('the branch map is displayed @smoke', async () => {
-    await expect(homePage.map).toBeVisible();
+    // BUG-002: MapsCmp has no fallback if the Google Maps script is slow
+    // or fails to load — the page can hang indefinitely instead of
+    // degrading gracefully. Bounding this to 60s so a slow/failed load
+    // fails fast and clearly, instead of consuming the whole CI job's
+    // time budget. See bugs/BUG-002-maps-no-load-fallback.md.
+    await expect(homePage.map).toBeVisible({ timeout: 60_000 });
   });
 
   test('the branch accordion is displayed @smoke', async () => {
