@@ -39,6 +39,12 @@ jobs:
         run: npx playwright test --grep @smoke
         env:
           CI: true
+          # Without .env (which never reaches CI), the app defaults to
+          # product.service.remote.js, which tries to fetch from a backend
+          # that doesn't exist here — causing every search/product query to
+          # silently return empty. Forcing local mode matches how the app
+          # actually runs for a frontend-only test suite.
+          VITE_LOCAL: true
 
       - name: Upload Playwright report (smoke)
         if: always()
@@ -78,6 +84,7 @@ jobs:
         run: npx playwright test --grep @regression
         env:
           CI: true
+          VITE_LOCAL: true
 
       - name: Upload Playwright report (regression)
         if: always()
@@ -117,6 +124,7 @@ jobs:
         run: npx playwright test --grep-invert "@smoke|@regression"
         env:
           CI: true
+          VITE_LOCAL: true
 
       - name: Upload Playwright report (untagged)
         if: always()

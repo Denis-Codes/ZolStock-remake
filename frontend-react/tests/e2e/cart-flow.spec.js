@@ -17,14 +17,6 @@ function pickProductWithVariants(excludeIds = []) {
 test.describe('Cart - Happy Path', () => {
 
   test('adding a plain product from the listing reaches the cart correctly @smoke', async ({ page }) => {
-    // TEMP DIAGNOSTIC: pipe the browser's own console output into the CI
-    // log, so we can see the real txt/products.length values from inside
-    // the actual failing environment instead of guessing from local
-    // reproduction attempts that haven't matched CI's behavior.
-    // Remove once BUG-003 (search returns no results for this exact
-    // product in CI) is diagnosed and resolved.
-    page.on('console', (msg) => console.log('BROWSER LOG:', msg.text()));
-
     const productA = pickInStockProduct();
     if (!productA) throw new Error('Test data: expected at least one in-stock product');
 
