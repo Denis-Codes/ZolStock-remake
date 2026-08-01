@@ -21,7 +21,9 @@ const UserDetails = lazy(() => import('./pages/UserDetails'))
 const ProductDetails = lazy(() =>
   import('./pages/ProductDetails.jsx').then(m => ({ default: m.ProductDetails }))
 )
-const SearchResultsPage = lazy(() => import('./pages/SearchResultsPage.jsx'))
+const SearchResultsPage = lazy(() =>
+  import('./pages/SearchResultsPage.jsx').then(m => ({ default: m.SearchResultsPage }))
+)
 const ProductIndex = lazy(() =>
   import('./pages/ProductIndex.jsx').then(m => ({ default: m.ProductIndex }))
 )
