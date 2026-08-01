@@ -1,10 +1,15 @@
-name: Playwright Tests
+name: CI/CD
 
 on:
   push:
     branches: [ "**" ]
   pull_request:
     branches: [ "**" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   # Fast tier — the small set of critical happy-path checks. Runs on every
@@ -133,3 +138,44 @@ jobs:
           name: playwright-report-untagged
           path: frontend-react/playwright-report/
           retention-days: 14
+
+  # ── CD starts here ──────────────────────────────────────────────────
+  # Both build and deploy are unchanged from the original working
+  # deploy-only workflow, except for two additions: `needs` (so this only
+  # runs after tests pass) and `if` (to replicate what used to be handled
+  # implicitly by the old workflow's own separate `on: push: branches:
+  # ["main"]` trigger, now that the top-level trigger above is broader).
+
+  build:
+    needs: [smoke, untagged]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:github
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4
