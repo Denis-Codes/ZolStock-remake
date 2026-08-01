@@ -121,7 +121,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run untagged tests
-        run: npx playwright test --grep-invert "@smoke|@regression"
+        run: npx playwright test --grep-invert "@smoke|@regression" --pass-with-no-tests
         env:
           CI: true
           VITE_LOCAL: true
