@@ -77,6 +77,34 @@ export function ProductDetails() {
     [product?.id, wishlist]
   )
 
+  // Memoize derived product values to prevent recalculation on every render.
+  // Guarded internally (not via early return) so this hook always runs,
+  // even before `product` has loaded — required by the Rules of Hooks.
+  const productInfo = useMemo(() => {
+    if (!product) return null
+    return {
+      title: product.displayNameHe || product.name,
+      categoryHe: product.displayCategoryHe,
+      subCategoryHe: product.displaySubCategoryHe,
+      tagsHe: product.displayTagsHe || [],
+      hasVariants: product.variants?.length > 0,
+      hasDiscount: product.discountPercent > 0,
+      displayPrice: product.salePrice || product.price,
+      originalPrice: product.originalPrice || product.price
+    }
+  }, [product])
+
+  // Memoize stock info based on selected variant.
+  // Same guard-internally pattern as above — must always run.
+  const stockInfo = useMemo(() => {
+    if (!product) return { inStock: false, stockQty: 0 }
+    return selectedVariant
+      ? { inStock: selectedVariant.inStock, stockQty: selectedVariant.stockQty }
+      : { inStock: product.inStock, stockQty: product.stockQty }
+  }, [selectedVariant, product])
+
+  // Early return now comes AFTER every hook call, so hook count/order
+  // stays identical on every render regardless of whether product is loaded.
   if (!product) {
     return (
       <section className="product-details">
@@ -88,27 +116,7 @@ export function ProductDetails() {
     )
   }
 
-  // Memoize derived product values to prevent recalculation on every render
-  const productInfo = useMemo(() => ({
-    title: product.displayNameHe || product.name,
-    categoryHe: product.displayCategoryHe,
-    subCategoryHe: product.displaySubCategoryHe,
-    tagsHe: product.displayTagsHe || [],
-    hasVariants: product.variants?.length > 0,
-    hasDiscount: product.discountPercent > 0,
-    displayPrice: product.salePrice || product.price,
-    originalPrice: product.originalPrice || product.price
-  }), [product])
-
   const { title, categoryHe, subCategoryHe, tagsHe, hasVariants, hasDiscount, displayPrice, originalPrice } = productInfo
-
-  // Memoize stock info based on selected variant
-  const stockInfo = useMemo(
-    () => selectedVariant
-      ? { inStock: selectedVariant.inStock, stockQty: selectedVariant.stockQty }
-      : { inStock: product.inStock, stockQty: product.stockQty },
-    [selectedVariant, product.inStock, product.stockQty]
-  )
 
   function handleWishlistClick() {
     dispatch(toggleWishlistItem(product.id))

@@ -149,76 +149,78 @@ export function AppHeader() {
       <div ref={logoSentinelRef} className="logo-sentinel full" />
 
       <header className={`app-header full ${isScrolled ? 'is-scrolled' : ''}`}>
-        <button
-          className="hamburger-btn"
-          type="button"
-          aria-label="פתח תפריט"
-          onClick={handleOpenMenu}
-        >
-          <span className="hamburger-icon" aria-hidden="true"></span>
-        </button>
+        <div className="header-start">
+          <button
+            className="hamburger-btn"
+            type="button"
+            aria-label="פתח תפריט"
+            onClick={handleOpenMenu}
+          >
+            <span className="hamburger-icon" aria-hidden="true"></span>
+          </button>
 
-        <NavLink to="/" className="mini-logo" aria-label="לדף הבית" tabIndex={isScrolled ? 0 : -1}>
-          <img src={logo} alt="zolstock logo" />
-        </NavLink>
+          <NavLink to="/" className="mini-logo" aria-label="לדף הבית" tabIndex={isScrolled ? 0 : -1}>
+            <img src={logo} alt="zolstock logo" />
+          </NavLink>
 
-        <div className="nav-wrap" aria-hidden={isScrolled}>
-          <nav>
-            <HeaderNavDropdown
-              id="furniture"
-              to="/category/furniture"
-              label="רהיטים"
-              subcats={categorySubcats.furniture || []}
-              openDropdown={openDropdown}
-              setOpenDropdown={setOpenDropdown}
-              onNavigate={onNavToCategoryOrSubcategory}
-            />
-            <HeaderNavDropdown
-              id="clothing"
-              to="/category/clothing"
-              label="ביגוד"
-              subcats={categorySubcats.clothing || []}
-              openDropdown={openDropdown}
-              setOpenDropdown={setOpenDropdown}
-              onNavigate={onNavToCategoryOrSubcategory}
-            />
-            <HeaderNavDropdown
-              id="electronics"
-              to="/category/electronics"
-              label="אלקטרוניקה"
-              subcats={categorySubcats.electronics || []}
-              openDropdown={openDropdown}
-              setOpenDropdown={setOpenDropdown}
-              onNavigate={onNavToCategoryOrSubcategory}
-            />
-            <HeaderNavDropdown
-              id="kitchen"
-              to="/category/kitchen"
-              label="מטבח"
-              subcats={categorySubcats.kitchen || []}
-              openDropdown={openDropdown}
-              setOpenDropdown={setOpenDropdown}
-              onNavigate={onNavToCategoryOrSubcategory}
-            />
-            <HeaderNavDropdown
-              id="pets"
-              to="/category/pets"
-              label="חיות מחמד"
-              subcats={categorySubcats.pets || []}
-              openDropdown={openDropdown}
-              setOpenDropdown={setOpenDropdown}
-              onNavigate={onNavToCategoryOrSubcategory}
-            />
+          <div className="nav-wrap" aria-hidden={isScrolled}>
+            <nav>
+              <HeaderNavDropdown
+                id="furniture"
+                to="/category/furniture"
+                label="רהיטים"
+                subcats={categorySubcats.furniture || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
+              <HeaderNavDropdown
+                id="clothing"
+                to="/category/clothing"
+                label="ביגוד"
+                subcats={categorySubcats.clothing || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
+              <HeaderNavDropdown
+                id="electronics"
+                to="/category/electronics"
+                label="אלקטרוניקה"
+                subcats={categorySubcats.electronics || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
+              <HeaderNavDropdown
+                id="kitchen"
+                to="/category/kitchen"
+                label="מטבח"
+                subcats={categorySubcats.kitchen || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
+              <HeaderNavDropdown
+                id="pets"
+                to="/category/pets"
+                label="חיות מחמד"
+                subcats={categorySubcats.pets || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
 
-            {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+              {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
-            {user && (
-              <div className="user-info">
-                <Link to={`user/${user._id}`}>{user.fullname}</Link>
-                <button onClick={onLogout}>logout</button>
-              </div>
-            )}
-          </nav>
+              {user && (
+                <div className="user-info">
+                  <Link to={`user/${user._id}`}>{user.fullname}</Link>
+                  <button onClick={onLogout}>logout</button>
+                </div>
+              )}
+            </nav>
+          </div>
         </div>
 
         <div className="search-bar">

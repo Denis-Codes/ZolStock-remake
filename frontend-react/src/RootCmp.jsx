@@ -18,7 +18,9 @@ const ReviewIndex = lazy(() => import('./pages/ReviewIndex.jsx'))
 const ChatApp = lazy(() => import('./pages/Chat.jsx'))
 const AdminIndex = lazy(() => import('./pages/AdminIndex.jsx'))
 const UserDetails = lazy(() => import('./pages/UserDetails'))
-const ProductDetails = lazy(() => import('./pages/ProductDetails.jsx'))
+const ProductDetails = lazy(() =>
+  import('./pages/ProductDetails.jsx').then(m => ({ default: m.ProductDetails }))
+)
 const SearchResultsPage = lazy(() => import('./pages/SearchResultsPage.jsx'))
 const ProductIndex = lazy(() =>
   import('./pages/ProductIndex.jsx').then(m => ({ default: m.ProductIndex }))
