@@ -7,6 +7,13 @@ export class ProductIndexPage {
     await this.page.goto(`/category/${categorySlug}`);
   }
 
+  // Reaches the same product-card markup via search instead of category
+  // navigation — avoids depending on the product's `category` field
+  // actually matching a real route slug, which isn't guaranteed.
+  async gotoSearch(query) {
+    await this.page.goto(`/search?q=${encodeURIComponent(query)}`);
+  }
+
   /**
    * Scopes to a single product card by its title text.
    * Cards share no data-testid, so this is the most reliable
