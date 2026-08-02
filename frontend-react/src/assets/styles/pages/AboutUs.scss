@@ -1,39 +1,251 @@
-.fancy-box {
-    background-color: gold;
-    padding: 5px;
-    margin: 5px;
-    text-align: center;
+/* ============================= */
+/* ABOUT                          */
+/* ============================= */
+/* Replaces the starter template's demo styles (a gold .fancy-box, a teal
+   .proj-preview and a .split-pane transition), which went dead when the
+   placeholder components they styled were replaced with real content. */
+
+.about-page {
+  @include page-container;
+
+  padding-block: rem(24px) rem(48px);
 }
 
-.split-pane > div{
-    transition: 0.5s;
-}
-.example-enter {
-    opacity: 0.01;
-}
-  
-.example-enter.example-enter-active {
-    opacity: 1;
-    transition: opacity 500ms ease-in;
-}
-  
-.example-leave {
-    opacity: 1;
-    transform: scale(1.3);
-}
-  
-.example-leave.example-leave-active {
-    opacity: 0.01;
-    transform: scale(1);
-    transition: all 300ms ease-in;
+.about-hero {
+  max-width: rem(680px);
+  margin-bottom: rem(28px);
+
+  h1 {
+    margin: 0 0 rem(12px);
+    font-size: clamp(rem(26px), 2vw + rem(16px), rem(38px));
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: rem(-0.5px);
+  }
 }
 
-.proj-preview {
-    background-color: teal;
-    color: whitesmoke;
-    padding: 5px;
-    margin: 3px;
+.about-lead {
+  margin: 0;
+  font-size: rem(17px);
+  line-height: 1.7;
+  color: rgba($clr3, 0.78);
 }
 
+/* ============================= */
+/* TABS                           */
+/* ============================= */
 
+.about-tabs {
+  display: flex;
+  gap: rem(4px);
+  flex-wrap: wrap;
 
+  border-block-end: rem(1px) solid $line-soft;
+  margin-bottom: rem(24px);
+
+  a {
+    padding: rem(10px) rem(14px);
+    margin-bottom: rem(-1px);
+
+    border-block-end: rem(2px) solid transparent;
+    color: rgba($clr3, 0.7);
+    text-decoration: none;
+
+    font-size: rem(15px);
+    font-weight: 600;
+
+    transition: color $dur $ease, border-color $dur $ease;
+
+    &:hover {
+      color: $clr1;
+    }
+
+    &.active {
+      color: $clr1;
+      border-block-end-color: $clr1;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(-2px);
+    }
+  }
+}
+
+/* ============================= */
+/* ARTICLES                       */
+/* ============================= */
+
+.about-article {
+  max-width: rem(680px);
+
+  h2 {
+    margin: 0 0 rem(12px);
+    font-size: rem(21px);
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0 0 rem(14px);
+    font-size: rem(16px);
+    line-height: 1.75;
+    color: rgba($clr3, 0.82);
+  }
+
+  /* Scoped rather than flagged with !important — the article's own `p` rule
+     is the only thing it needs to outrank. */
+  p.about-note {
+    font-size: rem(14px);
+    color: rgba($clr3, 0.6);
+  }
+}
+
+.about-principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(rem(210px), 1fr));
+  gap: rem(12px);
+
+  margin: rem(20px) 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: rem(16px);
+    border: rem(1px) solid $line-soft;
+    border-radius: $r-lg;
+    background: $surface;
+  }
+
+  h3 {
+    margin: 0 0 rem(6px);
+    font-size: rem(15px);
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    font-size: rem(14px);
+    line-height: 1.6;
+  }
+}
+
+/* ============================= */
+/* DEPARTMENTS                    */
+/* ============================= */
+
+.about-departments {
+  margin-top: rem(40px);
+
+  h2 {
+    margin: 0 0 rem(14px);
+    font-size: rem(19px);
+    font-weight: 800;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: rem(8px);
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+
+    height: rem(40px);
+    padding-inline: rem(16px);
+
+    border: rem(1px) solid $line;
+    border-radius: $r-md;
+    background: $surface;
+    color: $clr3;
+
+    font-size: rem(14px);
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: border-color $dur $ease, color $dur $ease;
+
+    &:hover {
+      border-color: $clr1;
+      color: $clr1;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(2px);
+    }
+  }
+}
+
+/* ============================= */
+/* CTA                            */
+/* ============================= */
+
+.about-cta {
+  margin-top: rem(40px);
+  padding: rem(24px);
+
+  border-radius: $r-lg;
+  background: $clr1;
+  color: $clr4;
+
+  h2 {
+    margin: 0 0 rem(8px);
+    font-size: rem(20px);
+    font-weight: 800;
+    color: $clr2;
+  }
+
+  p {
+    margin: 0 0 rem(16px);
+    max-width: rem(560px);
+    font-size: rem(15px);
+    line-height: 1.65;
+    color: rgba($clr4, 0.9);
+  }
+}
+
+.about-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: rem(44px);
+  padding-inline: rem(22px);
+
+  border-radius: $r-md;
+  background: $clr2;
+  color: $clr1;
+
+  font-size: rem(15px);
+  font-weight: 800;
+  text-decoration: none;
+
+  transition: filter $dur $ease;
+
+  &:hover {
+    filter: brightness(0.94);
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr4;
+    outline-offset: rem(2px);
+  }
+}
+
+@include until($bp-sm) {
+  .about-page {
+    padding-inline: rem(12px);
+  }
+
+  /* Full-bleed on a phone, matching the homepage's edge-to-edge blocks. */
+  .about-cta {
+    border-radius: 0;
+    margin-inline: rem(-12px);
+  }
+}

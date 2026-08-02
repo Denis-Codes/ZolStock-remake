@@ -52,6 +52,40 @@ export function loadFromStorage(key) {
     return (data) ? JSON.parse(data) : undefined
 }
 
+// Shared color-name -> CSS value map, used anywhere a product variant's
+// color needs to render as a swatch (VariantSelector, ProductPreview cards).
+export function getVariantColorValue(colorName) {
+  const colorMap = {
+    white: '#ffffff',
+    black: '#222222',
+    gray: '#888888',
+    'dark-blue': '#1a365d',
+    'light-blue': '#63b3ed',
+    navy: '#1a365d',
+    olive: '#556b2f',
+    'black-white': 'linear-gradient(135deg, #222 50%, #fff 50%)',
+  }
+  return colorMap[colorName] || '#cccccc'
+}
+
+const RECENTLY_VIEWED_KEY = 'zolstock_recently_viewed'
+const RECENTLY_VIEWED_LIMIT = 10
+
+// Most-recent-first list of product ids the user has viewed, deduped,
+// capped at RECENTLY_VIEWED_LIMIT. Plain localStorage (like the wishlist
+// storage helpers above) rather than Redux — nothing outside the product
+// details page needs to react to this list changing.
+export function getRecentlyViewed() {
+  return loadFromStorage(RECENTLY_VIEWED_KEY) || []
+}
+
+export function addRecentlyViewed(productId) {
+  if (!productId) return
+  const current = getRecentlyViewed().filter((id) => id !== productId)
+  const next = [productId, ...current].slice(0, RECENTLY_VIEWED_LIMIT)
+  saveToStorage(RECENTLY_VIEWED_KEY, next)
+}
+
 export function buildCategorySubcats(products) {
   const map = new Map()
 

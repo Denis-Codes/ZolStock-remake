@@ -1,0 +1,38 @@
+.wishlist-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: rem(44px);
+  height: rem(44px);
+  border-radius: $r-md;
+  background: transparent;
+  transition: background-color $dur $ease;
+
+  &:hover {
+    background: $surface-hover;
+  }
+
+  .wishlist-icon {
+    width: rem(24px);
+    height: rem(24px);
+    stroke: $clr1;
+  }
+
+  .wishlist-count {
+    position: absolute;
+    top: rem(2px);
+    right: rem(2px);
+    min-width: rem(18px);
+    height: rem(18px);
+    background: #e53935;
+    color: #fff;
+    font-size: rem(11px);
+    font-weight: 700;
+    border-radius: rem(9px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 rem(4px);
+  }
+}

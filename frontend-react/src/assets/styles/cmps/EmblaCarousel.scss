@@ -1,10 +1,63 @@
+/* Two artworks, two shapes. Below $bp-lg the component renders the square
+   1080×1080 campaign tiles and runs edge to edge with square corners; from
+   $bp-lg it renders the wide 1920×700 banners at their native ratio. Neither
+   set is ever cropped — see EmblaCarousel.jsx for the source swap. */
+
 .embla {
   overflow: hidden;
 }
+
+.embla__viewport {
+  width: 100%;
+}
+
 .embla__container {
   display: flex;
 }
+
 .embla__slide {
   flex: 0 0 100%;
   min-width: 0;
+  overflow: hidden;
+}
+
+/* Two classes deep on purpose: `.main-container img` in basics/_layout.scss
+   forces `height: auto` on every image and would otherwise win on
+   specificity, leaving the image at its natural size inside the slide. */
+.embla__slide .embla__slide__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================= */
+/* SQUARE SET (below $bp-lg)      */
+/* ============================= */
+
+.embla--square {
+  .embla__slide {
+    aspect-ratio: 1 / 1;
+    /* Full-bleed on a phone, so corners stay square — a rounded edge against
+       the screen edge reads as a mistake. */
+    border-radius: 0;
+  }
+}
+
+/* Two tiles side by side once there is room for them to still read. */
+@include from($bp-tablet-min) {
+  .embla--square .embla__slide {
+    flex-basis: 50%;
+  }
+}
+
+/* ============================= */
+/* WIDE SET ($bp-lg and up)       */
+/* ============================= */
+
+.embla--wide {
+  .embla__slide {
+    aspect-ratio: 1920 / 700;
+    border-radius: $r-lg;
+  }
 }

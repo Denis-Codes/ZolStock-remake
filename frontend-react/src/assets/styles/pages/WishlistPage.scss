@@ -1,0 +1,84 @@
+.wishlist-page {
+  padding: rem(24px) 0 rem(48px);
+  min-height: 60vh;
+
+  &.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* `main` drops its gutter below 480 so full-bleed blocks can reach the
+     screen edge; this page is text and panels, so it re-declares its own. */
+  .wishlist-container {
+    @include page-container;
+
+    @include until($bp-sm) {
+      padding-inline: rem(14px);
+    }
+  }
+
+  .wishlist-loading {
+    text-align: center;
+    color: #666;
+    padding: rem(48px) 0;
+  }
+
+  .empty-wishlist {
+    text-align: center;
+    padding: rem(48px) rem(24px);
+
+    .empty-wishlist-icon {
+      margin-inline: auto;
+      width: rem(80px);
+      height: rem(80px);
+      stroke: #ccc;
+      margin-bottom: rem(24px);
+    }
+
+    h2 {
+      font-size: rem(24px);
+      margin-bottom: rem(8px);
+      color: #333;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: rem(24px);
+    }
+
+    .continue-shopping-btn {
+      display: inline-block;
+      background: $clr1;
+      color: #fff;
+      padding: rem(14px) rem(36px);
+      border-radius: $r-lg;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 200ms ease;
+
+      &:hover {
+        background: darken($clr1, 8%);
+      }
+    }
+  }
+
+  .wishlist-header {
+    display: flex;
+    align-items: center;
+    gap: rem(12px);
+    margin-bottom: rem(24px);
+    padding-bottom: rem(16px);
+    border-bottom: rem(1px) solid #eee;
+
+    h1 {
+      font-size: rem(30px);
+      margin: 0;
+    }
+
+    .wishlist-item-count {
+      color: #666;
+      font-size: rem(16px);
+    }
+  }
+}

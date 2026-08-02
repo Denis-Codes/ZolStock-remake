@@ -3,14 +3,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: rem(44px);
+  height: rem(44px);
+  border-radius: $r-md;
   background: transparent;
-  transition: background 0.2s ease;
+  transition: background-color $dur $ease;
 
   &:hover {
-    background: rgba($clr1, 0.1);
+    background: $surface-hover;
   }
 
   .cart-icon {
@@ -33,13 +33,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    animation: cartBounce 0.3s ease;
+    padding: 0 rem(4px);
   }
-}
-
-@keyframes cartBounce {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
 }

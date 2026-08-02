@@ -2,6 +2,8 @@ import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleWishlistItem } from '../store/actions/wishlist.actions'
+import { getVariantColorValue } from '../services/util.service'
+import imageFit from '../data/product-image-fit.json'
 import { SaleBadge } from './SaleBadge'
 import { StarRating } from './StarRating'
 import { AddToCartBtn } from './AddToCartBtn'
@@ -12,6 +14,44 @@ function formatPriceParts(price) {
   const whole = Math.floor(num)
   const frac = Math.round((num - whole) * 100)
   return { whole, frac: String(frac).padStart(2, '0') }
+}
+
+const MAX_VISIBLE_SWATCHES = 5
+
+/**
+ * The product shots are all 1024×1024, but each subject fills a different
+ * share of its frame (75%–97%), so identical tiles still rendered products at
+ * noticeably different sizes. `product-image-fit.json` holds a per-file scale
+ * and centring offset, measured from each image's actual subject bounding box,
+ * that normalises every product's longest side to the same share of the tile.
+ *
+ * Unknown files fall through to `scale(1)` — the map is an enhancement, not a
+ * requirement, so a newly added photo still renders correctly.
+ */
+function getImageFitStyle(src) {
+  if (!src) return undefined
+  const file = src.split('/').pop()
+  const fit = imageFit[file]
+  if (!fit) return undefined
+  return {
+    '--fit-scale': fit.s,
+    '--fit-x': `${fit.x}%`,
+    '--fit-y': `${fit.y}%`,
+  }
+}
+
+function getSwatchColors(variants) {
+  if (!variants?.length) return []
+  const seen = new Set()
+  const colors = []
+
+  for (const v of variants) {
+    if (!v.color || seen.has(v.color)) continue
+    seen.add(v.color)
+    colors.push({ color: v.color, colorHe: v.colorHe || v.color })
+  }
+
+  return colors
 }
 
 function ProductPreview({ product }) {
@@ -30,6 +70,10 @@ function ProductPreview({ product }) {
   const to = `/product/${product.id}`
   const img = product.images?.[0] || product.imgUrl || product.image || ''
 
+  const swatchColors = getSwatchColors(product.variants)
+  const visibleSwatches = swatchColors.slice(0, MAX_VISIBLE_SWATCHES)
+  const hiddenSwatchCount = swatchColors.length - visibleSwatches.length
+
   function handleWishlistClick(ev) {
     ev.preventDefault()
     ev.stopPropagation()
@@ -40,7 +84,7 @@ function ProductPreview({ product }) {
     <article className={`product-card ${!product.inStock ? 'out-of-stock' : ''}`}>
       <Link className="card-media" to={to}>
         {img ? (
-          <img src={img} alt={title} loading="lazy" />
+          <img src={img} alt={title} loading="lazy" style={getImageFitStyle(img)} />
         ) : (
           <div className="media-placeholder">אין תמונה</div>
         )}
@@ -64,19 +108,36 @@ function ProductPreview({ product }) {
           <h3 className="card-title">{title}</h3>
         </Link>
 
-        {!!product.displaySubCategoryHe && (
-          <p className="card-line">{product.displaySubCategoryHe}</p>
-        )}
+        {/* Subcategory, rating and swatches share one meta line. They used to
+            occupy three separate fixed rows, which made every card tall and
+            mostly empty — the grid read as styling rather than as a catalogue. */}
+        <div className="card-meta">
+          {!!product.displaySubCategoryHe && (
+            <span className="card-line">{product.displaySubCategoryHe}</span>
+          )}
 
-        {/* Star rating */}
-        <StarRating
-          rating={product.rating}
-          reviewCount={product.reviewCount}
-          size="small"
-        />
+          <StarRating
+            rating={product.rating}
+            reviewCount={product.reviewCount}
+            size="small"
+          />
 
-        {/* Stock warning */}
-        <StockWarning stockQty={product.stockQty} inStock={product.inStock} />
+          {visibleSwatches.length > 0 && (
+            <span className="card-swatches" aria-label="צבעים זמינים">
+              {visibleSwatches.map(({ color, colorHe }) => (
+                <span
+                  key={color}
+                  className="card-swatch"
+                  title={colorHe}
+                  style={{ '--swatch-color': getVariantColorValue(color) }}
+                />
+              ))}
+              {hiddenSwatchCount > 0 && (
+                <span className="card-swatch-more">+{hiddenSwatchCount}</span>
+              )}
+            </span>
+          )}
+        </div>
 
         {/* Price section */}
         <div className="card-price-section">
@@ -88,13 +149,15 @@ function ProductPreview({ product }) {
           )}
 
           <div
-            className={`card-price ${hasDiscount ? 'sale' : ''}`}
+            className="card-price"
             aria-label={`מחיר ${whole}.${frac} שקלים`}
           >
             <span className="ils">₪</span>
             <span className="whole">{whole}</span>
             {frac !== '00' && <span className="frac">{frac}</span>}
           </div>
+
+          <StockWarning stockQty={product.stockQty} inStock={product.inStock} />
         </div>
 
         {/* Add to cart button */}

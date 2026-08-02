@@ -47,8 +47,11 @@ export function AppAccordion({
         const newId = isExpanded ? id : ''
         if (!isControlled) setExpanded(newId)
 
-        if (onExpandedChange && isExpanded) {
-          onExpandedChange(id)
+        // Report collapses too. When controlled, the parent owns the value —
+        // firing only on expand meant an open panel could never be closed,
+        // because the parent never heard about it.
+        if (onExpandedChange) {
+          onExpandedChange(newId)
         }
       }
     }

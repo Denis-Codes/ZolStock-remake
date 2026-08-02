@@ -1,47 +1,177 @@
-.login-form,
-.signup-form {
-	display: grid;
-	width: min(80%, 300px);
-	margin: auto;
+/* ============================= */
+/* AUTH (login + signup)          */
+/* ============================= */
+/* One centred card carrying both forms. The login screen was previously a
+   bare user <select> with an English button and no route into it from
+   anywhere in the UI. */
 
-	padding: 1em;
-	background-color: $clr4;
+.auth-page {
+  display: flex;
+  justify-content: center;
+
+  padding-block: rem(40px) rem(64px);
 }
 
-.signup-form {
-	input {
-		width: 100%;
-	}
+.auth-card {
+  width: 100%;
+  max-width: rem(420px);
 
-    .admin-toggle {
-        display: flex;
-        align-items: center;
-        justify-self: start;
+  background: $surface;
+  border: rem(1px) solid $line;
+  border-radius: $r-lg;
+  padding: rem(28px);
+}
 
-        span {
-            font-size: .8em;
-        }
+.auth-title {
+  margin: 0 0 rem(18px);
+  font-size: rem(22px);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ============================= */
+/* TABS                           */
+/* ============================= */
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: rem(4px);
+
+  padding: rem(4px);
+  margin-bottom: rem(22px);
+
+  border-radius: $r-md;
+  background: $surface-sunken;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: rem(38px);
+    border-radius: $r-sm;
+
+    color: $text-muted;
+    font-size: rem(14px);
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: background-color $dur $ease, color $dur $ease;
+
+    &:hover {
+      color: $clr1;
     }
+
+    &.active {
+      background: $surface;
+      color: $clr1;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(-2px);
+    }
+  }
 }
 
-.login-page nav {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 2em;
+/* ============================= */
+/* FORM                           */
+/* ============================= */
 
-	margin-block: 100px 0.5em;
+.auth-form {
+  display: grid;
+  gap: rem(14px);
+}
 
-	a {
-		font-size: 0.8em;
-		color: $clr4;
+.auth-field {
+  display: grid;
+  gap: rem(6px);
 
-		&:hover {
-			color: $clr1;
-		}
-	}
-	a.active {
-		text-decoration: underline;
-		color: $clr2;
-	}
+  label,
+  .auth-field-label {
+    font-size: rem(13px);
+    font-weight: 600;
+    color: $text-muted;
+  }
+
+  input {
+    width: 100%;
+    height: rem(46px);
+
+    border: rem(1px) solid $line;
+    border-radius: $r-md;
+    background: $surface;
+    color: $clr3;
+
+    padding-inline: rem(12px);
+    font-family: inherit;
+    font-size: rem(15px);
+
+    transition: border-color $dur $ease;
+
+    &:focus {
+      outline: none;
+      border-color: $clr1;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: #dc3545;
+    }
+  }
+}
+
+.auth-error {
+  margin: 0;
+  padding: rem(10px) rem(12px);
+
+  border: rem(1px) solid rgba(#dc3545, 0.35);
+  border-radius: $r-md;
+  background: rgba(#dc3545, 0.06);
+
+  color: #b3261e;
+  font-size: rem(13px);
+  line-height: 1.5;
+}
+
+.auth-submit {
+  height: rem(46px);
+  margin-top: rem(4px);
+
+  border: 0;
+  border-radius: $r-md;
+  background: $clr1;
+  color: $clr4;
+
+  font-family: inherit;
+  font-size: rem(15px);
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: background-color $dur $ease;
+
+  &:hover:not(:disabled) {
+    background-color: darken($clr1, 8%);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+@include until($bp-sm) {
+  .auth-page {
+    padding-block: rem(24px) rem(40px);
+    padding-inline: rem(12px);
+  }
+
+  .auth-card {
+    padding: rem(20px);
+  }
 }

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
@@ -7,8 +7,14 @@ export function SearchBar({
   onChange,
   onSubmit,
   placeholder = 'חיפוש מוצרים…',
+  autoFocus = false,
 }) {
   const inputRef = useRef(null)
+
+  // The overlay mounts on demand, so the caret has to be placed for the user.
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
 
   function handleSubmit(ev) {
     ev.preventDefault()

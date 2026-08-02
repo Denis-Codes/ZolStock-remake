@@ -1,17 +1,59 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { EmblaCarousel } from '../cmps/EmblaCarousel.jsx'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
-import regions from '../data/branches.withLatLng.json'
+import rawRegions from '../data/branches.withLatLng.json'
+import { productService } from '../services/product'
+
+// Same 5 categories used in the header's nav dropdowns — kept as its own
+// list here (rather than importing from AppHeader) so this homepage section
+// doesn't depend on the header's internal structure.
+const CATEGORY_TILE_DEFS = [
+  { slug: 'furniture', labelHe: 'רהיטים' },
+  { slug: 'clothing', labelHe: 'ביגוד' },
+  { slug: 'electronics', labelHe: 'אלקטרוניקה' },
+  { slug: 'kitchen', labelHe: 'מטבח' },
+  { slug: 'pets', labelHe: 'חיות מחמד' },
+]
+
+/**
+ * Three branches in branches.withLatLng.json share one `_placeId`
+ * (ChIJi8mnMiRJABURuiw1EyBCa2o) — אום אל פחם, ירכא and בית אל all failed to
+ * geocode and fell back to the same record. That id was doing three jobs at
+ * once: React key, ref lookup, and selected-branch identity, so the list threw
+ * duplicate-key warnings and clicking a pin scrolled to the wrong shop.
+ *
+ * A positional id is unique by construction and independent of the data's
+ * quality. `_placeId` stays on the object for anything that genuinely needs
+ * the Google reference.
+ *
+ * NOTE: those three branches also share fallback coordinates in the Negev, so
+ * their pins sit far from their real addresses. That is a data fix (re-run
+ * src/scripts/geocode-branches.mjs), not a UI one.
+ */
+function withBranchIds(regions) {
+  return regions.map((region) => ({
+    ...region,
+    branches: (region.branches ?? []).map((branch, idx) => ({
+      ...branch,
+      _uid: `${region.id}:${idx}`,
+    })),
+  }))
+}
 
 function HomePage() {
   const location = useLocation()
+  const regions = useMemo(() => withBranchIds(rawRegions), [])
 
-  const [selectedRegionId, setSelectedRegionId] = useState('sharon')
+  const [categoryTiles, setCategoryTiles] = useState([])
+
+  // Every region starts collapsed, so the map is the first thing you meet and
+  // the list stays a short, scannable set of region names underneath it.
+  const [selectedRegionId, setSelectedRegionId] = useState('')
   const [selectedBranchId, setSelectedBranchId] = useState(null)
   const branchRefs = useRef({})
 
@@ -26,7 +68,7 @@ function HomePage() {
   }
 
   function handleBranchClick(branch) {
-    setSelectedBranchId(branch?._placeId ?? null)
+    setSelectedBranchId(branch?._uid ?? null)
   }
 
   function handleSelectFromMap({ regionId, branchId }) {
@@ -46,6 +88,27 @@ function HomePage() {
   }
 
   useEffect(() => {
+    let isCancelled = false
+
+    Promise.all(
+      CATEGORY_TILE_DEFS.map(async (def) => {
+        const products = await productService.query({ category: def.slug })
+        const withImage = products.find((p) => p.images?.[0] || p.imgUrl || p.image)
+        if (!withImage) return null
+
+        const image = withImage.images?.[0] || withImage.imgUrl || withImage.image
+        return { ...def, image }
+      })
+    ).then((tiles) => {
+      if (!isCancelled) setCategoryTiles(tiles.filter(Boolean))
+    })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
     if (location.state?.scrollTo !== 'branches-map') return
 
     const el = document.getElementById('branches-map')
@@ -60,7 +123,13 @@ function HomePage() {
     if (!el) return
 
     const container = getScrollParent(el)
-    if (!container) return
+
+    // On mobile the list is no longer its own scroller, so there is no
+    // scroll parent to move — bring the branch into view on the page instead.
+    if (!container) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
 
     const containerRect = container.getBoundingClientRect()
     const elRect = el.getBoundingClientRect()
@@ -79,35 +148,17 @@ function HomePage() {
       </div>
 
       <div className="section-separator">
-        <h2>חדש על המדף</h2>
+        <h2>קנייה לפי קטגוריה</h2>
       </div>
 
-      {/* <div className="gallery2">
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/456456454565.jpg"
-          alt="new-products1"
-        />
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/575676567.jpg"
-          alt="new-products2"
-        />
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/9909090.jpg"
-          alt="new-products3"
-        />
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/23423424.jpg"
-          alt="new-products4"
-        />
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/23321323123.jpg"
-          alt="new-products5"
-        />
-        <img
-          src="https://zolstock.co.il/wp-content/uploads/2025/10/788989.jpg"
-          alt="new-products6"
-        />
-      </div> */}
+      <div className="category-tiles">
+        {categoryTiles.map((tile) => (
+          <Link key={tile.slug} to={`/category/${tile.slug}`} className="category-tile">
+            <img src={tile.image} alt={tile.labelHe} loading="lazy" />
+            <span className="category-tile-label">{tile.labelHe}</span>
+          </Link>
+        ))}
+      </div>
 
       <div className="welcome">
         <h1>ברוכים הבאים לרשת זול סטוק!</h1>
@@ -131,11 +182,12 @@ function HomePage() {
           <AppAccordion
             items={regions}
             allowMultiple={false}
-            defaultExpandedId="sharon"
+            defaultExpandedId={null}
             expandedId={selectedRegionId}
             getId={(r) => r.id}
             onExpandedChange={handleRegionChange}
-            maxDetailsHeight="248px"
+            /* Height is capped in CSS on the desktop two-column layout only.
+               Passing it here applied a nested scroller at every width. */
             sx={{ border: '1px solid #ddd' }}
             renderSummary={(region) => (
               <Typography sx={{ fontWeight: 700 }}>{region.name}</Typography>
@@ -147,14 +199,13 @@ function HomePage() {
                 ) : (
                   region.branches.map((b, idx) => {
                     const isActive =
-                      selectedBranchId && b._placeId === selectedBranchId
+                      selectedBranchId && b._uid === selectedBranchId
 
                     return (
                       <div
-                        key={b._placeId || `${b.title}-${b.address}`}
+                        key={b._uid}
                         ref={(node) => {
-                          if (!node) return
-                          if (b._placeId) branchRefs.current[b._placeId] = node
+                          if (node) branchRefs.current[b._uid] = node
                         }}
                         onClick={() => handleBranchClick(b)}
                         style={{

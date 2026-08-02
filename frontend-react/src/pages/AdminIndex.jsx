@@ -10,10 +10,16 @@ export function AdminIndex() {
 	const users = useSelector(storeState => storeState.userModule.users)
 	const isLoading = useSelector(storeState => storeState.userModule.isLoading)
 
+	// `user` is null whenever nobody is signed in, so reading `.isAdmin`
+	// straight off it threw and took the whole route down rather than
+	// redirecting. Optional chaining covers the logged-out case too.
 	useEffect(() => {
-        if(!user.isAdmin) navigate('/')
+		if (!user?.isAdmin) {
+			navigate('/')
+			return
+		}
 		loadUsers()
-	}, [])
+	}, [user, navigate])
 
 	return <section className="admin">
         {isLoading && 'Loading...'}

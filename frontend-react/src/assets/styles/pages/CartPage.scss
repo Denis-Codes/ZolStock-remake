@@ -1,5 +1,5 @@
 .cart-page {
-  padding: 24px 0 48px;
+  padding: rem(24px) 0 rem(48px);
   min-height: 60vh;
 
   &.empty {
@@ -8,41 +8,48 @@
     justify-content: center;
   }
 
+  /* `main` drops its gutter below 480 so full-bleed blocks can reach the
+     screen edge; this page is text and panels, so it re-declares its own. */
   .cart-container {
     @include page-container;
+
+    @include until($bp-sm) {
+      padding-inline: rem(14px);
+    }
   }
 
   .empty-cart {
     text-align: center;
-    padding: 48px 24px;
+    padding: rem(48px) rem(24px);
 
     .empty-cart-icon {
-      width: 80px;
-      height: 80px;
+      margin-inline: auto;
+      width: rem(80px);
+      height: rem(80px);
       stroke: #ccc;
-      margin-bottom: 24px;
+      margin-bottom: rem(24px);
     }
 
     h2 {
-      font-size: 24px;
-      margin-bottom: 8px;
+      font-size: rem(24px);
+      margin-bottom: rem(8px);
       color: #333;
     }
 
     p {
       color: #666;
-      margin-bottom: 24px;
+      margin-bottom: rem(24px);
     }
 
     .continue-shopping-btn {
       display: inline-block;
       background: $clr1;
       color: #fff;
-      padding: 12px 32px;
-      border-radius: 8px;
+      padding: rem(14px) rem(36px);
+      border-radius: $r-lg;
       font-weight: 600;
       text-decoration: none;
-      transition: background 0.2s ease;
+      transition: background 200ms ease;
 
       &:hover {
         background: darken($clr1, 8%);
@@ -53,26 +60,26 @@
   .cart-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #eee;
+    gap: rem(12px);
+    margin-bottom: rem(24px);
+    padding-bottom: rem(16px);
+    border-bottom: rem(1px) solid #eee;
 
     h1 {
-      font-size: 28px;
+      font-size: rem(30px);
       margin: 0;
     }
 
     .cart-item-count {
       color: #666;
-      font-size: 16px;
+      font-size: rem(16px);
     }
   }
 
   .cart-content {
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 32px;
+    grid-template-columns: 1fr rem(340px);
+    gap: rem(32px);
 
     @media (max-width: 860px) {
       grid-template-columns: 1fr;
@@ -82,34 +89,40 @@
   .cart-items {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: rem(18px);
   }
 
   .cart-item {
     display: grid;
-    grid-template-columns: 100px 1fr auto auto auto;
-    gap: 16px;
+    grid-template-columns: rem(100px) 1fr auto auto auto;
+    gap: rem(16px);
     align-items: center;
-    padding: 16px;
+    padding: rem(18px);
     background: #fff;
-    border: 1px solid #eee;
-    border-radius: 12px;
+    border: rem(1px) solid #eee;
+    border-radius: $r-lg;
+
+    transition: border-color $dur $ease;
+
+    &:hover {
+      border-color: $line-strong;
+    }
 
     @media (max-width: 600px) {
-      grid-template-columns: 80px 1fr;
+      grid-template-columns: rem(80px) 1fr;
       grid-template-rows: auto auto;
     }
 
     .item-image {
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
+      width: rem(100px);
+      height: rem(100px);
+      border-radius: $r-lg;
       overflow: hidden;
       background: #f8f8f8;
 
       @media (max-width: 600px) {
-        width: 80px;
-        height: 80px;
+        width: rem(80px);
+        height: rem(80px);
       }
 
       img {
@@ -125,7 +138,7 @@
         color: #333;
         text-decoration: none;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: rem(4px);
 
         &:hover {
           color: $clr1;
@@ -133,22 +146,22 @@
       }
 
       .item-variant {
-        font-size: 13px;
+        font-size: rem(13px);
         color: #666;
         display: flex;
-        gap: 12px;
+        gap: rem(12px);
       }
 
       .item-price-row {
-        margin-top: 8px;
+        margin-top: rem(8px);
         display: flex;
-        gap: 8px;
+        gap: rem(8px);
         align-items: center;
 
         .original-price {
           text-decoration: line-through;
           color: #999;
-          font-size: 13px;
+          font-size: rem(13px);
         }
 
         .current-price {
@@ -161,21 +174,21 @@
     .item-quantity {
       display: flex;
       align-items: center;
-      gap: 8px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 4px;
+      gap: rem(8px);
+      border: rem(1px) solid #ddd;
+      border-radius: $r-lg;
+      padding: rem(4px);
 
       button {
-        width: 32px;
-        height: 32px;
+        width: rem(32px);
+        height: rem(32px);
         border: none;
         background: transparent;
         cursor: pointer;
-        font-size: 18px;
+        font-size: rem(18px);
         color: #333;
-        border-radius: 6px;
-        transition: background 0.2s ease;
+        border-radius: $r-md;
+        transition: background 180ms ease;
 
         &:hover:not(:disabled) {
           background: #f0f0f0;
@@ -188,7 +201,7 @@
       }
 
       span {
-        min-width: 32px;
+        min-width: rem(32px);
         text-align: center;
         font-weight: 600;
       }
@@ -196,15 +209,15 @@
 
     .item-total {
       font-weight: 700;
-      font-size: 18px;
+      font-size: rem(19px);
       color: #333;
-      min-width: 80px;
+      min-width: rem(80px);
       text-align: left;
     }
 
     .remove-item-btn {
-      width: 36px;
-      height: 36px;
+      width: rem(36px);
+      height: rem(36px);
       border: none;
       background: transparent;
       cursor: pointer;
@@ -212,7 +225,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s ease;
+      transition: background 180ms ease;
 
       &:hover {
         background: #fee;
@@ -223,8 +236,8 @@
       }
 
       svg {
-        width: 18px;
-        height: 18px;
+        width: rem(18px);
+        height: rem(18px);
         stroke: #999;
       }
     }
@@ -232,13 +245,13 @@
 
   .clear-cart-btn {
     align-self: flex-start;
-    padding: 10px 20px;
+    padding: rem(10px) rem(20px);
     background: transparent;
-    border: 1px solid #ddd;
+    border: rem(1px) solid #ddd;
     color: #666;
-    border-radius: 8px;
+    border-radius: $r-lg;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 
     &:hover {
       background: #fee;
@@ -249,24 +262,25 @@
 
   .cart-summary {
     background: #f9f9f9;
-    border-radius: 12px;
-    padding: 24px;
+    border: rem(1px) solid rgba(0, 0, 0, 0.06);
+    border-radius: $r-lg;
+    padding: rem(28px);
     height: fit-content;
     position: sticky;
-    top: 100px;
+    top: rem(100px);
 
     h2 {
-      font-size: 20px;
-      margin: 0 0 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #eee;
+      font-size: rem(21px);
+      margin: 0 0 rem(20px);
+      padding-bottom: rem(16px);
+      border-bottom: rem(1px) solid #eee;
     }
 
     .summary-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 15px;
+      margin-bottom: rem(12px);
+      font-size: rem(15px);
 
       &.savings {
         color: #28a745;
@@ -277,37 +291,37 @@
       }
 
       &.shipping {
-        font-size: 13px;
+        font-size: rem(13px);
         color: #666;
       }
 
       &.total {
-        font-size: 18px;
+        font-size: rem(19px);
         font-weight: 700;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #ddd;
+        margin-top: rem(16px);
+        padding-top: rem(16px);
+        border-top: rem(1px) solid #ddd;
       }
     }
 
     .summary-divider {
-      height: 1px;
+      height: rem(1px);
       background: #eee;
-      margin: 16px 0;
+      margin: rem(16px) 0;
     }
 
     .checkout-btn {
       width: 100%;
-      padding: 14px 24px;
+      padding: rem(16px) rem(24px);
       background: $clr1;
       color: #fff;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: $r-lg;
+      font-size: rem(16px);
       font-weight: 600;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.2s ease;
+      margin-top: rem(20px);
+      transition: background 200ms ease;
 
       &:hover:not(:disabled) {
         background: darken($clr1, 8%);
@@ -322,10 +336,10 @@
     .continue-shopping-link {
       display: block;
       text-align: center;
-      margin-top: 16px;
+      margin-top: rem(16px);
       color: $clr1;
       text-decoration: none;
-      font-size: 14px;
+      font-size: rem(14px);
 
       &:hover {
         text-decoration: underline;
@@ -336,10 +350,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-top: 16px;
+      gap: rem(6px);
+      margin-top: rem(16px);
       color: #666;
-      font-size: 12px;
+      font-size: rem(12px);
 
       svg {
         color: #28a745;

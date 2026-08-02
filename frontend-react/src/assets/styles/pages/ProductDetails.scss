@@ -1,5 +1,5 @@
 .product-details {
-  background: $clr4;
+  /* The white pane is the content panel below, not the page. */
   color: $clr3;
 }
 
@@ -41,32 +41,48 @@
 }
 
 .pd-title {
-  font-size: 2.2rem;
+  font-size: 2.6rem;
   line-height: 1.1;
   margin: 0 0 1.2rem;
   font-weight: 700;
+  letter-spacing: -0.01rem;
 }
 
+/* The same yellow price tag the cards use. This page previously rendered the
+   price as bare text that turned red when discounted, so a shopper met one
+   treatment in the grid and a different one on the product itself. */
 .pd-price-row {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
-  gap: 0.35rem;
-  margin-bottom: 1.2rem;
+  gap: rem(6px);
+  width: fit-content;
+
+  padding: rem(8px) rem(16px);
+  border-radius: $r-md;
+  background: $clr2;
+  border: rem(1px) solid rgba($clr1, 0.15);
+
+  margin-bottom: rem(16px);
 
   .pd-currency {
-    font-size: 1.1rem;
-    color: rgba($clr3, 0.7);
+    font-size: rem(16px);
+    font-weight: 700;
+    color: $clr3;
+    opacity: 0.9;
   }
 
   .pd-price {
-    font-size: 2.2rem;
+    font-size: rem(34px);
+    line-height: 1;
     font-weight: 800;
+    letter-spacing: rem(-0.6px);
     color: $clr3;
   }
 
   .pd-cents {
-    font-size: 1.1rem;
-    color: rgba($clr3, 0.7);
+    font-size: rem(16px);
+    color: $clr3;
+    opacity: 0.85;
   }
 }
 
@@ -88,7 +104,7 @@
   align-items: center;
   width: fit-content;
   padding: 0.45rem 0.75rem;
-  border-radius: 999rem;
+  border-radius: $r-pill;
   font-size: 0.9rem;
   border: 0.08rem solid rgba($clr3, 0.18);
   margin-bottom: 1.1rem;
@@ -113,7 +129,7 @@
   .pd-tag {
     font-size: 0.85rem;
     padding: 0.35rem 0.6rem;
-    border-radius: 999rem;
+    border-radius: $r-pill;
     background: rgba($clr1, 0.08);
     color: $clr1;
     border: 0.08rem solid rgba($clr1, 0.18);
@@ -129,12 +145,14 @@
 
 .pd-btn {
   border: 0.08rem solid rgba($clr3, 0.18);
-  border-radius: 0.8rem;
+  border-radius: $r-lg;
   padding: 0.85rem 1.1rem;
   font-size: 1rem;
   background: $clr4;
   color: $clr3;
   cursor: pointer;
+
+  transition: border-color 180ms ease;
 
   &:hover {
     border-color: rgba($clr3, 0.3);
@@ -166,8 +184,12 @@
   font-size: 1.2rem;
 
   &:hover {
-    color: $clr2;
-    border-color: rgba($clr2, 0.55);
+    /* Was $clr2 (yellow) — nearly invisible as icon/text color against
+       this button's white background. $clr1 is the same brand palette,
+       just legible here. The .active (already wishlisted) state below
+       uses red with a filled background tint, unaffected by this. */
+    color: $clr1;
+    border-color: rgba($clr1, 0.4);
   }
 }
 
@@ -194,10 +216,10 @@
 .pd-img-wrap {
   width: 100%;
   max-width: 28rem;
-  border-radius: 1.2rem;
+  border-radius: $r-lg;
   background: rgba($clr3, 0.04);
   border: 0.08rem solid rgba($clr3, 0.12);
-  padding: 1rem;
+  padding: 1.2rem;
 }
 
 .pd-img {
@@ -211,8 +233,9 @@
 .pd-price-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.2rem;
+  align-items: flex-start;
+  gap: rem(6px);
+  margin-bottom: rem(18px);
 }
 
 .pd-original-price {
@@ -238,17 +261,14 @@
   background: #e53935;
   color: #fff;
   padding: 0.25rem 0.6rem;
-  border-radius: 4px;
+  border-radius: $r-sm;
   font-size: 0.85rem;
   font-weight: 600;
   width: fit-content;
 }
 
-.pd-price-row.sale {
-  .pd-price {
-    color: #c62828;
-  }
-}
+/* No `.sale` colour override: the tag stays yellow when discounted, and the
+   markdown is carried by the badge and the struck-through original above. */
 
 .pd-brand span {
   font-weight: 600;
@@ -279,7 +299,7 @@
     display: flex;
     align-items: center;
     border: 1px solid rgba($clr3, 0.18);
-    border-radius: 0.5rem;
+    border-radius: $r-lg;
     overflow: hidden;
 
     button {
@@ -352,8 +372,8 @@
 }
 
 .pd-section-title {
-  margin: 0 0 1.2rem;
-  font-size: 1.4rem;
+  margin: 0 0 1.4rem;
+  font-size: 1.7rem;
   font-weight: 700;
 }
 

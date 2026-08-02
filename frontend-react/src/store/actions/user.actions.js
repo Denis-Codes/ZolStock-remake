@@ -30,6 +30,13 @@ export async function removeUser(userId) {
 export async function login(credentials) {
     try {
         const user = await userService.login(credentials)
+
+        // The service resolves to undefined when no such username exists.
+        // Without this guard `socketService.login(user._id)` threw, so an
+        // unknown username surfaced as a generic failure instead of one the
+        // form could explain.
+        if (!user) return null
+
         store.dispatch({
             type: SET_USER,
             user

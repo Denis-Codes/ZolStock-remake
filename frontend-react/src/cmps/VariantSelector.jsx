@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { getVariantColorValue } from '../services/util.service'
 
 export function VariantSelector({ variants, onVariantSelect, initialVariant = null }) {
   // Extract unique sizes and colors from variants
@@ -103,7 +104,7 @@ export function VariantSelector({ variants, onVariantSelect, initialVariant = nu
                   onClick={() => setSelectedColor(color)}
                   disabled={!isAvailable}
                   title={colorMap[color]}
-                  style={{ '--color-value': getColorValue(color) }}
+                  style={{ '--color-value': getVariantColorValue(color) }}
                 >
                   <span className="color-swatch"></span>
                 </button>
@@ -129,19 +130,4 @@ export function VariantSelector({ variants, onVariantSelect, initialVariant = nu
       )}
     </div>
   )
-}
-
-// Helper to convert color names to CSS colors
-function getColorValue(colorName) {
-  const colorMap = {
-    white: '#ffffff',
-    black: '#222222',
-    gray: '#888888',
-    'dark-blue': '#1a365d',
-    'light-blue': '#63b3ed',
-    navy: '#1a365d',
-    olive: '#556b2f',
-    'black-white': 'linear-gradient(135deg, #222 50%, #fff 50%)',
-  }
-  return colorMap[colorName] || '#cccccc'
 }

@@ -22,13 +22,23 @@ export function Signup() {
         setCredentials({ ...credentials, [field]: value })
     }
     
+    const [error, setError] = useState('')
+
     async function onSignup(ev = null) {
         if (ev) ev.preventDefault()
 
-        if (!credentials.username || !credentials.password || !credentials.fullname) return
-        await signup(credentials)
-        clearState()
-        navigate('/')
+        if (!credentials.fullname?.trim()) return setError('יש להזין שם מלא')
+        if (!credentials.username?.trim()) return setError('יש להזין שם משתמש')
+        if (!credentials.password) return setError('יש להזין סיסמה')
+
+        setError('')
+        try {
+            await signup(credentials)
+            clearState()
+            navigate('/')
+        } catch {
+            setError('ההרשמה נכשלה. נסו שוב בעוד רגע.')
+        }
     }
 
     function onUploaded(imgUrl) {
@@ -36,33 +46,51 @@ export function Signup() {
     }
 
     return (
-        <form className="signup-form" onSubmit={onSignup}>
-            <input
-                type="text"
-                name="fullname"
-                value={credentials.fullname}
-                placeholder="Fullname"
-                onChange={handleChange}
-                required
-            />
-            <input
-                type="text"
-                name="username"
-                value={credentials.username}
-                placeholder="Username"
-                onChange={handleChange}
-                required
-            />
-            <input
-                type="password"
-                name="password"
-                value={credentials.password}
-                placeholder="Password"
-                onChange={handleChange}
-                required
-            />
-            <ImgUploader onUploaded={onUploaded} />
-            <button>Signup</button>
+        <form className="auth-form" onSubmit={onSignup} noValidate>
+            <div className="auth-field">
+                <label htmlFor="signup-fullname">שם מלא</label>
+                <input
+                    id="signup-fullname"
+                    type="text"
+                    name="fullname"
+                    autoComplete="name"
+                    value={credentials.fullname}
+                    onChange={handleChange}
+                />
+            </div>
+
+            <div className="auth-field">
+                <label htmlFor="signup-username">שם משתמש</label>
+                <input
+                    id="signup-username"
+                    type="text"
+                    name="username"
+                    autoComplete="username"
+                    value={credentials.username}
+                    onChange={handleChange}
+                />
+            </div>
+
+            <div className="auth-field">
+                <label htmlFor="signup-password">סיסמה</label>
+                <input
+                    id="signup-password"
+                    type="password"
+                    name="password"
+                    autoComplete="new-password"
+                    value={credentials.password}
+                    onChange={handleChange}
+                />
+            </div>
+
+            <div className="auth-field">
+                <span className="auth-field-label">תמונת פרופיל (רשות)</span>
+                <ImgUploader onUploaded={onUploaded} />
+            </div>
+
+            {error && <p className="auth-error" role="alert">{error}</p>}
+
+            <button className="auth-submit" type="submit">הרשמה</button>
         </form>
     )
 }

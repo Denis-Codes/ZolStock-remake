@@ -1,134 +1,333 @@
+/* ============================= */
+/* APP FOOTER                     */
+/* ============================= */
+/* Labelled link columns beside a brand block, closing on a thin legal bar —
+   the shape large retailers converge on, because it lets someone scan for one
+   thing (a branch, a policy, a category) without reading a sentence. The
+   previous markup had all seven links set to `display: none`, so the footer
+   rendered as two social icons and a credit line. */
+
 .app-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 3.5rem;
-
-  padding-block: rem(10px);
-  @include page-gutter;
   background-color: $clr3;
+
+  /* Brand strip, pinned as a top edge rather than tiled behind the content. */
   background-image: url(https://zolstock.co.il/wp-content/themes/zolstock/images/footerstrip.jpg);
   background-repeat: repeat-x;
+  background-position: top center;
+
+  padding-block-start: rem(56px);
+  color: $clr4;
+}
+
+.footer-main {
+  @include page-container;
+  @include page-gutter;
+
+  display: grid;
+  grid-template-columns: minmax(rem(200px), rem(280px)) 1fr;
+  grid-template-areas:
+    "brand  cols"
+    "social cols";
+  grid-template-rows: auto 1fr;
+  gap: clamp(rem(20px), 5vw, rem(72px));
+
+  padding-block: rem(32px) rem(36px);
+}
+
+.footer-brand  { grid-area: brand; }
+.footer-social { grid-area: social; }
+.footer-cols   { grid-area: cols; }
+
+.footer-social h3 {
+  margin: 0 0 rem(12px);
+  font-size: rem(14px);
+  font-weight: 700;
+  color: $clr4;
+}
+
+/* ============================= */
+/* BRAND BLOCK                    */
+/* ============================= */
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem(14px);
+}
+
+.footer-logo img {
+  display: block;
+  height: rem(56px);
+  width: auto;
+}
+
+.footer-tagline {
+  margin: 0;
+  font-size: rem(14px);
+  line-height: 1.5;
+  color: rgba($clr4, 0.72);
+}
+
+/* ============================= */
+/* LINK COLUMNS                   */
+/* ============================= */
+
+.footer-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(rem(20px), 3vw, rem(40px));
+}
+
+.footer-col {
+  min-width: 0;
+
+  h3 {
+    margin: 0 0 rem(14px);
+    font-size: rem(14px);
+    font-weight: 700;
+    letter-spacing: rem(0.3px);
+    color: $clr4;
+  }
+
+  ul {
+    display: grid;
+    gap: rem(9px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* `display: grid` above outranks the UA's `[hidden] { display: none }`,
+     so a collapsed section stayed fully visible. Restated at higher
+     specificity rather than reached for with !important. */
+  ul[hidden] {
+    display: none;
+  }
 
   a {
-    color: $clr4;
+    display: inline-block;
+    font-size: rem(14px);
+    line-height: 1.5;
+    color: rgba($clr4, 0.72);
     text-decoration: none;
+
+    transition: color $dur $ease;
 
     &:hover {
       color: $clr2;
     }
-  }
 
-  /* ✅ FIX: socials icon sizing (don’t use font-size for FA svg) */
-  .socials {
-    padding-top: 1rem;
-    line-height: 1;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: rem(12px);
-
-    /* prevent FA svg scaling by inherited font-size */
-    font-size: 1rem;
-
-    a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    &:focus-visible {
+      outline: rem(2px) solid $clr2;
+      outline-offset: rem(3px);
+      border-radius: $r-sm;
     }
-
-    svg {
-      width: rem(32px);
-      height: rem(32px);
-      flex: 0 0 auto;
-    }
-  }
-
-  p {
-    margin: 0;
-    padding-top: 1rem;
-    font-size: clamp(rem(12px), 1.2vw, rem(14px));
-    color: $clr4;
-    text-align: center;
-  }
-
-  span {
-    font-size: clamp(rem(11px), 1vw, rem(13px));
-
-    &.local-services {
-      color: $clr1;
-    }
-
-    &.remote-services {
-      color: $clr5;
-    }
-  }
-
-  /* ============================= */
-  /* SHORTCUTS (links row) */
-  /* ============================= */
-
-  .shortcuts {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-top: rem(1px) solid rgb(87, 87, 87);
-    border-bottom: rem(1px) solid rgb(87, 87, 87);
-
-    margin-top: 1rem;
-
-    /* קריטי: לא לשבור שורה */
-    flex-wrap: nowrap;
-    // white-space: nowrap;
-
-    /* אם אין מקום — גלילה אופקית במקום שבירה */
-    overflow-x: auto;
-    scrollbar-width: none; /* firefox */
-    -webkit-overflow-scrolling: touch;
-
-    /* קצת אוויר בפנים כדי שלא יידבק לקצוות */
-    padding-inline: clamp(rem(6px), 2vw, rem(14px));
-    gap: clamp(rem(6px), 2vw, rem(14px));
-
-    /* חשוב: שלא “יתפוצץ” רוחבית */
-    max-width: 100%;
-  }
-
-  .shortcuts::-webkit-scrollbar {
-    display: none; /* chrome */
-  }
-
-  .shortcuts a {
-    display: none;
-    /* במקום marginים כפולים — gap מנהל ריווחים */
-    margin: 0;
-    padding: rem(8px) rem(10px);
-
-    font-size: clamp(rem(12px), 1.1vw, rem(14px));
-    line-height: 1.2;
   }
 }
 
 /* ============================= */
-/* Mobile: קצת יותר קומפקט */
+/* ACCORDION HEADING (mobile)     */
 /* ============================= */
+
+.footer-col-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(12px);
+
+  width: 100%;
+  min-height: rem(48px);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+
+  color: $clr4;
+  font-family: inherit;
+  font-size: rem(15px);
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr2;
+    outline-offset: rem(-2px);
+  }
+}
+
+/* A drawn plus that loses its vertical stroke when open — one element, two
+   states, no icon font and no glyph standing in for an icon. */
+.footer-col-sign {
+  position: relative;
+  flex: 0 0 auto;
+  width: rem(14px);
+  height: rem(14px);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    width: 100%;
+    height: rem(1.5px);
+    background: currentColor;
+    translate: 0 -50%;
+  }
+
+  &::after {
+    rotate: 90deg;
+    transition: opacity $dur $ease, rotate $dur $ease;
+  }
+}
+
+.footer-col.is-open .footer-col-sign::after {
+  opacity: 0;
+  rotate: 0deg;
+}
+
+/* Pages that do not exist yet. Rendered as text rather than as a link, so
+   nobody clicks into a dead end — and so what is outstanding stays visible. */
+.footer-pending {
+  font-size: rem(14px);
+  line-height: 1.5;
+  color: rgba($clr4, 0.45);
+  cursor: default;
+}
+
+/* ============================= */
+/* SOCIALS                        */
+/* ============================= */
+
+.app-footer .socials {
+  display: flex;
+  align-items: center;
+  gap: rem(10px);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: rem(38px);
+    height: rem(38px);
+    border-radius: 50%;
+    border: rem(1px) solid rgba($clr4, 0.28);
+    color: $clr4;
+
+    transition: color $dur $ease, border-color $dur $ease;
+
+    &:hover {
+      color: $clr2;
+      border-color: $clr2;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr2;
+      outline-offset: rem(2px);
+    }
+  }
+
+  svg {
+    width: rem(16px);
+    height: rem(16px);
+  }
+}
+
+/* ============================= */
+/* LEGAL BAR                      */
+/* ============================= */
+
+.footer-bottom {
+  @include page-gutter;
+
+  border-block-start: rem(1px) solid rgba($clr4, 0.14);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: rem(6px) rem(16px);
+
+  padding-block: rem(16px);
+
+  p {
+    margin: 0;
+    font-size: rem(12px);
+    color: rgba($clr4, 0.55);
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE                     */
+/* ============================= */
+
+@include until($bp-md) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: rem(28px);
+  }
+}
+
 @include until($bp-sm) {
   .app-footer {
-    padding-inline: clamp(1rem, 4vw, 1.5rem);
+    padding-block-start: rem(44px);
+  }
 
-    .shortcuts a {
-      padding: rem(8px) rem(8px);
-      font-size: 0.5rem;
-    }
+  .footer-main {
+    padding-inline: rem(16px);
+    padding-block: rem(24px) rem(28px);
+  }
 
-    /* ✅ FIX: mobile icon sizing */
-    .socials svg {
-      width: rem(28px);
-      height: rem(28px);
+  /* One column, and the link groups become accordions: a phone gets four
+     tappable headings instead of fourteen links it has to scroll past. */
+  .footer-main {
+    grid-template-columns: 1fr;
+    grid-template-areas: "brand" "cols" "social";
+    gap: rem(20px);
+  }
+
+  .footer-cols {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .footer-col {
+    border-block-end: rem(1px) solid rgba($clr4, 0.14);
+
+    h3 {
+      margin: 0;
     }
+  }
+
+  .footer-col ul {
+    padding-block: rem(2px) rem(14px);
+  }
+
+  .footer-brand,
+  .footer-social {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-social {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .app-footer .socials {
+    justify-content: center;
+  }
+
+  .footer-logo img {
+    height: rem(50px);
+  }
+
+  .footer-bottom {
+    padding-inline: rem(16px);
+    justify-content: center;
+    text-align: center;
   }
 }

@@ -7,9 +7,12 @@
 .top-wrap {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  /* Each link cluster anchors to its own gutter, mirroring the bar below.
+     `space-evenly` floated them at arbitrary positions that matched nothing
+     else on the page. */
+  justify-content: space-between;
 
-  padding-block: 1rem;
+  padding-block: rem(8px);
   @include page-gutter;
 
   span {
@@ -19,6 +22,7 @@
 
   a {
     color: $clr1;
+    transition: color 160ms ease, background-color 160ms ease;
 
     &:hover {
       color: $clr2;
@@ -37,7 +41,8 @@
 .right-links,
 .left-links {
   a {
-    padding: 0 1rem;
+    padding: rem(4px) 1rem;
+    border-radius: rem(8px);
   }
 }
 
@@ -45,16 +50,37 @@
 /* LOGO (big logo area) */
 /* ============================= */
 
+/* The band sizes itself to the logo plus equal padding. It previously fixed
+   `height: 6rem` around a 180px image and pulled it up with `padding-bottom:
+   5rem`, so the logo overflowed the band and overlapped the strip above it. */
 .logo-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $clr1;
-  height: 6rem;
-  padding-bottom: 5rem;
 
+  background-color: $clr1;
+  padding-block: rem(16px);
+
+  /* Heights are the mark itself now. The old values wrapped ~42% vertical
+     transparency, so 146px of box only ever showed 85px of logo. */
   img {
-    height: rem(180px);
+    display: block;
+    height: rem(96px);
+    width: auto;
+  }
+
+  @include until($bp-md) {
+    img {
+      height: rem(80px);
+    }
+  }
+
+  @include until($bp-sm) {
+    padding-block: rem(12px);
+
+    img {
+      height: rem(64px);
+    }
   }
 }
 
@@ -68,23 +94,29 @@
 /* ============================= */
 
 .app-header {
+  /* Sticky, and the positioning anchor for the search overlay, which is an
+     absolutely-positioned child dropping from this bar's bottom edge. */
   position: sticky;
   top: 0;
   z-index: 1000;
 
-  background: rgba(245, 245, 245, 0.6);
-  backdrop-filter: blur(50px);
-  box-shadow: rgba(100, 100, 111, 0.2) 0 rem(7px) rem(29px) 0;
+  /* Opaque, not glass. The blur was decoration — a hairline is enough to
+     separate the bar from content scrolling under it. */
+  background: $surface;
+  box-shadow: $shadow-header;
 
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  /* Two clusters, each hugging its own page gutter, at every width. The old
+     three-column grid existed only to hold a permanent search field between
+     them — which could never be centred (nav needs ~535px, actions ~326px)
+     and starved the nav until it collided with the field. With search moved
+     behind a toggle there is no middle column to balance, so the bar is
+     symmetric by construction and needs no width-specific grid at all. */
+  display: flex;
   align-items: center;
-  gap: rem(14px);
+  justify-content: space-between;
+  gap: rem(16px);
 
   @include page-gutter;
-
-  transition: padding 240ms ease, box-shadow 240ms ease, background-color 240ms ease,
-    backdrop-filter 240ms ease;
 
   /* חשוב: כדי שילדים בתוך flex יוכלו להצטמצם ולא לשבור */
   > * {
@@ -92,7 +124,7 @@
   }
 
   /* ============================= */
-  /* HEADER START (hamburger + mini-logo + nav, grouped as one grid column) */
+  /* HEADER START (hamburger + mini-logo + nav) */
   /* ============================= */
 
   .header-start {
@@ -127,9 +159,14 @@
     transition: opacity 260ms ease, transform 260ms ease, width 260ms ease;
     transform-origin: right center;
 
+    /* Sized to sit inside the 44px control row rather than above it. At 54px
+       the mark was the tallest thing in the bar and dictated the header's
+       whole height, which made it read as oversized next to 44px icons. Its
+       trailing edge lands on the page gutter — the same line the content
+       below starts from. */
     img {
       display: block;
-      height: rem(70px);
+      height: rem(34px);
       width: auto;
       object-fit: contain;
     }
@@ -140,30 +177,31 @@
   /* ============================= */
 
   .hamburger-btn {
-    display: none; /* יופיע ב-97.5rem ומטה */
+    display: none; /* יופיע ב-$bp-lg (1200px) ומטה */
     align-items: center;
     justify-content: center;
 
     width: rem(44px);
     height: rem(44px);
 
+    /* Identical treatment to .search-toggle and the cart/wishlist icons —
+       four icon buttons in one bar must not have three different looks. */
     border: 0;
-    border-radius: rem(14px);
-    background: rgba(28, 65, 180, 0.08);
+    border-radius: $r-md;
+    background: transparent;
     color: $clr1;
 
     cursor: pointer;
     flex: 0 0 auto;
 
-    transition: background-color 180ms ease, transform 180ms ease;
+    transition: background-color $dur $ease;
 
     &:hover {
-      background: rgba(28, 65, 180, 0.14);
-      transform: scale(1.02);
+      background: $surface-hover;
     }
 
     &:focus-visible {
-      outline: rem(3px) solid rgba(28, 65, 180, 0.35);
+      outline: rem(2px) solid $clr1;
       outline-offset: rem(2px);
     }
   }
@@ -213,7 +251,12 @@
     transform: translateY(0);
     pointer-events: auto;
 
-    transition: max-width 260ms ease, opacity 200ms ease, transform 260ms ease;
+    /* The `transform` above creates a stacking context (any value but `none`
+       does), which traps the dropdown menu's `z-index: 9999` inside this
+       element. The nav layer therefore declares its own z-index rather than
+       relying on DOM order against the other header children. */
+    position: relative;
+    z-index: 20;
   }
 
   /* ============================= */
@@ -230,9 +273,6 @@
 
     overflow: visible;
     white-space: normal;
-
-    transition: transform 220ms ease, opacity 220ms ease, gap 220ms ease, font-size 220ms ease;
-    transform-origin: center;
 
     /* ---------- DROPDOWN WRAPPER ---------- */
     .nav-dropdown {
@@ -310,10 +350,10 @@
       min-width: min(28rem, calc(100vw - 2rem));
       padding: rem(12px);
 
-      background: #f5f5f5;
-      border: rem(1px) solid rgba(0, 0, 0, 0.12);
-      border-radius: rem(12px);
-      box-shadow: 0 rem(12px) rem(30px) rgba(0, 0, 0, 0.12);
+      background: $surface;
+      border: rem(1px) solid $line;
+      border-radius: $r-lg;
+      box-shadow: $shadow-overlay;
 
       z-index: 9999;
 
@@ -378,58 +418,78 @@
   }
 
   /* ============================= */
-  /* SEARCH BAR */
+  /* SEARCH TOGGLE */
   /* ============================= */
 
-  .search-bar {
-    position: relative;
+  .search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
 
-    width: clamp(rem(220px), 26vw, rem(720px));
+    width: rem(44px);
+    height: rem(44px);
 
-    input {
-      height: rem(44px);
-      padding: 0 rem(48px) 0 rem(14px);
-      width: 100%;
-      border-radius: rem(14px);
-      border: none;
+    border: 0;
+    border-radius: $r-md;
+    background: transparent;
+    color: $clr1;
+
+    font-size: rem(19px);
+    line-height: 1;
+    cursor: pointer;
+
+    transition: background-color $dur $ease;
+
+    &:hover,
+    &.is-open {
+      background: $surface-hover;
     }
 
-    .search-btn {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: rem(4px);
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(2px);
+    }
+  }
 
-      width: rem(38px);
+  /* ============================= */
+  /* ACCOUNT / LOGIN */
+  /* ============================= */
+  /* Same 44px icon treatment as search, wishlist and cart — five buttons in
+     one cluster must not look like five different controls. */
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .account-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
 
-      border: 0;
-      padding: 0;
-      margin: 0;
-      cursor: pointer;
+    width: rem(44px);
+    height: rem(44px);
 
-      background-color: transparent;
-      color: rgba(51, 51, 51, 0.65);
+    border: 0;
+    border-radius: $r-md;
+    background: transparent;
+    color: $clr1;
 
-      transition: color 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
-      line-height: 1;
+    font-size: rem(18px);
+    line-height: 1;
+    cursor: pointer;
+    text-decoration: none;
+
+    transition: background-color $dur $ease;
+
+    &:hover {
+      background: $surface-hover;
     }
 
-    &:focus-within .search-btn {
-      color: $clr1;
-      transform: scale(1.06);
-      background-color: rgba(28, 65, 180, 0.06);
-      border-radius: rem(6px);
+    &.active {
+      background: $surface-hover;
     }
 
-    .search-btn .svg-inline--fa,
-    .search-btn svg {
-      display: block;
-      line-height: 1;
-      vertical-align: middle;
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(2px);
     }
   }
 
@@ -466,8 +526,10 @@
       font-weight: 600;
       cursor: pointer;
 
+      transition: background-color $dur $ease;
+
       &:hover {
-        filter: brightness(0.95);
+        background-color: darken($clr1, 8%);
       }
 
       &:focus-visible {
@@ -487,11 +549,22 @@
     gap: rem(10px);
 
     a {
-      font-size: rem(22px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: rem(36px);
+      height: rem(36px);
+      border-radius: 50%;
+
+      font-size: rem(18px);
       color: $clr1;
+
+      transition: color 160ms ease, background-color 160ms ease;
 
       &:hover {
         color: $clr2;
+        background-color: $clr1;
       }
     }
   }
@@ -507,7 +580,9 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: $clr2;
+      /* Was $clr2 (yellow) with no contrasting backdrop here — sits
+         directly on the translucent header, same fix as elsewhere. */
+      color: $clr1;
     }
 
     img {
@@ -523,8 +598,6 @@
 /* ============================= */
 
 .app-header.is-scrolled {
-  box-shadow: rgba(100, 100, 111, 0.18) 0 rem(6px) rem(20px) 0;
-
   .mini-logo {
     width: auto;
     opacity: 1;
@@ -532,40 +605,19 @@
     pointer-events: auto;
   }
 
-  .nav-wrap {
-    max-width: 0;
-    opacity: 0;
-    transform: translateY(rem(-4px));
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .search-bar {
-    margin-inline: auto;
-  }
-
-  nav {
-    gap: rem(10px);
-    font-size: rem(14px);
-    transform: translateY(rem(-1px)) scale(0.98);
-    opacity: 1;
-  }
-
+  /* The nav used to collapse to `max-width: 0` on scroll to free room for
+     the search field. The field is gone, so the categories simply stay —
+     one less thing moving, and the bar keeps the same shape at all times. */
   nav .nav-link {
     height: rem(44px);
-    padding: 0 rem(10px);
-  }
-
-  .chevron {
-    font-size: rem(11px);
   }
 }
 
-/* Cancel mini-logo's flex gap only where nav is visible (desktop, >= 97.5rem).
+/* Cancel mini-logo's flex gap only where nav is visible (desktop, >= $bp-lg).
    A width:0 flex item still consumes one full `gap` next to it, so on
    mobile (where nav-wrap is hidden anyway) this must NOT apply — it was
    causing horizontal overflow on phones. */
-@media (min-width: 97.5rem) {
+@include from($bp-lg) {
   .app-header .mini-logo {
     margin-inline-end: -0.875rem;
   }
@@ -581,17 +633,8 @@
 
 /* <= 1024: tighten + horizontal scroll for categories */
 @include until($bp-md) {
-  .top-wrap {
-    padding-block: 2rem;
-  }
-
   .app-header {
     gap: rem(10px);
-
-    /* below the hamburger breakpoint, header-start only holds the hamburger
-       button (nav-wrap is hidden), so let the middle column stretch instead
-       of staying auto-sized to the search bar's own width */
-    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   .app-header .nav-wrap {
@@ -614,23 +657,19 @@
     font-size: rem(14px);
   }
 
-  .app-header .socials a {
-    font-size: rem(18px);
-  }
-
-  .app-header .search-bar {
-    width: 100%;
+  /* Social links belong to the footer once the bar is icon-dense; keeping
+     them here below the nav breakpoint gives the left cluster six items. */
+  .app-header .socials {
+    display: none;
   }
 }
 
 /* <= 480: simplify */
 @include until($bp-sm) {
-  .top-wrap {
-    padding: 2rem 0;
-  }
-
+  /* `main` drops its gutter at this width so cards can run edge to edge, but
+     the header must keep one — its icons are touch targets, not artwork. */
   .app-header {
-    padding-inline: 0;
+    padding-inline: rem(10px);
     gap: rem(8px);
   }
 
@@ -638,20 +677,11 @@
     display: none;
   }
 
-  .app-header .locations .branches-btn {
-    padding-inline: rem(10px);
-    gap: 0;
-
-    span {
-      display: none;
-    }
-
-    svg {
-      width: rem(18px);
-      height: rem(18px);
-    }
-
-    font-size: rem(13px);
+  /* Below 480 the bar carries search + wishlist + cart only. Branches moves
+     into the drawer rather than shrinking to an unlabelled pin competing
+     with three other icons. */
+  .app-header .locations {
+    display: none;
   }
 
   .app-header nav .dropdown-menu {
@@ -664,13 +694,6 @@
   }
 }
 
-/* 600–1024: keep search comfy */
-@include between($bp-tablet-min, $bp-tablet-max) {
-  .app-header .search-bar {
-    width: 100%;
-    max-width: rem(700px);
-  }
-}
 
 /* >= 2560: more air */
 @include from($bp-ultra-min) {
@@ -685,10 +708,6 @@
 
   .app-header .nav-wrap {
     max-width: rem(1600px);
-  }
-
-  .app-header .search-bar {
-    width: clamp(rem(320px), 26vw, rem(860px));
   }
 }
 
@@ -707,8 +726,11 @@
 /* BREAKPOINT: categories -> hamburger */
 /* ============================= */
 
-/* 1560px = 97.5rem (assuming 16px root) */
-@media (max-width: 97.5rem) {
+/* Collapses at $bp-lg (1200px), which is where the header genuinely runs
+   out of room: nav 535 + search 220 (min) + actions 326 + gutters/gaps
+   ≈ 1197px. Previously 97.5rem (1560px), which was set high to dodge the
+   nav/search collision now fixed by the content-sized grid above. */
+@include until($bp-lg) {
   /* hide categories + show hamburger */
   .app-header .nav-wrap {
     display: none;
@@ -718,15 +740,10 @@
     display: inline-flex;
   }
 
-  /* top links disappear, keep strip */
-  .top-wrap .right-links,
-  .top-wrap .left-links,
-  .top-wrap .investors {
-    display: none;
-  }
-
+  /* The utility links are the strip's only content, so the strip goes with
+     them rather than leaving an empty white band above the logo. */
   .top-wrap {
-    padding-block: 2rem;
+    display: none;
   }
 
   .app-header {
@@ -765,8 +782,8 @@
 .hamburger-drawer {
   width: min(84vw, rem(360px));
   height: 100dvh;
-  background: $clr4;
-  box-shadow: 0 0 rem(24px) rgba(0, 0, 0, 0.25);
+  background: $surface;
+  box-shadow: $shadow-overlay;
 
   display: flex;
   flex-direction: column;
@@ -812,6 +829,37 @@
   color: $clr3;
 }
 
+/* Group label, so five categories and five utility links stop reading as one
+   undifferentiated list of ten. */
+.hamburger-section {
+  margin: 0;
+  padding: rem(14px) rem(16px) rem(6px);
+
+  font-size: rem(11px);
+  font-weight: 700;
+  letter-spacing: rem(0.4px);
+  color: rgba($clr3, 0.5);
+}
+
+.hamburger-link--icon {
+  display: flex;
+  align-items: center;
+  gap: rem(10px);
+
+  svg {
+    width: rem(15px);
+    height: rem(15px);
+    color: $clr1;
+    flex: 0 0 auto;
+  }
+}
+
+/* The current category is marked, so the drawer says where you are. */
+.hamburger-link.active {
+  color: $clr1;
+  font-weight: 700;
+}
+
 .hamburger-nav {
   padding: rem(6px) 0;
   overflow: auto;
@@ -834,13 +882,24 @@
   justify-content: space-between;
 }
 
+/* Some rows are links and some are buttons (branches scrolls, it doesn't
+   navigate). The global `button` rule in _forms.scss paints a blue pill, so
+   the reset here is what keeps both kinds looking identical in the drawer. */
 .hamburger-link {
   display: block;
   width: 100%;
   padding: rem(14px) rem(16px);
+  margin: 0;
+  border: 0;
+  background: transparent;
   color: $clr3;
   text-decoration: none;
+  font-family: inherit;
   font-size: rem(14px);
+  text-align: start;
+  cursor: pointer;
+
+  transition: color $dur $ease;
 
   &:hover {
     color: $clr1;
@@ -897,10 +956,19 @@
 
 .hamburger-sublink {
   display: block;
+  width: 100%;
   padding: rem(12px) rem(16px);
+  margin: 0;
+  border: 0;
+  background: transparent;
   color: rgba(0, 0, 0, 0.7);
   text-decoration: none;
+  font-family: inherit;
   font-size: rem(13px);
+  text-align: start;
+  cursor: pointer;
+
+  transition: color $dur $ease;
 
   &:hover {
     color: $clr1;
@@ -918,8 +986,8 @@
   .app-header nav,
   .app-header nav .nav-link,
   .app-header .chevron,
-  .app-header .search-bar .search-btn,
-  .app-header .search-bar input,
+  .app-header .search-toggle,
+  .search-overlay,
   .hamburger-overlay,
   .hamburger-drawer {
     transition: none !important;

@@ -10,6 +10,7 @@ import { StarRating } from '../cmps/StarRating.jsx'
 import { SaleBadge } from '../cmps/SaleBadge.jsx'
 import { AddToCartBtn } from '../cmps/AddToCartBtn.jsx'
 import { toggleWishlistItem } from '../store/actions/wishlist.actions'
+import { addRecentlyViewed, getRecentlyViewed } from '../services/util.service'
 
 function formatPriceILS(price) {
   const num = Number(price) || 0
@@ -57,6 +58,7 @@ export function ProductDetails() {
   const [quantity, setQuantity] = useState(1)
   const [product, setProduct] = useState(null)
   const [similarProducts, setSimilarProducts] = useState([])
+  const [recentlyViewed, setRecentlyViewed] = useState([])
 
   useEffect(() => {
     async function loadProduct() {
@@ -66,6 +68,15 @@ export function ProductDetails() {
       if (prod) {
         const similar = await getSimilarProducts(prod, 8)
         setSimilarProducts(similar)
+
+        // Read the list from *before* this visit so the current product
+        // never shows up in its own "recently viewed" strip, then record
+        // this visit for the next page load.
+        const recentIds = getRecentlyViewed().filter((id) => id !== prod.id)
+        const recentProducts = await Promise.all(recentIds.map((id) => productService.getById(id)))
+        setRecentlyViewed(recentProducts.filter(Boolean))
+
+        addRecentlyViewed(prod.id)
       }
     }
     loadProduct()
@@ -316,6 +327,16 @@ export function ProductDetails() {
             <h2 className="pd-section-title">מוצרים נוספים שאולי תאהבו</h2>
             <div className="pd-similar-list">
               <ProductList products={similarProducts} />
+            </div>
+          </section>
+        )}
+
+        {/* Recently viewed */}
+        {!!recentlyViewed.length && (
+          <section className="pd-similar">
+            <h2 className="pd-section-title">נצפו לאחרונה</h2>
+            <div className="pd-similar-list">
+              <ProductList products={recentlyViewed} />
             </div>
           </section>
         )}

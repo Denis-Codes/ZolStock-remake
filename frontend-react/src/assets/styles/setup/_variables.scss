@@ -13,11 +13,63 @@ $gray3: #777;
 $gray4: #333;
 
 
+// ========== SURFACES & LINES ==========
+// The page is white and surfaces separate by hairline, not by shadow.
+// $clr1 / $clr2 are the real chain's marks and are never touched here.
+
+/* A soft off-white rather than pure #fff: paper, not a lightbox. It also
+   earns the flat surfaces their edge — white cards now separate from the
+   page by tone, without needing a shadow. Three steps, coolest last. */
+$page-bg:        #F2F4F7;                // the page itself
+$surface:        $clr4;                  // cards, panels, drawers
+$surface-sunken: #F1F3F5;                // image wells, inset zones
+$surface-hover:  rgba($clr1, 0.06);      // subtle tint under interactive rows
+
+/* Raised from 0.12/0.08/0.20. Flat white surfaces on a near-white page had
+   almost no visible edge — the design relies on these hairlines instead of
+   shadows, so they have to actually carry the separation. */
+$line:           rgba(0, 0, 0, 0.16);    // default hairline
+$line-soft:      rgba(0, 0, 0, 0.10);    // dividers inside a surface
+$line-strong:    rgba(0, 0, 0, 0.32);    // hover / emphasis
+
+/* Minimum alpha for secondary text on white. Below this, $clr3 drops under
+   the 4.5:1 floor. */
+$text-muted:     rgba($clr3, 0.72);
+
+
+// ========== RADIUS ==========
+// Squared-off scale. Bigger surfaces do NOT get bigger corners any more —
+// the whole system sits between 4 and 8px so nothing reads as a framework
+// default. Circles (50%) stay for avatars, swatches and slider thumbs.
+
+$r-sm:   rem(4px);    // badges, chips, swatch outlines
+$r-md:   rem(6px);    // buttons, inputs, icon buttons
+$r-lg:   rem(8px);    // cards, panels, media frames, drawers
+$r-pill: rem(999px);  // status pills only
+
+
+// ========== ELEVATION ==========
+// Exactly one shadow exists, and only genuinely floating layers may use it:
+// the dropdown menu, the mobile drawer, the search overlay, the sticky
+// header's separation. Resting surfaces are flat.
+
+$shadow-overlay: 0 rem(4px) rem(16px) rgba(0, 0, 0, 0.12);
+$shadow-header:  0 rem(1px) 0 $line-soft;
+
+
+// ========== MOTION ==========
+// One duration, one curve. Hovers change colour, background or border —
+// never position or scale. Nothing animates on load.
+
+$dur:  160ms;
+$ease: ease;
+
+
 // ========== משתני פונטים ==========
 
 // אופציה 1: Assistant (המומלץ!)
-// $font-main: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
-// $font-headings: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
+$font-main: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
+$font-headings: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
 
 // אופציה 2: Heebo
 // $font-main: Heebo, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,8 +88,8 @@ $gray4: #333;
 // $font-headings: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
 // אופציה 6: Varela Round
-$font-main: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
-$font-headings: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-main: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
+// $font-headings: 'Varela Round', -apple-system, BlinkMacSystemFont, sans-serif;
 
 // שילוב מומלץ: Assistant + Heebo
 // $font-main: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;

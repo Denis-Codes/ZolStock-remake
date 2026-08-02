@@ -21,26 +21,18 @@
   display: grid;
   place-items: center;
 
-  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.2);
-
   /* מצב מוסתר – מחוץ למסך */
   opacity: 0;
   transform: translateX(4rem);
   pointer-events: none;
 
   transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.25s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    transform $dur $ease,
+    opacity $dur $ease,
+    background-color $dur $ease;
 
   &:hover {
     background-color: darken($clr1, 5%);
-    box-shadow: 0 0.6rem 1.2rem rgba(0, 0, 0, 0.25);
-  }
-
-  &:active {
-    transform: translateX(0) scale(0.96);
   }
 
   &:focus-visible {

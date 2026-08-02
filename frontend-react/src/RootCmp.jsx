@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
 // Eager load - critical components
@@ -13,11 +13,12 @@ import { ScrollToTopBtn } from './cmps/ScrollToTopBtn'
 const HomePage = lazy(() => import('./pages/HomePage'))
 const AboutUs = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutUs })))
 const AboutTeam = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutTeam })))
+const AboutStory = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutStory })))
 const AboutVision = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutVision })))
-const ReviewIndex = lazy(() => import('./pages/ReviewIndex.jsx'))
-const ChatApp = lazy(() => import('./pages/Chat.jsx'))
-const AdminIndex = lazy(() => import('./pages/AdminIndex.jsx'))
-const UserDetails = lazy(() => import('./pages/UserDetails'))
+const ReviewIndex = lazy(() => import('./pages/ReviewIndex.jsx').then(m => ({ default: m.ReviewIndex })))
+const ChatApp = lazy(() => import('./pages/Chat.jsx').then(m => ({ default: m.ChatApp })))
+const AdminIndex = lazy(() => import('./pages/AdminIndex.jsx').then(m => ({ default: m.AdminIndex })))
+const UserDetails = lazy(() => import('./pages/UserDetails').then(m => ({ default: m.UserDetails })))
 const ProductDetails = lazy(() =>
   import('./pages/ProductDetails.jsx').then(m => ({ default: m.ProductDetails }))
 )
@@ -30,10 +31,19 @@ const ProductIndex = lazy(() =>
 const CartPage = lazy(() =>
   import('./pages/CartPage.jsx').then(m => ({ default: m.CartPage }))
 )
-const LoginSignup = lazy(() => import('./pages/LoginSignup.jsx'))
-const Login = lazy(() => import('./pages/Login.jsx'))
-const Signup = lazy(() => import('./pages/Signup.jsx'))
+const WishlistPage = lazy(() =>
+  import('./pages/WishlistPage.jsx').then(m => ({ default: m.WishlistPage }))
+)
+// These three export named functions, not defaults. `lazy()` reads
+// `module.default`, so without the mapping it rendered `undefined` and the
+// whole /login route crashed the tree — no header, no footer, blank page.
+const LoginSignup = lazy(() =>
+  import('./pages/LoginSignup.jsx').then(m => ({ default: m.LoginSignup }))
+)
+const Login = lazy(() => import('./pages/Login.jsx').then(m => ({ default: m.Login })))
+const Signup = lazy(() => import('./pages/Signup.jsx').then(m => ({ default: m.Signup })))
 
+import { rememberShoppingRoute } from './services/last-shopping-route.service'
 import { loadCart } from './store/actions/cart.actions'
 import { loadWishlist } from './store/actions/wishlist.actions'
 
@@ -56,6 +66,13 @@ function PageLoader() {
 export function RootCmp() {
   const scrollRef = useRef(null)
   const dispatch = useDispatch()
+  const location = useLocation()
+
+  // One place records where the shopper was browsing; the cart and wishlist
+  // empty states read it so "המשך בקניות" goes back there.
+  useEffect(() => {
+    rememberShoppingRoute(location.pathname + location.search)
+  }, [location.pathname, location.search])
 
   // Initialize cart and wishlist from localStorage on app load
   useEffect(() => {
@@ -75,6 +92,7 @@ export function RootCmp() {
           <Routes>
             <Route path="" element={<HomePage />} />
             <Route path="about" element={<AboutUs />}>
+              <Route index element={<AboutStory />} />
               <Route path="team" element={<AboutTeam />} />
               <Route path="vision" element={<AboutVision />} />
             </Route>
@@ -86,6 +104,7 @@ export function RootCmp() {
             <Route path="/search" element={<SearchResultsPage />} />
 
             <Route path="cart" element={<CartPage />} />
+            <Route path="wishlist" element={<WishlistPage />} />
 
             <Route path="user/:id" element={<UserDetails />} />
             <Route path="review" element={<ReviewIndex />} />

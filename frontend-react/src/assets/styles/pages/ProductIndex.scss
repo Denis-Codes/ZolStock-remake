@@ -44,7 +44,9 @@
 
 .product-page {
   direction: rtl;
-  background: $clr4;
+  /* No background override. Forcing white here cancelled the page tone, so
+     white cards sat on white with only a hairline between them — the whole
+     grid read as one flat sheet. */
   color: $clr3;
 
   /* אם full אצלך נותן רוחב מלא - זה בסדר.
@@ -55,8 +57,14 @@
     @include page-container;
   }
 
+  /* `main` drops its gutter below 480 so full-bleed blocks can reach the
+     screen edge, but this page is text first — breadcrumbs, title, count and
+     toolbar were all sitting flush against it. One inset on the container
+     covers every child, grid included. */
   @include until($bp-sm) {
-    // padding: rem(14px) rem(10px) rem(28px);
+    .product-page__container {
+      padding-inline: rem(14px);
+    }
   }
 
   /* TOP ROW: breadcrumbs + filters icon */
@@ -66,32 +74,9 @@
     justify-content: space-between;
     gap: rem(12px);
 
-    margin-bottom: rem(14px);
+    margin-bottom: rem(20px);
   }
 
-  /* HEADER: title + add button */
-  &__header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: rem(12px);
-
-    padding: rem(14px) rem(16px);
-    border: rem(1px) solid rgba(0, 0, 0, 0.08);
-    border-radius: rem(16px);
-    background: $clr4;
-
-    box-shadow: 0 rem(6px) rem(18px) rgba(0, 0, 0, 0.06);
-
-    margin-bottom: rem(14px);
-
-    @include until($bp-sm) {
-      align-items: stretch;
-      flex-direction: column;
-      padding: rem(12px);
-      border-radius: rem(14px);
-    }
-  }
 }
 
 /* ============================= */
@@ -151,60 +136,53 @@
   align-items: center;
   justify-content: center;
 
-  width: rem(42px);
-  height: rem(42px);
+  width: rem(46px);
+  height: rem(46px);
 
-  border-radius: rem(12px);
+  border-radius: $r-lg;
   border: rem(1px) solid rgba(0, 0, 0, 0.12);
   background: $clr4;
   color: $clr3;
 
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color 180ms ease;
 
   &:hover {
     border-color: rgba($clr1, 0.35);
-    box-shadow: 0 rem(6px) rem(16px) rgba(0, 0, 0, 0.08);
-    transform: translateY(rem(-1px));
-  }
-
-  &:active {
-    transform: translateY(rem(0px));
-    box-shadow: none;
   }
 }
 
 /* ============================= */
-/* TITLE */
+/* HEAD: title + count */
 /* ============================= */
+
+.product-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: rem(6px) rem(16px);
+
+  margin-block: rem(4px) rem(16px);
+}
 
 .product-title {
   margin: 0;
-  font-size: rem(22px);
-  line-height: rem(28px);
-  font-weight: 700;
-  letter-spacing: rem(-0.2px);
-
-  /* "IKEA-ish": קו קטן צהוב מתחת */
-  position: relative;
-  padding-bottom: rem(8px);
-
-  &::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-
-    width: rem(56px);
-    height: rem(4px);
-    border-radius: rem(999px);
-
-    background: $clr2;
-  }
+  font-size: rem(26px);
+  line-height: rem(32px);
+  font-weight: 800;
+  letter-spacing: rem(-0.4px);
 
   @include until($bp-sm) {
-    font-size: rem(20px);
-    line-height: rem(26px);
+    font-size: rem(21px);
+    line-height: rem(27px);
   }
+}
+
+.results-line {
+  margin: 0;
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: $text-muted;
 }
 
 /* ============================= */
@@ -219,7 +197,7 @@
   height: rem(42px);
   padding-inline: rem(16px);
 
-  border-radius: rem(12px);
+  border-radius: $r-lg;
   border: rem(1px) solid rgba(0, 0, 0, 0.08);
 
   background: $clr1;
@@ -228,16 +206,10 @@
   font-size: rem(14px);
   font-weight: 600;
 
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  transition: background-color $dur $ease;
 
   &:hover {
-    box-shadow: 0 rem(10px) rem(20px) rgba(0, 0, 0, 0.14);
-    transform: translateY(rem(-1px));
-  }
-
-  &:active {
-    transform: translateY(rem(0px));
-    box-shadow: none;
+    background-color: darken($clr1, 8%);
   }
 
   @include until($bp-sm) {
@@ -246,75 +218,107 @@
 }
 
 /* ============================= */
-/* CONTROLS: sort + search */
+/* TOOLBAR: filters + sort + filter-in-category */
 /* ============================= */
+/* One flat row instead of two bordered cards. It carries a rule above and
+   below rather than a box, so it reads as page furniture, not content. */
 
-.product-controls {
-  display: grid;
-  grid-template-columns: rem(220px) 1fr;
-  gap: rem(12px);
+.product-toolbar {
+  display: flex;
+  align-items: center;
+  gap: rem(10px);
 
-  padding: rem(12px) rem(16px);
-  border: rem(1px) solid rgba(0, 0, 0, 0.08);
-  border-radius: rem(16px);
-  background: $clr4;
+  padding-block: rem(12px);
+  border-block: rem(1px) solid $line-soft;
+  margin-bottom: rem(20px);
 
-  margin-bottom: rem(10px);
+  .toolbar-select,
+  .toolbar-search {
+    height: rem(42px);
 
-  box-shadow: 0 rem(4px) rem(14px) rgba(0, 0, 0, 0.05);
-
-  @include until($bp-sm) {
-    grid-template-columns: 1fr;
-    padding: rem(12px);
-    border-radius: rem(14px);
-  }
-
-  .sort-wrap,
-  .search-wrap {
-    display: flex;
-    align-items: center;
-    gap: rem(10px);
-  }
-
-  select,
-  input[type="search"] {
-    width: 100%;
-    height: rem(44px);
-
-    border-radius: rem(12px);
-    border: rem(1px) solid rgba(0, 0, 0, 0.12);
-    background: $clr4;
+    border-radius: $r-md;
+    border: rem(1px) solid $line;
+    background: $surface;
     color: $clr3;
 
     padding-inline: rem(12px);
+    font-family: inherit;
     font-size: rem(14px);
 
-    transition: border-color 120ms ease, box-shadow 120ms ease;
+    transition: border-color $dur $ease;
 
     &:focus {
       outline: none;
-      border-color: rgba($clr1, 0.55);
-      box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12);
+      border-color: $clr1;
     }
   }
 
-  input[type="search"]::placeholder {
-    color: rgba($clr3, 0.55);
+  .toolbar-select {
+    flex: 0 0 auto;
+    min-width: rem(190px);
+  }
+
+  /* Capped rather than greedy: at 1fr it stretched to 1125px of a 1325px
+     bar, reading as the page's main search when it only narrows the current
+     category. The header magnifier is the real search. */
+  .toolbar-search {
+    flex: 0 1 rem(320px);
+    min-width: rem(180px);
+
+    &::placeholder {
+      color: rgba($clr3, 0.62);
+    }
+  }
+
+  /* Desktop keeps the filters permanently in the sidebar, so the button that
+     opens them as a sheet only exists below that breakpoint. */
+  .toolbar-filters-btn {
+    display: none;
+  }
+
+  @include until($bp-md) {
+    .toolbar-filters-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+
+      height: rem(42px);
+      padding-inline: rem(18px);
+
+      border: rem(1px) solid $clr1;
+      border-radius: $r-md;
+      background: $surface;
+      color: $clr1;
+
+      font-family: inherit;
+      font-size: rem(14px);
+      font-weight: 700;
+      cursor: pointer;
+
+      transition: background-color $dur $ease, color $dur $ease;
+
+      &:hover {
+        background: $clr1;
+        color: $surface;
+      }
+    }
+
+    .toolbar-select {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    /* The in-category filter drops below the two controls rather than
+       squeezing three fields onto one phone-width row. */
+    flex-wrap: wrap;
+
+    .toolbar-search {
+      flex: 1 0 100%;
+    }
   }
 }
 
-/* ============================= */
-/* RESULTS LINE */
-/* ============================= */
-
-.results-line {
-  margin: 0 0 rem(14px);
-  padding-inline: rem(6px);
-
-  font-size: rem(13px);
-  line-height: rem(18px);
-  color: rgba($clr3, 0.72);
-}
 
 /* ============================= */
 /* PRODUCT GRID (wrap ProductList) */
@@ -329,3 +333,147 @@
 
 /* אופציונלי: אם יש לך קלאסים בתוך ProductPreview (כרטיס),
    תגיד לי מה השמות ואני אתן לך "כרטיס IKEA" מושלם */
+
+/* ============================= */
+/* SIDEBAR + GRID ROW (moved from the now-deleted CategoryPage.scss —
+   ProductIndex.jsx was its only live consumer) */
+/* ============================= */
+
+.products-page {
+  @include page-container;
+  /* No page-gutter here: this renders inside .product-page__container,
+     which is itself inside `<main>` — `<main>` already applies the site's
+     single page-gutter, so adding it again here would double the inset. */
+
+  display: grid;
+  grid-template-columns: rem(300px) 1fr;
+  gap: rem(32px);
+  align-items: start;
+
+  padding-block: rem(24px) rem(40px);
+}
+
+/* Sticky against the sticky header (~54px) plus breathing room. Requires
+   `align-items: start` on the grid above, and no clipping ancestor — see the
+   note in RootCmp.scss. */
+.products-sidebar {
+  position: sticky;
+  top: rem(72px);
+  align-self: start;
+  max-height: calc(100vh - #{rem(88px)});
+  overflow-y: auto;
+  min-width: 0;
+}
+
+/* The sheet chrome only exists on mobile; on desktop the panel is simply
+   the top of the sidebar column. */
+.products-sidebar__head {
+  display: none;
+}
+
+.products-main {
+  min-width: 0;
+}
+
+/* ============================= */
+/* MOBILE: filters as a sheet     */
+/* ============================= */
+/* Stacking the filter panel above the grid meant scrolling past a price
+   slider to reach the first product. It becomes a drawer instead, opened
+   from the toolbar, so the products start at the top of the page. */
+
+@include until($bp-md) {
+  .products-page {
+    grid-template-columns: 1fr;
+    gap: rem(20px);
+    padding-block: rem(16px) rem(28px);
+  }
+
+  .filters-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .products-sidebar {
+    position: fixed;
+    inset-block: 0;
+    /* inline-start is the RIGHT edge in RTL, which is the side the drawer
+       comes from — matching the hamburger menu. Anchoring to inline-end put
+       it against the left edge, where `translateX(100%)` then pushed it INTO
+       the viewport instead of out of it, and the closed panel silently ate
+       every click on the page. */
+    inset-inline-start: 0;
+    z-index: 1101;
+
+    width: min(86vw, rem(360px));
+    max-height: 100dvh;
+    overflow-y: auto;
+
+    background: $surface;
+    box-shadow: $shadow-overlay;
+
+    /* Off-canvas until opened. Transform only — nothing reflows. */
+    transform: translateX(100%);
+    transition: transform 220ms ease, visibility 220ms ease;
+
+    /* Belt and braces: a transformed-away panel must not be hit-testable or
+       reachable by tab, regardless of how the transform resolves. */
+    visibility: hidden;
+
+    &.is-open {
+      transform: translateX(0);
+      visibility: visible;
+    }
+  }
+
+  .products-sidebar__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(12px);
+
+    padding: rem(14px) rem(16px);
+    border-block-end: rem(1px) solid $line-soft;
+
+    h2 {
+      margin: 0;
+      font-size: rem(17px);
+      font-weight: 800;
+    }
+  }
+
+  .products-sidebar__close {
+    width: rem(40px);
+    height: rem(40px);
+
+    border: 0;
+    border-radius: $r-md;
+    background: transparent;
+    color: $clr3;
+
+    font-size: rem(17px);
+    line-height: 1;
+    cursor: pointer;
+
+    transition: background-color $dur $ease;
+
+    &:hover {
+      background: $surface-hover;
+    }
+  }
+
+  /* Inside the sheet the panel is the sheet — it drops its own frame. */
+  .products-sidebar .sidebar-filters {
+    border: 0;
+    border-radius: 0;
+    padding: rem(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .products-sidebar {
+    transition: none;
+  }
+}

@@ -1,131 +1,129 @@
-import React, { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
-import PropTypes from 'prop-types'
+import { Link, NavLink, Outlet } from 'react-router-dom'
+
+/**
+ * This page was the starter template's demo screen — lorem ipsum, a pink
+ * SplitPane, a FancyBox and two placeholder names — reachable at /about and
+ * linked from the footer. Replaced with the chain's own copy.
+ *
+ * Everything here comes from what the project actually knows: the five
+ * departments it sells, the branch network on the homepage map, and the
+ * tagline already on the logo. No customer numbers, founding dates, store
+ * counts or awards — PRODUCT.md records that none of that is established, and
+ * inventing it would put false claims on a real chain's page.
+ */
+
+const DEPARTMENTS = [
+  { slug: 'furniture', labelHe: 'רהיטים' },
+  { slug: 'clothing', labelHe: 'ביגוד' },
+  { slug: 'electronics', labelHe: 'אלקטרוניקה' },
+  { slug: 'kitchen', labelHe: 'מטבח' },
+  { slug: 'pets', labelHe: 'חיות מחמד' },
+]
 
 export function AboutUs() {
-    const [count, setCount] = useState(100)
+  return (
+    <section className="about-page">
+      <header className="about-hero">
+        <h1>אודות זול סטוק</h1>
+        <p className="about-lead">
+          זול סטוק היא רשת קמעונאית שמביאה מגוון רחב של מוצרים לבית ולמשפחה
+          במחירים נגישים. מרהיטים ועד כלי מטבח, מביגוד ועד מוצרי חשמל — הכול
+          תחת קורת גג אחת, ובמחיר שמתאים לכל תקציב.
+        </p>
+      </header>
 
-    function onTellMeMore() {
-        console.log('Telling you more')
-    }
-    return (
-        <section>
-            <h2>About Us</h2>
-            <nav>
-                <NavLink to="team">Team</NavLink> |
-                <NavLink to="vision">Vision</NavLink>
-            </nav>
+      <nav className="about-tabs" aria-label="ניווט באודות">
+        <NavLink to="/about" end>הסיפור שלנו</NavLink>
+        <NavLink to="/about/vision">החזון</NavLink>
+        <NavLink to="/about/team">הצוות</NavLink>
+      </nav>
 
-            <section>
-                <Outlet />
-            </section>
+      <div className="about-body">
+        <Outlet />
+      </div>
 
-            <SplitPane
-                left={
-                    <Contacts />
-                }
-                right={
-                    <Projects />
-                } />
+      <section className="about-departments">
+        <h2>המחלקות שלנו</h2>
+        <ul>
+          {DEPARTMENTS.map(({ slug, labelHe }) => (
+            <li key={slug}>
+              <Link to={`/category/${slug}`}>{labelHe}</Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-            <FancyBox onClose={() => console.log('ok, closing')}>
-                <h3>{count.toLocaleString()} Followers</h3>
-                <button onClick={onTellMeMore}>Tell me More</button>
-            </FancyBox>
+      <section className="about-cta">
+        <h2>רוצים לראות במו עיניכם?</h2>
+        <p>
+          המלאי בסניפים מתחדש באופן שוטף, וייתכנו הבדלים בין סניף לסניף.
+          כדאי לבדוק מה קרוב אליכם לפני שיוצאים לדרך.
+        </p>
+        <Link className="about-cta-btn" to="/" state={{ scrollTo: 'branches-map' }}>
+          לרשימת הסניפים
+        </Link>
+      </section>
+    </section>
+  )
+}
 
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni aperiam quo veniam velit dolor reprehenderit, laudantium consequatur neque numquam labore quae. Accusamus libero perferendis ducimus? Alias unde hic quisquam doloremque.</p>
-        </section>
-    )
+export function AboutStory() {
+  return (
+    <article className="about-article">
+      <h2>הסיפור שלנו</h2>
+      <p>
+        הרעיון פשוט: לרכז תחת קורת גג אחת את מה שמשפחה צריכה — רהיטים, ביגוד,
+        מוצרי חשמל, כלי מטבח וציוד לחיות מחמד — ולמכור אותו במחיר שלא מחייב
+        להתפשר על האיכות.
+      </p>
+      <p>
+        המבחר בסניפים משתנה לאורך השנה, ולכן שווה לחזור ולבדוק. מה שמופיע כאן
+        באתר נותן תמונה של הקטגוריות, והסניף הקרוב הוא המקום לראות, למשש
+        ולקחת הביתה.
+      </p>
+    </article>
+  )
+}
+
+export function AboutVision() {
+  return (
+    <article className="about-article">
+      <h2>החזון</h2>
+      <p>
+        המחיר הוא נקודת הפתיחה, לא הפשרה. המטרה היא שקנייה משתלמת לא תרגיש
+        כמו ויתור — שהמוצר יהיה טוב, שהמבחר יהיה אמיתי, ושהמחיר יהיה ברור
+        מהרגע הראשון.
+      </p>
+
+      <ul className="about-principles">
+        <li>
+          <h3>מחיר בלי כוכביות</h3>
+          <p>המחיר שאתם רואים הוא המחיר. הנחות מוצגות תמיד לצד המחיר המקורי.</p>
+        </li>
+        <li>
+          <h3>מבחר שמתחדש</h3>
+          <p>המלאי בסניפים מתחדש באופן שוטף, כך שתמיד יש מה לגלות.</p>
+        </li>
+        <li>
+          <h3>קרוב לבית</h3>
+          <p>רשת סניפים פרוסה ברחבי הארץ, עם כתובות ושעות פתיחה בדף הבית.</p>
+        </li>
+      </ul>
+    </article>
+  )
 }
 
 export function AboutTeam() {
-    return (
-        <section>
-            <h2>Best Team</h2>
-            <ul>
-                <li>Popo Decaprio </li>
-                <li>Jini Baba</li>
-            </ul>
-        </section>
-    )
+  return (
+    <article className="about-article">
+      <h2>הצוות</h2>
+      <p>
+        מאחורי כל סניף עומד צוות מקומי שמכיר את הלקוחות שלו ואת המדפים שלו.
+        הצוות אחראי על סידור המלאי, על השירות בקופה ועל המענה לשאלות בשטח.
+      </p>
+      <p className="about-note">
+        מחפשים עבודה ברשת? פרטי המשרות הפתוחות מתפרסמים בעמוד הדרושים.
+      </p>
+    </article>
+  )
 }
-
-
-export function AboutVision() {
-    return (
-        <section>
-            <h2>Vision</h2>
-            <ul>
-                <li>Save the day</li>
-                <li>Spread some love</li>
-                <li>Take over the world</li>
-            </ul>
-        </section>
-    )
-}
-
-
-function FancyBox(props) {
-    return <div className="fancy-box">
-        <button style={{ float: 'right' }} onClick={props.onClose}>x</button>
-        {props.children}
-    </div>
-}
-
-FancyBox.propTypes = {
-    onClose: PropTypes.func.isRequired
-}
-
-function Contacts() {
-    return <section style={{ height: '50vh', backgroundColor: 'pink' }}>
-        <h2>Contacts</h2>
-        <p>Click me</p>
-    </section>
-}
-
-function Projects() {
-    const [projs, setProjs] = useState(['Puki Proj', 'Muki Proj'])
-    const projList = projs.map((proj, idx) => (
-        <article className="proj-preview" key={proj} onClick={(ev) => {
-            ev.stopPropagation()
-            setProjs(projs.filter(p => p !== proj))
-        }}>
-            {proj}
-        </article>
-    ))
-    return <section style={{ minHeight: '50vh', backgroundColor: 'lightblue' }}>
-        <h2>Projects</h2>
-        {projList}
-        <button onClick={ev => {
-            ev.stopPropagation()
-            setProjs([...projs, 'Babu Proj' + Date.now() % 100])
-        }}>Add</button>
-    </section>
-}
-
-function SplitPane(props) {
-
-    const [width, setWidth] = useState(30)
-
-    if (false && width === 60) {
-        throw new Error('Projects cannot load')
-    }
-    return (
-        <div className="split-pane" style={{
-            display: 'flex'
-        }}>
-            <div style={{ width: width + '%' }} onClick={() => {
-                if (width + 10 <= 100) setWidth(width + 10)
-            }}>
-                {props.left}
-            </div>
-            <div style={{ flex: 1 }} onClick={() => {
-                if (width > 10) setWidth(width - 10)
-            }}>
-                {props.right}
-            </div>
-        </div>
-    )
-}
-
-

@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-02T00:00:00.000Z",
+  "title": "Design System: ZolStock Remake",
+  "extensions": {
+    "colorMeta": {
+      "zolstock-blue": {
+        "role": "primary",
+        "displayName": "ZolStock Blue",
+        "canonical": "oklch(43.0% 0.187 265.2)",
+        "tonalRamp": [
+          "#08004f",
+          "#03077a",
+          "#1334a6",
+          "#315bcd",
+          "#5582f1",
+          "#79a6ff",
+          "#9ecbff",
+          "#c2edff"
+        ]
+      },
+      "zolstock-blue-deep": {
+        "role": "primary",
+        "displayName": "ZolStock Blue Deep",
+        "canonical": "#173491",
+        "tonalRamp": [
+          "#08004f",
+          "#03077a",
+          "#1334a6",
+          "#315bcd",
+          "#5582f1",
+          "#79a6ff",
+          "#9ecbff",
+          "#c2edff"
+        ]
+      },
+      "high-voltage-yellow": {
+        "role": "secondary",
+        "displayName": "High-Voltage Yellow",
+        "canonical": "oklch(94.1% 0.200 105.7)",
+        "tonalRamp": [
+          "#130a00",
+          "#302700",
+          "#514600",
+          "#746900",
+          "#998d00",
+          "#bcaf00",
+          "#e0d300",
+          "#fff512"
+        ]
+      },
+      "markdown-red": {
+        "role": "tertiary",
+        "displayName": "Markdown Red",
+        "canonical": "oklch(60.8% 0.209 27.0)",
+        "tonalRamp": [
+          "#370000",
+          "#630000",
+          "#910000",
+          "#bf0b17",
+          "#ed423c",
+          "#ff6d61",
+          "#ff9688",
+          "#ffbcad"
+        ]
+      },
+      "markdown-red-deep": {
+        "role": "tertiary",
+        "displayName": "Markdown Red Deep",
+        "canonical": "#c62828",
+        "tonalRamp": [
+          "#370000",
+          "#630000",
+          "#910000",
+          "#bf0b17",
+          "#ed423c",
+          "#ff6d61",
+          "#ff9688",
+          "#ffbcad"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(32.1% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#262626",
+          "#454545",
+          "#666666",
+          "#898989",
+          "#ababab",
+          "#cecece",
+          "#eeeeee"
+        ]
+      },
+      "cool-ash": {
+        "role": "neutral",
+        "displayName": "Cool Ash",
+        "canonical": "#F1F3F5",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#252628",
+          "#434547",
+          "#646669",
+          "#87898c",
+          "#a8abae",
+          "#cbced2",
+          "#eceff3"
+        ]
+      },
+      "pure-white": {
+        "role": "neutral",
+        "displayName": "Pure White",
+        "canonical": "#FFFFFF"
+      },
+      "fog-white": {
+        "role": "neutral",
+        "displayName": "Fog White",
+        "canonical": "#F5F5F5"
+      },
+      "quiet-gray": {
+        "role": "neutral",
+        "displayName": "Quiet Gray",
+        "canonical": "#777777"
+      },
+      "hairline-gray": {
+        "role": "neutral",
+        "displayName": "Hairline Gray",
+        "canonical": "#DDDDDD"
+      },
+      "in-stock-green": {
+        "role": "tertiary",
+        "displayName": "In Stock Green",
+        "canonical": "#28a745"
+      },
+      "low-stock-amber": {
+        "role": "tertiary",
+        "displayName": "Low Stock Amber",
+        "canonical": "#f57c00"
+      },
+      "out-of-stock-red": {
+        "role": "tertiary",
+        "displayName": "Out of Stock Red",
+        "canonical": "#dc3545"
+      },
+      "star-gold": {
+        "role": "tertiary",
+        "displayName": "Star Gold",
+        "canonical": "#ffc107"
+      },
+      "page-paper": {
+        "role": "neutral",
+        "displayName": "Page Paper",
+        "canonical": "#F7F8FA"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Homepage hero headline only. Yellow over a darkened photo scrim."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Product-details title and the large price beside it."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel and section headings. Weight 800 is what separates it from body."
+      },
+      "price": {
+        "displayName": "Price",
+        "purpose": "The whole-shekel figure inside a price tag. Never used for anything else."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Page copy at 1.125rem/1.6. Steps down inside cards and dense controls."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels, stock warnings, badge text, meta lines."
+      }
+    },
+    "shadows": [
+      {
+        "name": "overlay",
+        "value": "0 4px 16px rgba(0,0,0,0.12)",
+        "purpose": "The only shadow in the system. Dropdown, mobile drawer, search overlay, filter sheet — floating layers only."
+      },
+      {
+        "name": "header-hairline",
+        "value": "0 1px 0 rgba(0,0,0,0.08)",
+        "purpose": "Separates the sticky bar from content scrolling under it. A rule, not an elevation."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration",
+        "value": "160ms",
+        "purpose": "The single duration. Colour, background and border transitions only."
+      },
+      {
+        "name": "easing",
+        "value": "ease",
+        "purpose": "The single curve."
+      },
+      {
+        "name": "search-drop",
+        "value": "180ms ease-out",
+        "purpose": "The search overlay's fade-and-drop, the one authored motion moment on the page."
+      },
+      {
+        "name": "drawer",
+        "value": "220ms ease",
+        "purpose": "Hamburger drawer and filter sheet slide."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "@media (prefers-reduced-motion: reduce)",
+        "purpose": "Cancels header transitions, the search drop, carousel autoplay and the welcome parallax."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-max",
+        "value": "480px"
+      },
+      {
+        "name": "tablet-min",
+        "value": "600px"
+      },
+      {
+        "name": "tablet-max",
+        "value": "1024px"
+      },
+      {
+        "name": "nav-collapse / sidebar",
+        "value": "1200px"
+      },
+      {
+        "name": "desktop-max",
+        "value": "1920px"
+      },
+      {
+        "name": "ultra-min",
+        "value": "2560px"
+      },
+      {
+        "name": "4k-min",
+        "value": "3840px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Add to cart, and every committing action. Confirms itself rather than relying on a toast.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\"><svg class=\"ds-btn-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"9\" cy=\"21\" r=\"1\"/><circle cx=\"20\" cy=\"21\" r=\"1\"/><path d=\"M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6\"/></svg>הוספה לסל</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; background: #1c41b4; color: #fff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 180ms ease, transform 180ms ease; } .ds-btn-primary .ds-btn-icon { width: 18px; height: 18px; flex-shrink: 0; } .ds-btn-primary:hover { background: #173491; transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0); } .ds-btn-primary:focus-visible { outline: 3px solid rgba(28,65,180,0.35); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Safe secondary actions such as clearing filters. Inverts to a solid blue fill on hover.",
+      "html": "<button class=\"ds-btn-outline\" type=\"button\">נקה הכל</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; height: 36px; padding-inline: 16px; border: 1px solid rgba(28,65,180,0.35); border-radius: 999px; background: transparent; color: #1c41b4; font-size: 13px; font-weight: 700; cursor: pointer; transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; } .ds-btn-outline:hover { background: #1c41b4; border-color: #1c41b4; color: #fff; } .ds-btn-outline:focus-visible { outline: 3px solid rgba(28,65,180,0.35); outline-offset: 2px; }"
+    },
+    {
+      "name": "Price Tag",
+      "kind": "custom",
+      "refersTo": "price-tag",
+      "description": "The signature object of the storefront. Yellow fill, LTR-locked numerals, agorot as a superscript.",
+      "html": "<div class=\"ds-price-tag\"><span class=\"ds-price-ils\">₪</span><span class=\"ds-price-whole\">2490</span></div>",
+      "css": ".ds-price-tag { display: inline-flex; flex-direction: row-reverse; align-items: baseline; gap: 4px; width: fit-content; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 800; color: #333; padding: 8px 14px; border-radius: 14px; background: #FFF200; border: 1px solid rgba(28,65,180,0.15); } .ds-price-tag .ds-price-ils { font-size: 14px; opacity: 0.9; } .ds-price-tag .ds-price-whole { font-size: 28px; line-height: 28px; letter-spacing: -0.6px; } .ds-price-tag .ds-price-frac { font-size: 14px; opacity: 0.85; transform: translateY(-8px); }"
+    },
+    {
+      "name": "Price Tag (Sale)",
+      "kind": "custom",
+      "refersTo": "price-tag-sale",
+      "description": "Current discounted state — red tint instead of yellow. Flagged as an open question in DESIGN.md; do not treat as settled.",
+      "html": "<div class=\"ds-price-row\"><div class=\"ds-price-was\"><span class=\"ds-was-currency\">₪</span><span>2990</span></div><div class=\"ds-price-tag ds-price-tag--sale\"><span class=\"ds-price-ils\">₪</span><span class=\"ds-price-whole\">2490</span></div></div>",
+      "css": ".ds-price-row { display: flex; align-items: center; gap: 8px; direction: rtl; } .ds-price-was { display: flex; flex-direction: row-reverse; gap: 2px; text-decoration: line-through; color: #999; font-family: Assistant, sans-serif; font-size: 13px; font-weight: 500; } .ds-price-was .ds-was-currency { font-size: 11px; } .ds-price-tag { display: inline-flex; flex-direction: row-reverse; align-items: baseline; gap: 4px; width: fit-content; font-family: Assistant, sans-serif; font-weight: 800; color: #333; padding: 8px 14px; border-radius: 14px; background: #FFF200; border: 1px solid rgba(28,65,180,0.15); } .ds-price-tag .ds-price-ils { font-size: 14px; opacity: 0.9; } .ds-price-tag .ds-price-whole { font-size: 28px; line-height: 28px; letter-spacing: -0.6px; } .ds-price-tag--sale { background: rgba(229,57,53,0.12); border-color: rgba(229,57,53,0.25); color: #c62828; }"
+    },
+    {
+      "name": "Sale Badge",
+      "kind": "chip",
+      "refersTo": "sale-badge",
+      "description": "Factual markdown marker pinned to the top-right of product media. Never decorative.",
+      "html": "<span class=\"ds-sale-badge\">17%-</span>",
+      "css": ".ds-sale-badge { display: inline-block; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; background: #e53935; color: #fff; font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 6px; }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "product-card",
+      "description": "The atom of the storefront. Lifts 6px on hover while the image inside scales to 1.08 at a slower 320ms.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-media\"><span class=\"ds-card-placeholder\">אין תמונה</span><button class=\"ds-wish-btn\" type=\"button\" aria-label=\"הוספה למועדפים\">♡</button></div><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">ספת 3 מושבים \"נובה\"</h3><p class=\"ds-card-line\">ספות</p><div class=\"ds-price-tag\"><span class=\"ds-price-ils\">₪</span><span class=\"ds-price-whole\">2490</span></div></div></article>",
+      "css": ".ds-card { direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; position: relative; max-width: 260px; background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 24px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.06); transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease; } .ds-card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px rgba(0,0,0,0.14); border-color: rgba(28,65,180,0.18); } .ds-card:focus-within { border-color: rgba(28,65,180,0.5); box-shadow: 0 0 0 4px rgba(28,65,180,0.12), 0 22px 40px rgba(0,0,0,0.14); } .ds-card-media { position: relative; aspect-ratio: 1 / 1; background: rgba(51,51,51,0.03); display: grid; place-items: center; } .ds-card-placeholder { font-size: 13px; color: rgba(51,51,51,0.6); } .ds-wish-btn { position: absolute; top: 10px; left: 10px; width: 44px; height: 44px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.10); background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: rgba(51,51,51,0.85); display: inline-flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; cursor: pointer; transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, color 180ms ease; } .ds-wish-btn:hover { transform: translateY(-2px) scale(1.06); border-color: rgba(28,65,180,0.28); box-shadow: 0 14px 24px rgba(0,0,0,0.16); } .ds-card-body { padding: 16px 16px 18px; display: grid; gap: 8px; } .ds-card-title { margin: 0; font-size: 16px; line-height: 22px; font-weight: 700; color: #333; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-card-line { margin: 0; font-size: 13px; line-height: 18px; color: rgba(51,51,51,0.78); } .ds-price-tag { display: inline-flex; flex-direction: row-reverse; align-items: baseline; gap: 4px; width: fit-content; font-weight: 800; color: #333; padding: 8px 14px; border-radius: 14px; background: #FFF200; border: 1px solid rgba(28,65,180,0.15); } .ds-price-tag .ds-price-ils { font-size: 14px; opacity: 0.9; } .ds-price-tag .ds-price-whole { font-size: 28px; line-height: 28px; letter-spacing: -0.6px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "The header's search. Its focus state animates its own icon — the magnifier tints blue and scales 1.06.",
+      "html": "<div class=\"ds-search\"><input class=\"ds-search-input\" type=\"search\" placeholder=\"מה תרצו לחפש?\" /><button class=\"ds-search-btn\" type=\"button\" aria-label=\"חיפוש\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg></button></div>",
+      "css": ".ds-search { position: relative; direction: rtl; width: 100%; max-width: 360px; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-search-input { height: 44px; width: 100%; padding: 0 48px 0 14px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); background: #fff; color: #333; font-family: inherit; font-size: 15px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); transition: box-shadow 160ms ease, border-color 160ms ease; } .ds-search-input:focus { outline: none; border-color: rgba(28,65,180,0.35); box-shadow: 0 0 0 4px rgba(28,65,180,0.12), 0 4px 14px rgba(0,0,0,0.05); } .ds-search-btn { position: absolute; top: 0; bottom: 0; right: 4px; width: 38px; display: flex; align-items: center; justify-content: center; border: 0; padding: 0; background: transparent; color: rgba(51,51,51,0.65); cursor: pointer; transition: color 180ms ease, transform 180ms ease, background-color 180ms ease; } .ds-search-btn svg { width: 18px; height: 18px; } .ds-search:focus-within .ds-search-btn { color: #1c41b4; transform: scale(1.06); background-color: rgba(28,65,180,0.06); border-radius: 6px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Labelled field used in the price filter. Native outline is replaced by the blue halo, never just removed.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-min\">ממחיר</label><input class=\"ds-field-input\" id=\"ds-min\" type=\"number\" value=\"0\" /></div>",
+      "css": ".ds-field { display: grid; gap: 6px; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; max-width: 180px; } .ds-field-label { color: rgba(51,51,51,0.65); font-weight: 600; font-size: 12px; } .ds-field-input { width: 100%; height: 46px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12); padding-inline: 12px; outline: none; background: #fff; color: #333; font-family: inherit; font-size: 15px; transition: border-color 180ms ease, box-shadow 180ms ease; } .ds-field-input:focus { border-color: rgba(28,65,180,0.55); box-shadow: 0 0 0 4px rgba(28,65,180,0.12); }"
+    },
+    {
+      "name": "Category Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Desktop category nav. Hover fills the whole 52px row with High-Voltage Yellow and rotates the chevron.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-link\"><a href=\"#\">רהיטים<span class=\"ds-chevron\">▾</span></a></span><span class=\"ds-nav-link\"><a href=\"#\">חשמל<span class=\"ds-chevron\">▾</span></a></span></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 1rem; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-nav-link { display: flex; align-items: center; height: 52px; padding: 0 12px; border-radius: 4px; font-weight: 600; white-space: nowrap; font-size: 16px; transition: background-color 160ms ease; } .ds-nav-link a { display: inline-flex; align-items: center; gap: 6px; color: #1c41b4; text-decoration: none; } .ds-nav-link .ds-chevron { font-size: 11px; transition: transform 200ms ease; } .ds-nav-link:hover { background-color: #FFF200; } .ds-nav-link:hover .ds-chevron { transform: rotate(180deg); }"
+    },
+    {
+      "name": "Stock Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Status pills drawn from the functional colour set, deliberately outside the brand palette.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-chip--in\">במלאי</span><span class=\"ds-chip ds-chip--low\">נותרו 3 יחידות</span><span class=\"ds-chip ds-chip--tag\">סלון</span></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; direction: rtl; font-family: Assistant, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-chip { display: inline-flex; align-items: center; padding: 0.35rem 0.6rem; border-radius: 999px; font-size: 13px; font-weight: 600; } .ds-chip--in { background: rgba(40,167,69,0.12); color: #28a745; } .ds-chip--low { background: rgba(245,124,0,0.12); color: #f57c00; } .ds-chip--tag { background: rgba(28,65,180,0.08); color: #1c41b4; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Soft Warehouse",
+    "overview": "ZolStock sells cheap goods across five unrelated departments, and the interface never pretends otherwise. Underneath, the logic is blunt warehouse economics: a struck-through original price, a percentage off, a count of how many are left on the shelf. On the surface, all of it arrives with the softness of a well-made consumer app — 24px corners, a page that breathes, motion that eases rather than snaps. That tension is the entire system. Hard numbers, soft delivery.\n\nThe gut feeling to protect is trustworthy, cheerful, effortless. This is a big chain you can rely on, not a flash-sale site trying to panic you into buying. The deal is stated, plainly and legibly, and then the interface gets out of the way. Red exists here, but as a factual marker of markdown and stock risk — never as manufactured urgency. Cheerfulness comes from the yellow and the air, not from exclamation marks.\n\nEverything is Hebrew RTL and thumb-first. The product card is the atom of the whole storefront: a square photo on white, two lines of clamped title, colour swatches, a rating, a stock line, a price, and a way to buy — repeated in a grid that reflows from two columns on a phone to as many as the viewport allows. If a decision does not survive being repeated forty times in that grid at 375px, it is the wrong decision.",
+    "keyCharacteristics": [
+      "Soft off-white page, white surfaces, a squared-off 4–8px radius scale",
+      "One saturated brand blue carrying every interactive affordance",
+      "A filled yellow price tag as the loudest element on any product surface — at every size, discounted or not",
+      "Square 1:1 product media, scale-normalised per image so no product renders larger than another",
+      "One motion duration (160ms) and one curve; hovers change colour, never position",
+      "Flat surfaces: exactly one shadow exists, and only true overlays may use it"
+    ],
+    "rules": [
+      {
+        "name": "The Fixed Palette Rule",
+        "body": "ZolStock Blue (#1c41b4) and High-Voltage Yellow (#FFF200) are the real chain's colours. They are never re-shaded, never nudged toward a nicer neighbour, never swapped for a token that renders differently. Any refactor that touches them must diff the compiled hex before and after.",
+        "section": "colors"
+      },
+      {
+        "name": "The Yellow Needs A Bed Rule",
+        "body": "High-Voltage Yellow at #FFF200 fails against white — it has been fixed as a legibility bug twice already in this codebase. Yellow is only ever a fill under dark text, or text sitting on blue, a dark scrim, or a photo. Yellow text on a light surface is a defect, not a style choice.",
+        "section": "colors"
+      },
+      {
+        "name": "The Red Means Fact Rule",
+        "body": "Red states something true from the data — a real discount percentage, a real low-stock count, a real item count in the cart. It is never used to decorate, alarm, or invent urgency.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Assistant does every job. If something needs to feel different, change weight (400 → 700 → 800) or size, never the typeface.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Line Clamp Rule",
+        "body": "Product titles clamp to exactly two lines (-webkit-line-clamp: 2). Cards in a grid must never disagree about their own height because one product has a longer name.",
+        "section": "typography"
+      },
+      {
+        "name": "The LTR Price Rule",
+        "body": "Prices are numerals inside an RTL document, so the price tag and strikethrough price both force flex-direction: row-reverse to lock ₪ → whole → agorot in reading order. Never let a price inherit ambient direction.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Gutter Rule",
+        "body": "page-gutter is the only source of page inset. A component that needs to align with the header aligns by inheriting it, not by guessing a matching value.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "If a surface is not floating above the page, it casts nothing. A card earns its edge from a hairline and the page tone behind it. Adding a resting shadow to a new component is a regression.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Radius Is Flat Rule",
+        "body": "Do not scale the corner with the component. Pick from sm/md/lg by role, not by size. Anything running edge to edge on a phone drops to 0.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do put every interactive affordance in ZolStock Blue (#1c41b4). One colour means one meaning: this responds to you.",
+      "Do give High-Voltage Yellow a dark bed — a fill under dark text, or text over blue or a photo scrim. Never yellow text on a light surface.",
+      "Do keep the product card at two clamped title lines so grid rows stay honest.",
+      "Do force LTR ordering (flex-direction: row-reverse) on anything containing a price or a numeral run.",
+      "Do reach for the until / from / between mixins and the rem() function; both exist precisely so raw px and raw media queries don't reappear.",
+      "Do route page insets through the page-gutter mixin so header, main and footer stay aligned.",
+      "Do size every touch target at 44px or larger — this system is thumb-first before it is anything else.",
+      "Do honour prefers-reduced-motion; the header already does, and new motion must follow.",
+      "Do let a coloured element cast a shadow tinted to its own colour.",
+      "Do run edge-to-edge blocks at radius 0 on phones, and give the sections beside them a matching inset.",
+      "Do regenerate product-image-fit.json (npm run gen:image-fit) after changing a product photo."
+    ],
+    "donts": [
+      "Don't alter, re-shade, or \"improve\" #1c41b4 or #FFF200. They are the real chain's marks. Diff the compiled hex on any refactor that touches them.",
+      "Don't introduce a second typeface. Assistant does every job; hierarchy is weight and size.",
+      "Don't use Markdown Red for anything the data doesn't support. No invented scarcity, no decorative red.",
+      "Don't crop product photography. Media is 1 / 1 with object-fit: contain, always.",
+      "Don't invent a new breakpoint. The scale is centralised and the header now uses it end to end — reach for $bp-lg and its siblings, not a hand-written px value.",
+      "Don't fix an overlap by hiding the thing that overlaps. The header's nav once collapsed a full 360px early to dodge a stacking bug; the bug outlived the workaround. Find the stacking context or the starved column first.",
+      "Don't remove a focus outline without replacing it with the blue halo.",
+      "Don't add !important. Exactly one exists, cancelling transitions under prefers-reduced-motion, where overriding every transition is the point. That is the only justified case.",
+      "Don't collapse the mobile product grid to one column. Two columns at 375px is the intended shelf-scanning density.",
+      "Don't add a resting shadow to any surface, or a hover shadow to any. One overlay shadow exists and only floating layers may use it.",
+      "Don't animate position, scale or size on hover. Colour, background and border only, at 160ms.",
+      "Don't assume inset-inline-end is the left edge. This document is RTL: inline-start is the right edge, and getting it backwards puts an off-canvas panel over the page."
+    ]
+  }
+}

@@ -3,12 +3,17 @@ import { NavLink } from 'react-router-dom'
 
 export function LoginSignup() {
     return (
-        <div className="login-page">
-            <nav>
-                <NavLink to=".">Login</NavLink>
-                <NavLink to="signup">Signup</NavLink>
-            </nav>
-            <Outlet/>
+        <div className="auth-page">
+            <div className="auth-card">
+                <h1 className="auth-title">החשבון שלי</h1>
+
+                <nav className="auth-tabs" aria-label="התחברות או הרשמה">
+                    <NavLink to="." end>התחברות</NavLink>
+                    <NavLink to="signup">הרשמה</NavLink>
+                </nav>
+
+                <Outlet />
+            </div>
         </div>
     )
 }

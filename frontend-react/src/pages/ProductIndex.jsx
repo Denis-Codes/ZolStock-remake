@@ -9,6 +9,7 @@ import { showErrorMsg } from '../services/event-bus.service'
 
 import { ProductBreadcrumbs } from '../cmps/ProductBreadcrumbs.jsx'
 import { ProductList } from '../cmps/ProductList.jsx'
+import { ProductSidebarFilters } from '../cmps/ProductSidebarFilters.jsx'
 
 export function ProductIndex() {
   const dispatch = useDispatch()
@@ -25,6 +26,10 @@ export function ProductIndex() {
   // ✅ Labels בעברית (כדי שגם הכותרת וגם ה-breadcrumbs יהיו בעברית)
   const [catLabel, setCatLabel] = useState('')
   const [subLabel, setSubLabel] = useState('')
+
+  // Filters are a side panel on desktop and a sheet on mobile; one flag drives
+  // both, since the sheet styling only applies below the sidebar breakpoint.
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
   useEffect(() => {
     let isCancelled = false
@@ -69,6 +74,30 @@ export function ProductIndex() {
     dispatch(loadProducts()).catch(() => showErrorMsg('Cannot load products'))
   }, [filterBy]) // השארתי כמו שהיה אצלך
 
+  // Escape closes the filter sheet, and the page underneath must not scroll
+  // while it is open.
+  useEffect(() => {
+    if (!isFiltersOpen) return
+
+    function onKeyDown(ev) {
+      if (ev.key === 'Escape') setIsFiltersOpen(false)
+    }
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isFiltersOpen])
+
+  // Leaving the category closes the sheet with it.
+  useEffect(() => {
+    setIsFiltersOpen(false)
+  }, [categorySlug, subCategorySlug])
+
   function onChangeTxt(ev) {
     dispatch(setFilterBy({ txt: ev.target.value }))
   }
@@ -79,11 +108,6 @@ export function ProductIndex() {
     if (val === 'priceAsc') return dispatch(setFilterBy({ sortField: 'price', sortDir: '1' }))
     if (val === 'priceDesc') return dispatch(setFilterBy({ sortField: 'price', sortDir: '-1' }))
     if (val === 'name') return dispatch(setFilterBy({ sortField: 'name', sortDir: '1' }))
-  }
-
-  function onOpenFilters() {
-    // בשלב הבא: Sidebar / Modal
-    console.log('open filters')
   }
 
   const total = products?.length || 0
@@ -102,58 +126,89 @@ export function ProductIndex() {
   return (
     <div className="product-page full">
       <div className="product-page__container">
-        <div className="product-page__top">
-          <ProductBreadcrumbs
-            categorySlug={categorySlug}
-            subCategorySlug={subCategorySlug}
-            catLabel={catLabel}
-            subLabel={subLabel}
-          />
-          {/* 
-        <button className="filters-btn" type="button" onClick={onOpenFilters} aria-label="סינון">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <path
-              d="M4 6h10M18 6h2M4 12h2M8 12h12M4 18h12M18 18h2"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button> */}
-        </div>
+        <ProductBreadcrumbs
+          categorySlug={categorySlug}
+          subCategorySlug={subCategorySlug}
+          catLabel={catLabel}
+          subLabel={subLabel}
+        />
 
-        <header className="product-page__header">
-          <h2 className="product-title">{title}</h2>
-          {canAdd && <button className="btn" type="button">הוסף מוצר</button>}
+        {/* Title, count and controls used to live in three separate bordered
+            panels stacked on top of each other, which on a phone pushed the
+            first product roughly 800px down the page. One head, one bar. */}
+        <header className="product-head">
+          <h1 className="product-title">{title}</h1>
+          <p className="results-line" aria-live="polite">
+            {isLoading ? 'טוען מוצרים…' : `${total} מוצרים`}
+          </p>
         </header>
 
-        <div className="product-controls">
-          <div className="sort-wrap">
-            <select value={mapSortToSelectValue(filterBy)} onChange={onChangeSort} aria-label="מיון">
-              <option value="reco">סידור ברירת מחדל</option>
-              <option value="priceAsc">מחיר מהנמוך לגבוה</option>
-              <option value="priceDesc">מחיר מהגבוה לנמוך</option>
-              <option value="name">שם</option>
-            </select>
-          </div>
+        <div className="product-toolbar">
+          <button
+            className="toolbar-filters-btn"
+            type="button"
+            onClick={() => setIsFiltersOpen(true)}
+            aria-expanded={isFiltersOpen}
+          >
+            סינון
+          </button>
 
-          <div className="search-wrap">
-            <input
-              value={filterBy.txt || ''}
-              onChange={onChangeTxt}
-              type="search"
-              placeholder="חיפוש מוצר..."
-              aria-label="חיפוש"
-            />
-          </div>
+          <select
+            className="toolbar-select"
+            value={mapSortToSelectValue(filterBy)}
+            onChange={onChangeSort}
+            aria-label="מיון"
+          >
+            <option value="reco">סידור ברירת מחדל</option>
+            <option value="priceAsc">מחיר מהנמוך לגבוה</option>
+            <option value="priceDesc">מחיר מהגבוה לנמוך</option>
+            <option value="name">שם</option>
+          </select>
+
+          {/* Narrows the products already on screen. The header's magnifier
+              searches the whole catalogue and navigates away — different job,
+              which is why both exist. */}
+          <input
+            className="toolbar-search"
+            value={filterBy.txt || ''}
+            onChange={onChangeTxt}
+            type="search"
+            placeholder="סינון בתוך הקטגוריה…"
+            aria-label="סינון בתוך הקטגוריה"
+          />
+
+          {canAdd && <button className="btn" type="button">הוסף מוצר</button>}
         </div>
 
-        <p className="results-line">
-          {isLoading ? 'טוען...' : `מציג ${to}–${from} מתוך ${total} תוצאות`}
-        </p>
+        <div className="products-page">
+          {isFiltersOpen && (
+            <div
+              className="filters-scrim"
+              onClick={() => setIsFiltersOpen(false)}
+              role="presentation"
+            />
+          )}
 
-        <ProductList products={products} layout="grid" />
+          <aside className={`products-sidebar ${isFiltersOpen ? 'is-open' : ''}`}>
+            <div className="products-sidebar__head">
+              <h2>סינון</h2>
+              <button
+                className="products-sidebar__close"
+                type="button"
+                onClick={() => setIsFiltersOpen(false)}
+                aria-label="סגור סינון"
+              >
+                ✕
+              </button>
+            </div>
+
+            <ProductSidebarFilters />
+          </aside>
+
+          <div className="products-main">
+            <ProductList products={products} layout="grid" />
+          </div>
+        </div>
       </div>
     </div>
   )

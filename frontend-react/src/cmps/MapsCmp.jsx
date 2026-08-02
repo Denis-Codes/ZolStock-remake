@@ -72,7 +72,7 @@ export function MyComponent({
     const map = mapRef.current
     if (!map) return
 
-    const found = allMarkers.find((b) => b._placeId === selectedBranchId)
+    const found = allMarkers.find((b) => b._uid === selectedBranchId)
     if (!found) return
 
     map.panTo({ lat: found.lat, lng: found.lng })
@@ -110,8 +110,10 @@ export function MyComponent({
       >
         {pinIcon &&
           allMarkers.map((branch) => {
-            const branchId = branch._placeId || `${branch.title}-${branch.address}`
-            const isActive = selectedBranchId && branch._placeId === selectedBranchId
+            // `_uid` is assigned in HomePage; `_placeId` is not unique in the
+            // source data and cannot identify a branch on its own.
+            const branchId = branch._uid
+            const isActive = selectedBranchId && branch._uid === selectedBranchId
 
             return (
               <MarkerF
@@ -123,7 +125,7 @@ export function MyComponent({
                 onClick={() =>
                   onSelectFromMap?.({
                     regionId: branch._regionId,
-                    branchId: branch._placeId ?? null,
+                    branchId: branch._uid ?? null,
                   })
                 }
               />

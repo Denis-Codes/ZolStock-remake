@@ -1,0 +1,119 @@
+/* ============================= */
+/* SEARCH OVERLAY */
+/* ============================= */
+
+/* Drops from the header's bottom edge. Absolute inside `.app-header` (which
+   is sticky, so it already owns a stacking context) — that way the panel
+   tracks the bar's height without anyone hard-coding it. */
+
+.search-overlay {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  z-index: 30;
+
+  background: $surface;
+  border-block-end: rem(1px) solid $line;
+  box-shadow: $shadow-overlay;
+
+  /* One short ease-out on open, and nothing else on the page moves. The panel
+     is already in its final place by the time the caret lands in the field. */
+  animation: search-drop 180ms ease-out;
+  transform-origin: top center;
+}
+
+@keyframes search-drop {
+  from {
+    opacity: 0;
+    transform: translateY(rem(-8px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-overlay {
+    animation: none;
+  }
+}
+
+.search-overlay-inner {
+  @include page-gutter;
+
+  padding-block: rem(16px);
+  margin-inline: auto;
+  width: 100%;
+  max-width: rem(760px);
+}
+
+/* The field itself — the only place a search input exists now. */
+.search-overlay .search-bar {
+  position: relative;
+  width: 100%;
+
+  input {
+    width: 100%;
+    height: rem(48px);
+    padding-inline: rem(48px) rem(14px);
+
+    border: rem(1px) solid $line;
+    border-radius: $r-md;
+    background: $surface;
+    color: $clr3;
+
+    font-family: inherit;
+    font-size: rem(16px);
+
+    transition: border-color $dur $ease;
+
+    &::placeholder {
+      color: rgba($clr3, 0.55);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $clr1;
+    }
+  }
+
+  .search-btn {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+
+    width: rem(48px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: rgba($clr3, 0.65);
+    cursor: pointer;
+    line-height: 1;
+
+    transition: color $dur $ease;
+
+    &:hover {
+      color: $clr1;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(-4px);
+      border-radius: $r-md;
+    }
+  }
+}
+
+@include until($bp-sm) {
+  .search-overlay-inner {
+    padding-inline: rem(12px);
+    padding-block: rem(12px);
+  }
+}

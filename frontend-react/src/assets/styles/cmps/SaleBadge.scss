@@ -1,26 +1,26 @@
 .sale-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: rem(8px);
+  right: rem(8px);
   background: #e53935;
   color: #fff;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: $r-sm;
+  line-height: 1.4;
   z-index: 2;
 
   &.small {
-    padding: 3px 8px;
-    font-size: 11px;
+    padding: rem(3px) rem(8px);
+    font-size: rem(11px);
   }
 
   &.medium {
-    padding: 4px 10px;
-    font-size: 12px;
+    padding: rem(4px) rem(10px);
+    font-size: rem(12px);
   }
 
   &.large {
-    padding: 6px 14px;
-    font-size: 14px;
-    border-radius: 8px;
+    padding: rem(6px) rem(14px);
+    font-size: rem(14px);
   }
 }

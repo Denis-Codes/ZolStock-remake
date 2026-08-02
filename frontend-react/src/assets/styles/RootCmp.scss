@@ -1,4 +1,16 @@
 .main-container main {
     min-height: calc(100vh - 7rem);
-    overflow: hidden; // Quick fix for JSONs in <pre>
+
+    /* No `overflow: hidden` here. It was a "quick fix for JSONs in <pre>"
+       on the admin page, but clipping the whole main element silently
+       disabled `position: sticky` for every descendant sitewide — the
+       listing page's filter sidebar could never stick. The wide element is
+       the <pre>, so that is what scrolls. */
+}
+
+/* Long unwrapped JSON dumps scroll inside their own block instead of
+   stretching the page. */
+.main-container pre {
+    max-width: 100%;
+    overflow-x: auto;
 }

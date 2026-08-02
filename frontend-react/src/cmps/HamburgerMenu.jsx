@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 
 export function HamburgerMenu({
   isOpen,
@@ -7,8 +9,12 @@ export function HamburgerMenu({
   categorySubcats,
   onNavigate,
   onPickSubcat,
+  onGoToBranches,
+  user,
+  onLogout,
 }) {
   const [openCat, setOpenCat] = useState(null)
+  const drawerRef = useRef(null)
   const [phase, setPhase] = useState('closed') // 'closed' | 'opening' | 'open' | 'closing'
 
   // Build cats once per input
@@ -46,14 +52,48 @@ export function HamburgerMenu({
     }
   }, [phase])
 
-  // ESC close
+  // ESC close, and keep Tab inside the drawer. It declares
+  // `role="dialog" aria-modal="true"`, but focus used to walk straight out
+  // into the page behind it after two presses.
   useEffect(() => {
     if (phase === 'closed') return
-    function onKeyDown(ev) {
-      if (ev.key === 'Escape') handleClose()
+
+    function getFocusable() {
+      if (!drawerRef.current) return []
+      return [...drawerRef.current.querySelectorAll(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )].filter(el => el.offsetParent !== null)
     }
+
+    function onKeyDown(ev) {
+      if (ev.key === 'Escape') return handleClose()
+      if (ev.key !== 'Tab') return
+
+      const items = getFocusable()
+      if (!items.length) return
+
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement
+
+      if (ev.shiftKey && (active === first || !drawerRef.current.contains(active))) {
+        ev.preventDefault()
+        last.focus()
+      } else if (!ev.shiftKey && active === last) {
+        ev.preventDefault()
+        first.focus()
+      }
+    }
+
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
+  }, [phase])
+
+  // Land focus inside the drawer when it opens, not on the page behind it.
+  useEffect(() => {
+    if (phase !== 'open') return
+    const first = drawerRef.current?.querySelector('button, a[href]')
+    first?.focus()
   }, [phase])
 
   // Reset internal openCat when fully closed
@@ -92,6 +132,7 @@ export function HamburgerMenu({
   return (
     <div className={overlayClass} onClick={handleClose} role="presentation">
       <aside
+        ref={drawerRef}
         className={drawerClass}
         onClick={(ev) => ev.stopPropagation()}
         role="dialog"
@@ -106,6 +147,8 @@ export function HamburgerMenu({
         </header>
 
         <nav className="hamburger-nav">
+          <p className="hamburger-section">קטגוריות</p>
+
           <ul className="hamburger-list">
             {cats.map((cat) => {
               const isOpenCat = openCat === cat.id
@@ -167,7 +210,20 @@ export function HamburgerMenu({
 
           <div className="hamburger-divider" />
 
+          <p className="hamburger-section">מידע ושירות</p>
+
           <ul className="hamburger-list">
+            {onGoToBranches && (
+              <li className="hamburger-item">
+                <button
+                  type="button"
+                  className="hamburger-link"
+                  onClick={() => { closeAndReset(); onGoToBranches() }}
+                >
+                  סניפים
+                </button>
+              </li>
+            )}
             <li className="hamburger-item">
               <NavLink to="/about" className="hamburger-link" onClick={closeAndReset}>אודות</NavLink>
             </li>
@@ -180,6 +236,40 @@ export function HamburgerMenu({
             <li className="hamburger-item">
               <NavLink to="/franchise" className="hamburger-link" onClick={closeAndReset}>זכיינות</NavLink>
             </li>
+          </ul>
+
+          <div className="hamburger-divider" />
+
+          {/* The drawer is the primary navigation on a phone, so the account
+              belongs in it — not only in the icon bar. */}
+          <ul className="hamburger-list">
+            {user ? (
+              <>
+                <li className="hamburger-item">
+                  <NavLink to={`/user/${user._id}`} className="hamburger-link hamburger-link--icon" onClick={closeAndReset}>
+                    <FontAwesomeIcon icon={faUser} />
+                    <span>{user.fullname}</span>
+                  </NavLink>
+                </li>
+                <li className="hamburger-item">
+                  <button
+                    type="button"
+                    className="hamburger-link hamburger-link--icon"
+                    onClick={() => { handleClose(); onLogout?.() }}
+                  >
+                    <FontAwesomeIcon icon={faRightFromBracket} />
+                    <span>התנתקות</span>
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="hamburger-item">
+                <NavLink to="/login" className="hamburger-link hamburger-link--icon" onClick={closeAndReset}>
+                  <FontAwesomeIcon icon={faUser} />
+                  <span>התחברות / הרשמה</span>
+                </NavLink>
+              </li>
+            )}
           </ul>
         </nav>
       </aside>

@@ -8,15 +8,24 @@ import { setFilterBy } from '../store/actions/product.actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons'
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons'
-import logo from '../assets/styles/img/logo.png'
+import {
+  faLocationDot,
+  faMagnifyingGlass,
+  faXmark,
+  faUser,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons'
+// Tightly cropped copy of logo.png, which carries ~53% transparent width
+// and ~42% transparent height. The original is kept alongside it.
+import logo from '../assets/styles/img/logo-trimmed.png'
 
 import productsData from '../data/products.json'
 import { HeaderNavDropdown } from './HeaderNavDropdown'
 import { buildCategorySubcats } from '../services/util.service'
-import { SearchBar } from './SearchBar.jsx'
+import { SearchOverlay } from './SearchOverlay.jsx'
 import { HamburgerMenu } from './HamburgerMenu.jsx'
 import { CartIcon } from './CartIcon.jsx'
+import { WishlistIcon } from './WishlistIcon.jsx'
 
 export function AppHeader() {
   const dispatch = useDispatch()
@@ -37,8 +46,19 @@ export function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMenuClosing, setIsMenuClosing] = useState(false)
 
+  // search overlay state
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const searchToggleRef = useRef(null)
+
+  const closeSearch = useCallback(() => {
+    setIsSearchOpen(false)
+    // Send focus back where it came from, or the toggle vanishes under the user.
+    searchToggleRef.current?.focus()
+  }, [])
+
   useEffect(() => {
     setOpenDropdown(null)
+    setIsSearchOpen(false)
     // אם ניווט קרה תוך כדי תפריט פתוח — נסגור יפה
     if (isMenuOpen) handleCloseMenu()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,26 +233,53 @@ export function AppHeader() {
 
               {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
-              {user && (
-                <div className="user-info">
-                  <Link to={`user/${user._id}`}>{user.fullname}</Link>
-                  <button onClick={onLogout}>logout</button>
-                </div>
-              )}
             </nav>
           </div>
         </div>
 
-        <div className="search-bar">
-          <SearchBar
-            value={filterBy?.txt || ''}
-            onChange={onSearchChange}
-            onSubmit={onSearchSubmit}
-            placeholder="חיפוש מוצרים…"
-          />
-        </div>
-
         <div className="header-left-actions">
+          <button
+            className={`search-toggle ${isSearchOpen ? 'is-open' : ''}`}
+            type="button"
+            ref={searchToggleRef}
+            aria-label={isSearchOpen ? 'סגור חיפוש' : 'חיפוש מוצרים'}
+            aria-expanded={isSearchOpen}
+            onClick={() => (isSearchOpen ? closeSearch() : setIsSearchOpen(true))}
+          >
+            <FontAwesomeIcon icon={isSearchOpen ? faXmark : faMagnifyingGlass} />
+          </button>
+
+          {/* The only route to the login form. It previously existed at /login
+              with nothing anywhere in the UI pointing at it, and the logged-in
+              block lived inside the desktop nav — so it vanished entirely
+              below 1200px. This sits in the action cluster at every width. */}
+          {user ? (
+            <>
+              <Link
+                to={`/user/${user._id}`}
+                className="account-btn"
+                aria-label={`החשבון של ${user.fullname}`}
+                title={user.fullname}
+              >
+                <FontAwesomeIcon icon={faUser} />
+              </Link>
+              <button
+                className="account-btn"
+                type="button"
+                onClick={onLogout}
+                aria-label="התנתקות"
+                title="התנתקות"
+              >
+                <FontAwesomeIcon icon={faRightFromBracket} />
+              </button>
+            </>
+          ) : (
+            <NavLink to="/login" className="account-btn" aria-label="התחברות">
+              <FontAwesomeIcon icon={faUser} />
+            </NavLink>
+          )}
+
+          <WishlistIcon />
           <CartIcon />
 
           <div className="locations">
@@ -243,14 +290,22 @@ export function AppHeader() {
           </div>
 
           <div className="socials">
-            <a href="https://www.facebook.com/zolstock/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.facebook.com/zolstock/" target="_blank" rel="noopener noreferrer" aria-label="פייסבוק">
               <FontAwesomeIcon icon={faFacebookF} />
             </a>
-            <a href="https://www.instagram.com/zol_stock/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/zol_stock/" target="_blank" rel="noopener noreferrer" aria-label="אינסטגרם">
               <FontAwesomeIcon icon={faInstagram} />
             </a>
           </div>
         </div>
+
+        <SearchOverlay
+          isOpen={isSearchOpen}
+          onClose={closeSearch}
+          value={filterBy?.txt || ''}
+          onChange={onSearchChange}
+          onSubmit={onSearchSubmit}
+        />
       </header>
 
       <HamburgerMenu
@@ -259,6 +314,9 @@ export function AppHeader() {
         onClose={handleCloseMenu}
         categorySubcats={categorySubcats}
         onNavigate={onNavToCategoryOrSubcategory}
+        onGoToBranches={onGoToBranches}
+        user={user}
+        onLogout={onLogout}
       />
     </>
   )

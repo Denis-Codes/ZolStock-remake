@@ -1,6 +1,7 @@
 // Setup
-@import "setup/variables";
+// functions first: _variables.scss builds its radius/shadow tokens with rem()
 @import "setup/functions";
+@import "setup/variables";
 @import "setup/mixins";
 @import "setup/typography";
 @import "setup/breakpoints";
@@ -25,16 +26,17 @@
 @import "pages/LoginSignup";
 @import "pages/ProductDetails";
 @import "pages/CartPage";
+@import "pages/WishlistPage";
 
 // Components
 @import "cmps/list";
 @import "cmps/preview";
 
 @import "cmps/AppHeader";
+@import "cmps/SearchOverlay";
 @import "cmps/AppFooter";
 @import "cmps/UserMsg";
 
-@import "cmps/CarFilter";
 @import "cmps/ReviewEdit";
 @import "cmps/ReviewList";
 @import "cmps/ReviewPreview";
@@ -47,6 +49,7 @@
 @import "cmps/EmblaCarousel";
 @import "cmps/ProductList";
 @import "cmps/ProductPreview";
+@import "cmps/ProductSidebarFilters";
 
 // New e-commerce components
 @import "cmps/AddToCartBtn";
@@ -56,4 +59,5 @@
 @import "cmps/ImageGallery";
 @import "cmps/VariantSelector";
 @import "cmps/CartIcon";
+@import "cmps/WishlistIcon";
 @import "cmps/StockWarning";

@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 import { AppHeaderPage } from '../pages/app-header.page';
 import { HomePage } from '../pages/home.page';
 
-// The hamburger button only renders below the 1560px breakpoint (it's
-// display:none above that), so this whole file runs at a narrow, mobile-
-// style viewport instead of the suite's default desktop size.
+// The hamburger button only renders below the 1200px breakpoint ($bp-lg —
+// it's display:none above that), so this whole file runs at a narrow,
+// mobile-style viewport instead of the suite's default desktop size.
 test.use({ viewport: { width: 500, height: 900 } });
 
 test.describe('Header Navigation - Smoke Tests', () => {

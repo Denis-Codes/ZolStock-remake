@@ -6,40 +6,66 @@
   align-items: center;
   justify-content: center;
 
-  background-image: url(https://zolstock.co.il/wp-content/uploads/2019/04/welcome.jpg);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.32)),
+    url(https://zolstock.co.il/wp-content/uploads/2019/04/welcome.jpg);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 
-  padding-block: clamp(1rem, 2vw, 2.5rem);
-  @include page-gutter;
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+
+  /* `<main>` carries the page gutter at most widths, but drops it below 480
+     so cards can bleed — which left this section's copy sitting 0–1px from
+     the screen edge. An inset of its own, kept smaller than the gutter so it
+     never double-indents where main still applies one. */
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+
   margin-top: 1rem;
 
   /* קצת גובה כדי להרגיש hero */
-  min-height: clamp(16rem, 35vh, 28rem);
+  min-height: clamp(20rem, 45vh, 34rem);
 
   h1 {
     color: $clr2;
     text-align: center;
-    margin: 0 0 0.75rem 0;
-    font-size: clamp(1.6rem, 2.2vw, 2.6rem);
+    margin: 0 0 1rem 0;
+    font-size: clamp(2.1rem, 3.4vw, 3.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.02rem;
   }
 
   p {
     text-align: center;
     width: min(100%, 50rem);
     margin: 0;
-    font-size: clamp(1rem, 0.6vw + 0.9rem, 1.125rem);
-    line-height: 1.55;
+    font-size: clamp(1.05rem, 0.6vw + 0.95rem, 1.25rem);
+    line-height: 1.6;
     color: #fff;
+  }
+
+  h2 {
+    margin-top: 1.5rem;
   }
 }
 
-/* במובייל/טאץ׳: fixed עושה בעיות ביצועים/באגים */
+/* Touch devices keep the parallax, but through a scaled-up background rather
+   than `background-attachment: fixed` — iOS Safari does not honour `fixed`
+   and Android jitters on it, which is why it was switched off here before.
+   `background-position: center` plus extra coverage keeps the image moving
+   against the copy without the jank. */
 @media (pointer: coarse) {
   .welcome {
     background-attachment: scroll;
+    background-size: cover;
     font-size: smaller;
+  }
+}
+
+/* Honour a reduced-motion preference: parallax is motion the reader did not
+   ask for, so it pins to the section instead. */
+@media (prefers-reduced-motion: reduce) {
+  .welcome {
+    background-attachment: scroll;
   }
 }
 
@@ -52,68 +78,156 @@
   justify-content: center;
   min-width: 0;
 
-  // @include page-gutter;
+  padding-block: rem(16px);
+
+  /* Runs edge to edge below the desktop breakpoint — the square campaign art
+     is the content, so it gets the full screen width rather than a gutter. */
+  @include until($bp-lg) {
+    padding-block: 0;
+    padding-inline: 0;
+  }
 }
 
 /* ============================= */
 /* SECTION SEPARATOR */
 /* ============================= */
+/* Sized to the content it introduces, not to the viewport. It used to break
+   out to 100vw while the tiles and panels below stayed inset, so the band
+   overhung them on both sides. It is also a label, not a hero — the block
+   is now roughly half its old height. */
 .section-separator {
+  @include page-container;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   background-color: $clr1;
-  padding-block: clamp(0.75rem, 2vw, 1.25rem);
-  @include page-gutter;
+  border-radius: $r-md;
+  padding-block: rem(12px);
+  padding-inline: rem(16px);
+  margin-block: rem(28px) rem(16px);
 
   h2 {
     margin: 0;
     color: $clr4;
-    /* אם יש לך לבן, אחרת תוריד */
-    font-size: clamp(1.1rem, 1.2vw, 1.6rem);
+    font-size: clamp(rem(15px), 1vw + rem(10px), rem(19px));
+    font-weight: 700;
+    letter-spacing: -0.01rem;
     text-align: center;
   }
-}
 
-/* ============================= */
-/* GALLERY2 (image grid) */
-/* ============================= */
-.gallery2 {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-
-  /* center+gap יותר יציב מ-space-around */
-  justify-content: center;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-
-  @include page-container;
-  margin-top: 1rem;
-
-  min-width: 0;
-
-  img {
-    width: clamp(10rem, 22vw, 20rem);
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-
-    margin: 0;
-
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-    transform-origin: center;
-    will-change: transform;
-
-    &:hover {
-      transform: scale(1.03);
-    }
+  /* Full-bleed on a phone, matching the carousel and the map either side. */
+  @include until($bp-lg) {
+    border-radius: 0;
+    margin-block: 0;
+    padding-block: rem(14px);
   }
 }
 
-/* מובייל: תמונות יותר גדולות / פחות “רווח מת” */
+/* ============================= */
+/* CATEGORY TILES (homepage "shop by category" grid) */
+/* ============================= */
+/* A mosaic rather than five identical tiles: the first category runs at twice
+   the scale of the other four. Every tile stays SQUARE, because the source
+   artwork is 1024×1024 — so the variety comes from size, not from shape, and
+   nothing is cropped. The old 4/5 tiles were already cutting 20% off each
+   image. */
+.category-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: rem(8px);
+
+  @include page-container;
+  margin-top: rem(8px);
+  padding-bottom: rem(8px);
+}
+
+.category-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0;
+
+  /* These are product shots on near-white backgrounds, so a light scrim left
+     the white label sitting on pale grey at roughly 1.5:1. Weighted darker
+     and held at full strength through the label's own band. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.55) 18%,
+      rgba(0, 0, 0, 0.18) 38%,
+      rgba(0, 0, 0, 0) 58%
+    );
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.category-tile-label {
+  position: absolute;
+  left: rem(18px);
+  right: rem(18px);
+  bottom: rem(18px);
+  z-index: 1;
+
+  color: #fff;
+  font-size: rem(20px);
+  font-weight: 700;
+  letter-spacing: -0.01rem;
+}
+
+/* The feature tile spans two columns and two rows. Since the small tiles are
+   square and set the row height, the doubled cell is square too. */
+.category-tile:first-child {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.category-tile:first-child .category-tile-label {
+  font-size: rem(28px);
+  left: rem(24px);
+  right: rem(24px);
+  bottom: rem(22px);
+}
+
+/* מובייל: אריחים רחבים יותר, פחות "רווח מת" */
 @include until($bp-sm) {
-  .gallery2 img {
-    width: min(100%, rem(360px));
+  /* `main` drops its gutter below 480 so product cards can bleed edge to
+     edge, which took every other section with it — the tiles sat at exactly
+     0px from both screen edges. Sections that are not a full-bleed grid
+     re-declare their own inset here. */
+  /* Two columns, and the feature tile fills the first square. One double
+     plus four singles tiles two full rows exactly, so no tile is ever
+     stranded beside a hole and none of them needs a landscape crop. */
+  .category-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(6px);
+    padding-inline: rem(12px);
+  }
+
+  .category-tile:first-child .category-tile-label {
+    font-size: rem(22px);
+    left: rem(14px);
+    right: rem(14px);
+    bottom: rem(14px);
+  }
+
+  .category-tile-label {
+    font-size: rem(16px);
+    left: rem(12px);
+    right: rem(12px);
+    bottom: rem(12px);
   }
 }
 
@@ -134,50 +248,132 @@
   margin-top: clamp(0.75rem, 2vw, 1.5rem);
 }
 
-/* עדיף לא לגעת בכל הכפתורים גלובלית,
-   אבל אם זה שלך בעמוד הבית – תשאיר כאן */
-button:hover {
-  color: $clr2;
-}
+/* Removed: a global `button:hover { color: $clr2 }` used to live here.
+   Its own comment already flagged the risk ("better not touch all buttons
+   globally") — and it was doing exactly that: because `button:hover`
+   (element+pseudo-class) is more specific than a plain class selector like
+   `.pd-btn`, it silently overrode every unrelated button's hover color
+   sitewide, turning text bright yellow on white backgrounds (e.g.
+   ProductDetails' secondary buttons) — the real source of the "yellow on
+   white, hard to see" contrast bug. Removed rather than rescoped since
+   nothing on the homepage was confirmed to depend on it. */
 
 /* ============================= */
 /* BRANCHES + MAP */
 /* ============================= */
+/* Grid rather than flex: two exactly equal columns, so the list and the map
+   are the same width without anyone tuning flex-basis. */
 .branches-container {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
+  @include page-container;
 
-  gap: clamp(1rem, 3vw, 2rem);
-  padding: 1rem 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: rem(24px) 0 rem(8px);
 
   min-width: 0;
 }
 
 .branches-menu,
 .map-container {
-  flex: 1 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
+
+  background: $surface;
+  border: rem(1px) solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(16px);
 }
 
-/* מפה: תמיד תמלא את גובה העמודה (אותו גובה כמו רשימת הסניפים) */
+/* Side by side, the list matches the map's height and scrolls inside its own
+   column. This is the ONLY place a nested scroll is acceptable — see the
+   mobile block, where it is explicitly undone. */
+@include from($bp-lg) {
+  .branches-menu,
+  .map-container {
+    min-height: rem(420px);
+    overflow: hidden;
+  }
+
+  .branches-menu .MuiAccordionDetails-root {
+    max-height: rem(248px);
+    overflow-y: auto;
+  }
+}
+
 .map {
   width: 100%;
   height: 100%;
-  min-height: rem(300px); /* רצפת ביטחון כדי שלא יקרוס ל-0 */
+  min-height: rem(300px);
+  border-radius: $r-md;
+  overflow: hidden;
 }
 
-/* מובייל/טאבלט: עמודה אחת (רשימה מעל מפה) */
-@include until($bp-md) {
+/* ============================= */
+/* MOBILE / TABLET: one column    */
+/* ============================= */
+@include until($bp-lg) {
+  /* Full-bleed: the map and the branch list are the content here, so they take
+     the whole screen width. Corners and side borders go with the gutter —
+     a rounded panel flush against the screen edge reads as a mistake. */
+  /* No inset at all: the map meets the separator above it directly. The
+     container's own 24px top padding was the last gap left. */
   .branches-container {
-    flex-direction: column-reverse;
-    align-items: stretch;
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 0;
   }
 
+  /* No panel chrome at all: the map sits directly on top of the region list
+     with nothing between them. Borders and padding are what made two
+     full-width blocks still read as two floating cards. */
+  .branches-menu,
+  .map-container {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  /* The accordion keeps its horizontal rules — they separate one region from
+     the next — but loses the side borders that boxed it in. */
+  .branches-menu .MuiAccordion-root {
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  /* Map first: it orients you, then you pick a region from the list below. */
+  .map-container {
+    order: -1;
+  }
+
+  /* The accordion previously carried `maxHeight: 248px; overflow-y: auto`,
+     which turned the branch list into a small nested scroller inside the
+     page — a swipe over it scrolled the inner box instead of the document,
+     and the list could not be read normally. Off the desktop two-column
+     layout there is no height to match, so the details expand naturally and
+     the page scrolls as one surface. */
+  .branches-menu {
+    overflow: visible;
+  }
+
+  .branches-menu .MuiAccordionDetails-root {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* The map is the primary way to find a branch on a phone, so it gets real
+     height instead of a 300px letterbox — capped so the region list below
+     still peeks above the fold and signals there is more to scroll. */
   .map {
-    min-height: rem(260px);
+    border-radius: 0;
+    min-height: min(62vh, rem(560px));
+  }
+
+  .map-container {
+    min-height: 0;
   }
 }
 

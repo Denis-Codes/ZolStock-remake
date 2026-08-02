@@ -6,10 +6,10 @@
   background: $clr1;
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: $r-md;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color $dur $ease;
 
   &.small {
     padding: 8px 14px;
@@ -44,11 +44,11 @@
 
   &:hover:not(:disabled) {
     background: darken($clr1, 8%);
-    transform: translateY(-1px);
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
   }
 
   &:disabled {
@@ -87,8 +87,9 @@
   to { transform: rotate(360deg); }
 }
 
+/* Confirmation reads, it doesn't bounce — the old 0 → 1.2 → 1 overshoot
+   was the loudest motion on the page for the most routine action. */
 @keyframes checkPop {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

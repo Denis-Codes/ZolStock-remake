@@ -1,6 +1,22 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
+import { getLastShoppingRoute } from '../services/last-shopping-route.service'
 import { removeFromCart, updateCartItemQty, clearCart, getCartTotals } from '../store/actions/cart.actions'
+
+function CartBreadcrumbs() {
+  return (
+    <nav className="breadcrumbs" aria-label="פירורי לחם">
+      <ol className="crumbs">
+        <li className="crumb">
+          <NavLink to="/">עמוד הבית</NavLink>
+        </li>
+        <li className="crumb">
+          <NavLink to="/cart">עגלת קניות</NavLink>
+        </li>
+      </ol>
+    </nav>
+  )
+}
 
 export function CartPage() {
   const dispatch = useDispatch()
@@ -25,6 +41,7 @@ export function CartPage() {
     return (
       <section className="cart-page empty">
         <div className="cart-container">
+          <CartBreadcrumbs />
           <div className="empty-cart">
             <svg className="empty-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="9" cy="21" r="1" />
@@ -33,7 +50,7 @@ export function CartPage() {
             </svg>
             <h2>העגלה ריקה</h2>
             <p>לא הוספת עדיין מוצרים לעגלה</p>
-            <Link to="/" className="continue-shopping-btn">המשך בקניות</Link>
+            <Link to={getLastShoppingRoute()} className="continue-shopping-btn">המשך בקניות</Link>
           </div>
         </div>
       </section>
@@ -43,6 +60,7 @@ export function CartPage() {
   return (
     <section className="cart-page">
       <div className="cart-container">
+        <CartBreadcrumbs />
         <div className="cart-header">
           <h1>עגלת קניות</h1>
           <span className="cart-item-count">{itemCount} פריטים</span>

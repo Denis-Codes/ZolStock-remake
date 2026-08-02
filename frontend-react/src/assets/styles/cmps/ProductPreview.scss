@@ -1,199 +1,59 @@
-// // .product-card {
-// //   display: flex;
-// //   flex-direction: column;
-
-// //   position: relative;
-// //   background: $clr4;
-// //   border: 0.1rem solid rgba(0, 0, 0, 0.12);
-// //   padding: 1.6rem 1.2rem 1.2rem;
-// //   min-height: 32rem;
-
-// //   align-items: center;
-// //   text-align: center;
-
-// //   cursor: pointer;
-// //   overflow: hidden;
-
-// //   transition:
-// //     border-color 0.25s ease,
-// //     transform 0.25s ease;
-
-// //   &:hover {
-// //     border-color: rgba(0, 0, 0, 0.28);
-// //     transform: translateY(-0.3rem);
-// //   }
-// // }
-
-// // /* כל הכרטיס לחיץ */
-// // .card-link {
-// //   width: 100%;
-// //   height: 100%;
-
-// //   display: flex;
-// //   flex-direction: column;
-// //   align-items: center;
-// //   text-align: center;
-
-// //   text-decoration: none;
-// //   color: inherit;
-// // }
-
-// // /* תמונה */
-// .img-wrap {
-//   width: 100%;
-//   height: 16rem;
-
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-
-//   margin-top: 0.6rem;
-
-//   img {
-//     width: 100%;
-//     height: 100%;
-//     object-fit: contain;
-//     display: block;
-
-//     transition: transform 0.3s ease;
-//   }
-// }
-
-// // /* Premium zoom */
-// // .product-card:hover .img-wrap img {
-// //   transform: scale(1.06);
-// // }
-
-// /* שם מוצר */
-// .title {
-//   margin: 1.2rem 0 0;
-//   font-size: 2.2rem;
-//   font-weight: 800;
-//   color: $clr3;
-//   line-height: 1.2;
-
-//   min-height: 5.6rem;
-
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// }
-
-// /* מחיר – נעול נגד RTL */
-// .price-row {
-//   margin-top: auto;
-//   padding-top: 1.2rem;
-
-//   direction: ltr;
-//   display: inline-flex;
-//   align-items: flex-end;
-//   justify-content: center;
-//   gap: 0.6rem;
-//   flex-direction: row-reverse;
-
-//   .ils {
-//     font-size: 4.2rem;
-//     font-weight: 900;
-//     color: $clr3;
-//     line-height: 1;
-//     letter-spacing: -0.03rem;
-//   }
-
-//   .ag {
-//     font-size: 1.6rem;
-//     font-weight: 800;
-//     color: $clr3;
-//     transform: translateY(-0.25rem);
-//     opacity: 0.9;
-//   }
-
-//   .currency {
-//     font-size: 1.8rem;
-//     font-weight: 900;
-//     color: $clr3;
-//     transform: translateY(-0.25rem);
-//   }
-// }
-
-// .product-card {
-//   display: flex;
-//   flex-direction: column;
-
-//   position: relative;
-//   background: $clr4;
-//   border: none;
-//   padding: 2rem 1.6rem 1.6rem;
-//   min-height: 32rem;
-
-//   align-items: center;
-//   text-align: center;
-
-//   cursor: pointer;
-//   overflow: hidden;
-
-//   box-shadow: 
-//     0 0.2rem 0.8rem rgba(0, 0, 0, 0.04),
-//     0 0.4rem 1.6rem rgba(0, 0, 0, 0.06);
-
-//   transition:
-//     box-shadow 0.3s ease,
-//     transform 0.3s ease;
-
-//   &:hover {
-//     box-shadow: 
-//       0 0.4rem 1.2rem rgba(0, 0, 0, 0.08),
-//       0 0.8rem 2.4rem rgba(0, 0, 0, 0.12);
-//     transform: translateY(-0.4rem);
-//   }
-// }
-
 /* ============================= */
 /* PRODUCT PREVIEW (IKEA-ish) */
 /* ============================= */
 
 .product-card {
   position: relative;
-  background: $clr4;
-  border: rem(1px) solid rgba(0, 0, 0, 0.08);
-  border-radius: rem(18px);
+  background: $surface;
+  border: rem(1px) solid $line;
+  border-radius: $r-lg;
   overflow: hidden;
 
-  box-shadow: 0 rem(6px) rem(18px) rgba(0, 0, 0, 0.06);
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  /* Flat at rest. Hover darkens the hairline and nothing else — no lift,
+     no shadow, no scale. Forty of these sit in a grid; movement on hover
+     turns the whole page into a twitch. */
+  transition: border-color $dur $ease;
 
   &:hover {
-    transform: translateY(rem(-2px));
-    box-shadow: 0 rem(12px) rem(26px) rgba(0, 0, 0, 0.12);
-    border-color: rgba($clr1, 0.18);
+    border-color: $line-strong;
   }
 
   &:focus-within {
-    border-color: rgba($clr1, 0.5);
-    box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12), 0 rem(12px) rem(26px) rgba(0, 0, 0, 0.12);
+    border-color: $clr1;
   }
 }
 
 .card-media {
   display: block;
   position: relative;
-  background: rgba($clr3, 0.03);
 
-  /* תמונה אחידה כמו איקאה */
-  aspect-ratio: 4 / 3;
+  /* White, matching the product shots' own canvas. A tinted well was visible
+     as a grey border around each image's white square once the images were
+     inset — the frame has to be the same colour as the artwork behind it. */
+  background: $surface;
+
+  /* תמונה אחידה, יחס ריבועי לתחושה קטלוגית */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
 
+  /* Per-image normalisation. The three custom properties come from
+     product-image-fit.json (see ProductPreview.jsx): a scale that makes every
+     product's longest side the same share of the tile, and an offset that
+     recentres a subject sitting off-centre in its own artwork. The fallbacks
+     mean an unmapped photo simply renders as before. */
   img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
 
-    transform: scale(1);
-    transition: transform 220ms ease;
-  }
+    /* Uniform breathing room so no product touches the frame edge — one
+       source reached 97% of its canvas, another only 75%. */
+    padding: 3%;
 
-  .product-card:hover & img {
-    transform: scale(1.04);
+    transform:
+      translate(var(--fit-x, 0), var(--fit-y, 0))
+      scale(var(--fit-scale, 1));
   }
 }
 
@@ -210,43 +70,36 @@
 /* לב קטן כמו wishlist של איקאה */
 .wish-btn {
   position: absolute;
-  top: rem(10px);
-  left: rem(10px);
+  top: rem(8px);
+  left: rem(8px);
   z-index: 3;
 
   width: rem(40px);
   height: rem(40px);
 
-  border-radius: rem(12px);
-  border: rem(1px) solid rgba(0, 0, 0, 0.10);
-  background: rgba($clr4, 0.92);
-  color: rgba($clr3, 0.85);
+  border-radius: $r-md;
+  border: rem(1px) solid $line-soft;
+  background: $surface;
+  color: rgba($clr3, 0.7);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  font-size: rem(18px);
+  font-size: rem(19px);
   line-height: 1;
   cursor: pointer;
 
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, color 120ms ease;
+  transition: color $dur $ease, border-color $dur $ease;
 
   &:hover {
-    transform: translateY(rem(-1px));
-    border-color: rgba($clr1, 0.28);
-    box-shadow: 0 rem(10px) rem(18px) rgba(0, 0, 0, 0.12);
-  }
-
-  &:active {
-    transform: translateY(rem(0px));
-    box-shadow: none;
+    color: #e53935;
+    border-color: $line-strong;
   }
 
   &.active {
     color: #e53935;
-    border-color: rgba(#e53935, 0.3);
-    background: rgba(#e53935, 0.08);
+    border-color: rgba(#e53935, 0.35);
   }
 }
 
@@ -258,17 +111,54 @@
   }
 }
 
+/* Four rows, not seven. Subcategory, rating and swatches were each taking a
+   fixed row of their own and the stock line a fifth, so most of a card was
+   empty space — it read as decoration rather than as a catalogue entry. Every
+   child is still pinned to a numbered row, so a product missing its meta or
+   its stock line leaves that row empty instead of dragging the rest upward
+   and breaking alignment across the grid. */
+/* Rows size to their content, and a single flexible row in the middle soaks
+   up whatever slack the tallest card in the row creates. Fixed row heights
+   looked right on paper but put the leftover space in the WRONG place: a
+   one-line title sat top-aligned in a two-line box, leaving a hole between it
+   and the meta line that read as uneven padding. Now the gap collects once,
+   below the meta, and price + button are pinned to the bottom edge — so they
+   line up across the grid without anything above them drifting. */
 .card-body {
-  padding: rem(12px) rem(14px) rem(14px);
+  padding: rem(10px) rem(12px) rem(12px);
+
   display: grid;
+  grid-template-rows:
+    auto  /* 1 title (1–2 lines) */
+    auto  /* 2 meta: subcategory · rating · swatches */
+    1fr   /* 3 slack */
+    auto  /* 4 price + stock */
+    auto; /* 5 add to cart */
   gap: rem(6px);
+  align-content: start;
+}
+
+.card-title        { grid-row: 1; }
+.card-title-link   { grid-row: 1; }
+.card-meta         { grid-row: 2; }
+.card-price-section { grid-row: 4; }
+.card-body .add-to-cart-btn { grid-row: 5; }
+
+/* One line carrying every secondary fact, truncating rather than wrapping. */
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: rem(8px);
+  min-width: 0;
+  min-height: rem(18px);
+  overflow: hidden;
 }
 
 .card-title {
   margin: 0;
-  font-size: rem(15px);
-  line-height: rem(20px);
-  font-weight: 700;
+  font-size: rem(14px);
+  line-height: rem(19px);
+  font-weight: 600;
   color: $clr3;
 
   /* חיתוך נקי לשתי שורות */
@@ -280,9 +170,16 @@
 
 .card-line {
   margin: 0;
-  font-size: rem(13px);
+  flex: 0 1 auto;
+  min-width: 0;
+
+  font-size: rem(12px);
   line-height: rem(18px);
-  color: rgba($clr3, 0.78);
+  color: rgba($clr3, 0.72);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &.muted {
     color: rgba($clr3, 0.55);
@@ -295,11 +192,42 @@
   color: inherit;
 }
 
+.card-swatches {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(4px);
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.card-swatch {
+  width: rem(12px);
+  height: rem(12px);
+  border-radius: 50%;
+  flex: 0 0 auto;
+
+  background: var(--swatch-color, #ccc);
+  border: rem(1px) solid rgba(0, 0, 0, 0.14);
+  box-shadow: inset 0 0 0 rem(2px) $clr4;
+}
+
+.card-swatch-more {
+  font-size: rem(12px);
+  color: rgba($clr3, 0.6);
+  font-weight: 600;
+}
+
 .card-price-section {
   display: flex;
   align-items: center;
   gap: rem(8px);
-  margin-top: rem(6px);
+  min-width: 0;
+}
+
+/* Stock sits beside the price rather than owning a row. */
+.card-price-section .stock-warning {
+  margin-inline-start: auto;
+  font-size: rem(11px);
 }
 
 .original-price {
@@ -325,53 +253,42 @@
   font-weight: 800;
   color: $clr3;
 
-  /* תג מחיר קטן עם היילייט צהוב */
+  /* תג מחיר עם היילייט צהוב — מלא (לא שקוף), אחרת הצהוב כמעט לא נראה על רקע לבן */
   width: fit-content;
-  padding: rem(6px) rem(10px);
-  border-radius: rem(12px);
-  background: rgba($clr2, 0.20);
-  border: rem(1px) solid rgba($clr2, 0.35);
+  padding: rem(4px) rem(10px);
+  border-radius: $r-md;
+  background: $clr2;
+  border: rem(1px) solid rgba($clr1, 0.15);
 
   .ils {
-    font-size: rem(13px);
+    font-size: rem(12px);
     opacity: 0.9;
   }
 
   .whole {
     font-size: rem(22px);
-    line-height: rem(22px);
+    line-height: rem(24px);
     letter-spacing: rem(-0.4px);
   }
 
   .frac {
-    font-size: rem(13px);
+    font-size: rem(14px);
     opacity: 0.85;
-    transform: translateY(rem(-6px));
+    transform: translateY(rem(-8px));
   }
 
-  &.sale {
-    background: rgba(#e53935, 0.12);
-    border-color: rgba(#e53935, 0.25);
-    color: #c62828;
-  }
+  /* The tag stays yellow when discounted. It used to flip to a red tint,
+     which meant a row of cards showed two different coloured blobs at two
+     different sizes and the brand mark vanished exactly where the saving
+     mattered most. The markdown is carried by the corner badge and the
+     struck-through original price instead. */
 }
 
 /* רספונסיביות: שומר על תחושה אוורירית */
 @include until($bp-sm) {
-  .product-card {
-    border-radius: rem(16px);
-  }
-
   .card-body {
-    padding: rem(10px) rem(12px) rem(12px);
-  }
-
-  .wish-btn {
-    top: rem(8px);
-    left: rem(8px);
-    width: rem(38px);
-    height: rem(38px);
-    border-radius: rem(12px);
+    padding: rem(8px) rem(10px) rem(10px);
+    gap: rem(5px);
   }
 }
 
@@ -381,27 +298,39 @@
 
 .product-list {
   display: grid;
-  gap: rem(18px);
-  padding: 1rem 0;
+  gap: rem(12px);
+  padding: rem(8px) 0 1.5rem;
 
   /* ✅ קסם: ממלא שורות אוטומטית ולא נופל ל"מוצר בודד" */
-  grid-template-columns: repeat(auto-fit, minmax(rem(220px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(rem(200px), 1fr));
 
-  align-items: start;
+  /* Cards fill the row's height so their bottom edges line up even if one
+     title wraps to two lines and its neighbour does not. */
+  align-items: stretch;
+}
+
+.product-list .product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-list .card-body {
+  flex: 1 1 auto;
 }
 
 /* טאבלט */
 @include until($bp-md) {
   .product-list {
-    gap: rem(14px);
-    grid-template-columns: repeat(auto-fit, minmax(rem(200px), 1fr));
+    gap: rem(10px);
+    grid-template-columns: repeat(auto-fit, minmax(rem(165px), 1fr));
   }
 }
 
 /* מובייל */
 @include until($bp-sm) {
   .product-list {
-    gap: rem(12px);
+    gap: rem(8px);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
