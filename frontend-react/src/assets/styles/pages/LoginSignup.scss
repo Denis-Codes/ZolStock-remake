@@ -116,7 +116,7 @@
     }
 
     &[aria-invalid='true'] {
-      border-color: #dc3545;
+      border-color: $out-of-stock-red;
     }
   }
 }
@@ -125,9 +125,9 @@
   margin: 0;
   padding: rem(10px) rem(12px);
 
-  border: rem(1px) solid rgba(#dc3545, 0.35);
+  border: rem(1px) solid rgba($out-of-stock-red, 0.35);
   border-radius: $r-md;
-  background: rgba(#dc3545, 0.06);
+  background: rgba($out-of-stock-red, 0.06);
 
   color: #b3261e;
   font-size: rem(13px);

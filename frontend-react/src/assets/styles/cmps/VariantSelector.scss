@@ -17,7 +17,7 @@
 
     .selected-color-name {
       font-weight: 400;
-      color: #666;
+      color: $text-secondary;
     }
   }
 
@@ -28,7 +28,7 @@
   }
 
   .variant-option {
-    border: 2px solid #ddd;
+    border: 2px solid $hairline-gray;
     background: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -88,16 +88,16 @@
     margin-top: 4px;
 
     .in-stock {
-      color: #28a745;
+      color: $in-stock-green;
     }
 
     .low-stock {
-      color: #f57c00;
+      color: $low-stock-amber;
       font-weight: 600;
     }
 
     .out-of-stock {
-      color: #dc3545;
+      color: $out-of-stock-red;
     }
   }
 }

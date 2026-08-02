@@ -7,11 +7,6 @@ $clr5: #dff0ea;
 $clr6: #fff;
 $clr7: #222;
 
-$gray1: #ddd;
-$gray2: #aaa;
-$gray3: #777;
-$gray4: #333;
-
 
 // ========== SURFACES & LINES ==========
 // The page is white and surfaces separate by hairline, not by shadow.
@@ -35,6 +30,58 @@ $line-strong:    rgba(0, 0, 0, 0.32);    // hover / emphasis
 /* Minimum alpha for secondary text on white. Below this, $clr3 drops under
    the 4.5:1 floor. */
 $text-muted:     rgba($clr3, 0.72);
+
+
+// ========== NEUTRALS ==========
+// Names come from DESIGN.md's colour vocabulary, so the stylesheet and the
+// design system say the same words. Values are the literals that were already
+// scattered through the component files, carried across unchanged — this
+// section renames, it does not restyle.
+
+$hairline-gray: #ddd;  // DESIGN.md: empty star glyphs, and the control borders
+                       // that in practice also use it
+$quiet-gray:    #777;  // DESIGN.md: review counts
+
+/* NOT in DESIGN.md. These four are real values in the shipped CSS that the
+   design system never documented, and two of them contradict it: DESIGN.md
+   states secondary text is Ink at reduced alpha (0.78 / 0.6 / 0.55), "not a
+   separate gray", yet #666 and #999 are exactly that, 15 times over. Likewise
+   it states borders are rgba(0,0,0,0.06-0.12) rather than a named gray, yet
+   #eee borders exist. Tokenised here at their current values so the drift is
+   visible and countable; reconciling them changes pixels and is a design
+   decision, not a refactor. */
+$text-secondary:   #666;  // supporting copy under a heading
+$text-faint:       #999;  // de-emphasised labels, empty-state icons
+$line-faint:       #eee;  // lightest hairline: row separators, dividers
+$control-disabled: #ccc;  // background of a disabled button
+$icon-empty:       #ccc;  // stroke of an empty-state illustration
+
+/* Legacy neutral names. Only six call sites still use these and the numbers
+   carry no meaning, so they are aliases now rather than separate values —
+   $gray1 in particular was a second definition of #ddd. Retire on contact. */
+$gray1: $hairline-gray;  // #ddd
+$gray2: #aaa;
+$gray3: $quiet-gray;     // #777, unused
+$gray4: #333;            // same colour as $clr3, kept as-is to avoid churn
+
+
+// ========== STATUS COLOURS ==========
+// Not brand marks — those are $clr1 / $clr2 and are frozen. Names are
+// DESIGN.md's. These were previously loose hex literals repeated across
+// ~26 rules.
+//
+// The two reds are deliberately NOT merged. DESIGN.md separates them by
+// intent: Markdown Red is promotional and factual (a real discount, a real
+// count), while Out of Stock Red belongs to the functional status set that
+// sits "deliberately outside the brand palette". Similar hues, different
+// jobs; that is not a reason to collapse them.
+
+$markdown-red:     #e53935;  // sale badge, discounted price, cart/wishlist counters
+$out-of-stock-red: #dc3545;  // out of stock, unavailable variant, form errors
+$out-of-stock-bg:  #fee;     // pale wash behind a failure message
+$in-stock-green:   #28a745;  // in stock, added to cart
+$low-stock-amber:  #f57c00;  // low stock
+$star-gold:        #ffc107;  // review stars
 
 
 // ========== RADIUS ==========
@@ -97,8 +144,8 @@ $font-headings: Assistant, -apple-system, BlinkMacSystemFont, sans-serif;
 
 // ===================================
 
-// Breakpoints
-$mobile-breakpoint: 460px;
-$narrow-breakpoint: 720px;
-$normal-breakpoint: 960px;
+// Breakpoints live in setup/_breakpoints.scss — the single source. Three
+// stray values (460/720/960px) used to sit here as a parallel set that
+// agreed with neither the $bp-* scale nor each other, and nothing ever
+// referenced them.
 

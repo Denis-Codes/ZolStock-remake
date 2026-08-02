@@ -245,20 +245,20 @@
 
   .pd-price.strikethrough {
     text-decoration: line-through;
-    color: #999;
+    color: $text-faint;
     font-size: 1.2rem;
     font-weight: 500;
   }
 
   .pd-currency {
     font-size: 0.9rem;
-    color: #999;
+    color: $text-faint;
   }
 }
 
 .pd-discount-label {
   display: inline-block;
-  background: #e53935;
+  background: $markdown-red;
   color: #fff;
   padding: 0.25rem 0.6rem;
   border-radius: $r-sm;
@@ -277,7 +277,7 @@
 
 .pd-stock {
   .low-stock {
-    color: #f57c00;
+    color: $low-stock-amber;
     font-weight: 600;
   }
 }
@@ -362,9 +362,9 @@
 
 /* Wishlist button in product details */
 .pd-btn-ghost.active {
-  color: #e53935;
-  border-color: rgba(#e53935, 0.4);
-  background: rgba(#e53935, 0.05);
+  color: $markdown-red;
+  border-color: rgba($markdown-red, 0.4);
+  background: rgba($markdown-red, 0.05);
 }
 
 .pd-similar {

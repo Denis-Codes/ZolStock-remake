@@ -32,19 +32,35 @@ $bp-4k-min: 240rem;      // 3840px
   @media (min-width: $min) and (max-width: ($max - 0.001rem)) { @content; }
 }
 
-/* Semantic mixins (readable) */
+/* Semantic mixins (readable)
+ *
+ * These are built on the $bp-sm/md/lg aliases rather than the min/max pairs
+ * above, for one reason: the aliases are what the component files actually
+ * use (480 / 1024 / 1200 account for every call site), so the readable names
+ * and the raw calls now describe the same boundaries.
+ *
+ * They are also contiguous, which they previously were not. The old set ran
+ * 320-480, 600-1024, 1200-1920, 2560+, leaving four dead bands where a rule
+ * matched no viewport at all: below 320, 480-600, 1024-1200 and 1920-2560.
+ * A 540px phone or a 1100px laptop fell straight through. Nothing used the
+ * mixins yet, so the gaps never shipped — this closes them before they can.
+ */
 @mixin mobile {
-  @include between($bp-mobile-min, $bp-mobile-max) { @content; }
+  @include until($bp-sm) { @content; }                 // up to 480
 }
 
 @mixin tablet {
-  @include between($bp-tablet-min, $bp-tablet-max) { @content; }
+  @include between($bp-sm, $bp-md) { @content; }       // 480 - 1024
+}
+
+@mixin laptop {
+  @include between($bp-md, $bp-lg) { @content; }       // 1024 - 1200
 }
 
 @mixin desktop {
-  @include between($bp-desktop-min, $bp-desktop-max) { @content; }
+  @include between($bp-lg, $bp-ultra-min) { @content; } // 1200 - 2560
 }
 
 @mixin ultra {
-  @include from($bp-ultra-min) { @content; }
+  @include from($bp-ultra-min) { @content; }           // 2560 and up
 }

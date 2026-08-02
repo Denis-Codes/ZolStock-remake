@@ -9,10 +9,10 @@
   }
 
   .star {
-    color: #ffc107;
+    color: $star-gold;
 
     &.empty {
-      color: #ddd;
+      color: $hairline-gray;
     }
   }
 

@@ -26,7 +26,7 @@
       margin-inline: auto;
       width: rem(80px);
       height: rem(80px);
-      stroke: #ccc;
+      stroke: $icon-empty;
       margin-bottom: rem(24px);
     }
 
@@ -37,7 +37,7 @@
     }
 
     p {
-      color: #666;
+      color: $text-secondary;
       margin-bottom: rem(24px);
     }
 
@@ -63,7 +63,7 @@
     gap: rem(12px);
     margin-bottom: rem(24px);
     padding-bottom: rem(16px);
-    border-bottom: rem(1px) solid #eee;
+    border-bottom: rem(1px) solid $line-faint;
 
     h1 {
       font-size: rem(30px);
@@ -71,7 +71,7 @@
     }
 
     .cart-item-count {
-      color: #666;
+      color: $text-secondary;
       font-size: rem(16px);
     }
   }
@@ -99,7 +99,7 @@
     align-items: center;
     padding: rem(18px);
     background: #fff;
-    border: rem(1px) solid #eee;
+    border: rem(1px) solid $line-faint;
     border-radius: $r-lg;
 
     transition: border-color $dur $ease;
@@ -147,7 +147,7 @@
 
       .item-variant {
         font-size: rem(13px);
-        color: #666;
+        color: $text-secondary;
         display: flex;
         gap: rem(12px);
       }
@@ -160,7 +160,7 @@
 
         .original-price {
           text-decoration: line-through;
-          color: #999;
+          color: $text-faint;
           font-size: rem(13px);
         }
 
@@ -175,7 +175,7 @@
       display: flex;
       align-items: center;
       gap: rem(8px);
-      border: rem(1px) solid #ddd;
+      border: rem(1px) solid $hairline-gray;
       border-radius: $r-lg;
       padding: rem(4px);
 
@@ -228,17 +228,17 @@
       transition: background 180ms ease;
 
       &:hover {
-        background: #fee;
+        background: $out-of-stock-bg;
 
         svg {
-          stroke: #dc3545;
+          stroke: $out-of-stock-red;
         }
       }
 
       svg {
         width: rem(18px);
         height: rem(18px);
-        stroke: #999;
+        stroke: $text-faint;
       }
     }
   }
@@ -247,16 +247,16 @@
     align-self: flex-start;
     padding: rem(10px) rem(20px);
     background: transparent;
-    border: rem(1px) solid #ddd;
-    color: #666;
+    border: rem(1px) solid $hairline-gray;
+    color: $text-secondary;
     border-radius: $r-lg;
     cursor: pointer;
     transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 
     &:hover {
-      background: #fee;
-      border-color: #dc3545;
-      color: #dc3545;
+      background: $out-of-stock-bg;
+      border-color: $out-of-stock-red;
+      color: $out-of-stock-red;
     }
   }
 
@@ -273,7 +273,7 @@
       font-size: rem(21px);
       margin: 0 0 rem(20px);
       padding-bottom: rem(16px);
-      border-bottom: rem(1px) solid #eee;
+      border-bottom: rem(1px) solid $line-faint;
     }
 
     .summary-row {
@@ -283,7 +283,7 @@
       font-size: rem(15px);
 
       &.savings {
-        color: #28a745;
+        color: $in-stock-green;
 
         .savings-amount {
           font-weight: 600;
@@ -292,7 +292,7 @@
 
       &.shipping {
         font-size: rem(13px);
-        color: #666;
+        color: $text-secondary;
       }
 
       &.total {
@@ -300,13 +300,13 @@
         font-weight: 700;
         margin-top: rem(16px);
         padding-top: rem(16px);
-        border-top: rem(1px) solid #ddd;
+        border-top: rem(1px) solid $hairline-gray;
       }
     }
 
     .summary-divider {
       height: rem(1px);
-      background: #eee;
+      background: $line-faint;
       margin: rem(16px) 0;
     }
 
@@ -328,7 +328,7 @@
       }
 
       &:disabled {
-        background: #ccc;
+        background: $control-disabled;
         cursor: not-allowed;
       }
     }
@@ -352,11 +352,11 @@
       justify-content: center;
       gap: rem(6px);
       margin-top: rem(16px);
-      color: #666;
+      color: $text-secondary;
       font-size: rem(12px);
 
       svg {
-        color: #28a745;
+        color: $in-stock-green;
       }
     }
   }

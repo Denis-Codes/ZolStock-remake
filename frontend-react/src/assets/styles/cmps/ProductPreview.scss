@@ -93,13 +93,13 @@
   transition: color $dur $ease, border-color $dur $ease;
 
   &:hover {
-    color: #e53935;
+    color: $markdown-red;
     border-color: $line-strong;
   }
 
   &.active {
-    color: #e53935;
-    border-color: rgba(#e53935, 0.35);
+    color: $markdown-red;
+    border-color: rgba($markdown-red, 0.35);
   }
 }
 
@@ -232,7 +232,7 @@
 
 .original-price {
   text-decoration: line-through;
-  color: #999;
+  color: $text-faint;
   font-size: rem(13px);
   font-weight: 500;
   display: flex;

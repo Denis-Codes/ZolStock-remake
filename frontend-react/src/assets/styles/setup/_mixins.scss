@@ -31,24 +31,6 @@
     }
   }
 
-  /* Legacy breakpoint mixins -> mapped to the new single-source breakpoints */
-
-@mixin for-mobile-layout {
-  @include until($bp-mobile-max) { @content; }
-}
-
-@mixin for-narrow-layout {
-  @include between($bp-tablet-min, $bp-tablet-max) { @content; }
-}
-
-@mixin for-normal-layout {
-  @include between($bp-desktop-min, $bp-desktop-max) { @content; }
-}
-
-@mixin for-wide-layout {
-  @include from($bp-ultra-min) { @content; }
-}
-
 /* Shared page gutter + container width (single source of truth,
    matches AppHeader's padding scale so header/main/banners/pages all align) */
 @mixin page-gutter {

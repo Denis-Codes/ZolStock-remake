@@ -4,10 +4,10 @@
   padding: 2px 0;
 
   &.low-stock {
-    color: #f57c00;
+    color: $low-stock-amber;
   }
 
   &.out-of-stock {
-    color: #dc3545;
+    color: $out-of-stock-red;
   }
 }
