@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Link, NavLink } from 'react-router-dom'
 import { getLastShoppingRoute } from '../services/last-shopping-route.service'
 import { removeFromCart, updateCartItemQty, clearCart, getCartTotals } from '../store/actions/cart.actions'
+import { onProductImageError } from '../services/util.service'
 
 function CartBreadcrumbs() {
   return (
@@ -72,7 +73,7 @@ export function CartPage() {
             {cart.map((item) => (
               <article key={item.variantKey} className="cart-item">
                 <Link to={`/product/${item.productId}`} className="item-image">
-                  <img src={item.image} alt={item.name} />
+                  <img src={item.image} alt={item.name} onError={onProductImageError} />
                 </Link>
 
                 <div className="item-details">

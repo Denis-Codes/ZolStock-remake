@@ -8,17 +8,8 @@ import { AppAccordion } from '../cmps/AppAccordion'
 import { MyComponent } from '../cmps/MapsCmp.jsx'
 import rawRegions from '../data/branches.withLatLng.json'
 import { productService } from '../services/product'
-
-// Same 5 categories used in the header's nav dropdowns — kept as its own
-// list here (rather than importing from AppHeader) so this homepage section
-// doesn't depend on the header's internal structure.
-const CATEGORY_TILE_DEFS = [
-  { slug: 'furniture', labelHe: 'רהיטים' },
-  { slug: 'clothing', labelHe: 'ביגוד' },
-  { slug: 'electronics', labelHe: 'אלקטרוניקה' },
-  { slug: 'kitchen', labelHe: 'מטבח' },
-  { slug: 'pets', labelHe: 'חיות מחמד' },
-]
+import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
+import { onProductImageError } from '../services/util.service'
 
 /**
  * Three branches in branches.withLatLng.json share one `_placeId`
@@ -91,7 +82,7 @@ function HomePage() {
     let isCancelled = false
 
     Promise.all(
-      CATEGORY_TILE_DEFS.map(async (def) => {
+      DEPARTMENTS.map(async (def) => {
         const products = await productService.query({ category: def.slug })
         const withImage = products.find((p) => p.images?.[0] || p.imgUrl || p.image)
         if (!withImage) return null
@@ -153,8 +144,8 @@ function HomePage() {
 
       <div className="category-tiles">
         {categoryTiles.map((tile) => (
-          <Link key={tile.slug} to={`/category/${tile.slug}`} className="category-tile">
-            <img src={tile.image} alt={tile.labelHe} loading="lazy" />
+          <Link key={tile.slug} to={departmentPath(tile.slug)} className="category-tile">
+            <img src={tile.image} alt={tile.labelHe} loading="lazy" onError={onProductImageError} />
             <span className="category-tile-label">{tile.labelHe}</span>
           </Link>
         ))}

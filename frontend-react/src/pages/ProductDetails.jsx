@@ -209,7 +209,7 @@ export function ProductDetails() {
               )}
             </div>
 
-            {/* Variant selector for clothing */}
+            {/* Variant selector — size/colour, currently used by textiles */}
             {hasVariants && (
               <VariantSelector
                 variants={product.variants}

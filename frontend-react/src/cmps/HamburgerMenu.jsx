@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
 
 export function HamburgerMenu({
   isOpen,
@@ -18,13 +19,15 @@ export function HamburgerMenu({
   const [phase, setPhase] = useState('closed') // 'closed' | 'opening' | 'open' | 'closing'
 
   // Build cats once per input
-  const cats = useMemo(() => ([
-    { id: 'furniture', label: 'רהיטים', to: '/category/furniture', subcats: categorySubcats?.furniture || [] },
-    { id: 'clothing', label: 'ביגוד', to: '/category/clothing', subcats: categorySubcats?.clothing || [] },
-    { id: 'electronics', label: 'אלקטרוניקה', to: '/category/electronics', subcats: categorySubcats?.electronics || [] },
-    { id: 'kitchen', label: 'מטבח', to: '/category/kitchen', subcats: categorySubcats?.kitchen || [] },
-    { id: 'pets', label: 'חיות מחמד', to: '/category/pets', subcats: categorySubcats?.pets || [] },
-  ]), [categorySubcats])
+  const cats = useMemo(
+    () => DEPARTMENTS.map(({ slug, labelHe }) => ({
+      id: slug,
+      label: labelHe,
+      to: departmentPath(slug),
+      subcats: categorySubcats?.[slug] || [],
+    })),
+    [categorySubcats]
+  )
 
   // Handle open/close phases (so we can animate close while still mounted)
   useEffect(() => {

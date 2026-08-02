@@ -6,6 +6,7 @@ import { loadProducts, setFilterBy } from '../store/actions/product.actions'
 import { userService } from '../services/user'
 import { productService } from '../services/product/'
 import { showErrorMsg } from '../services/event-bus.service'
+import { departmentLabel } from '../services/taxonomy.service'
 
 import { ProductBreadcrumbs } from '../cmps/ProductBreadcrumbs.jsx'
 import { ProductList } from '../cmps/ProductList.jsx'
@@ -45,7 +46,11 @@ export function ProductIndex() {
 
         const cats = await productService.getCategories()
         const cat = cats.find(c => c.slug === categorySlug)
-        const nextCatLabel = cat?.labelHe || categorySlug
+        // getCategories() is derived from products, so a department with no
+        // products in stock returns nothing here. Fall back to the taxonomy's
+        // Hebrew label rather than showing an English slug in a Hebrew UI;
+        // departmentLabel() still yields the slug for a genuinely unknown one.
+        const nextCatLabel = cat?.labelHe || departmentLabel(categorySlug)
 
         let nextSubLabel = ''
         if (subCategorySlug) {

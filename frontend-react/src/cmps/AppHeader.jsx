@@ -22,6 +22,7 @@ import logo from '../assets/styles/img/logo-trimmed.png'
 import productsData from '../data/products.json'
 import { HeaderNavDropdown } from './HeaderNavDropdown'
 import { buildCategorySubcats } from '../services/util.service'
+import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
 import { SearchOverlay } from './SearchOverlay.jsx'
 import { HamburgerMenu } from './HamburgerMenu.jsx'
 import { CartIcon } from './CartIcon.jsx'
@@ -185,51 +186,18 @@ export function AppHeader() {
 
           <div className="nav-wrap" aria-hidden={isScrolled}>
             <nav>
-              <HeaderNavDropdown
-                id="furniture"
-                to="/category/furniture"
-                label="רהיטים"
-                subcats={categorySubcats.furniture || []}
-                openDropdown={openDropdown}
-                setOpenDropdown={setOpenDropdown}
-                onNavigate={onNavToCategoryOrSubcategory}
-              />
-              <HeaderNavDropdown
-                id="clothing"
-                to="/category/clothing"
-                label="ביגוד"
-                subcats={categorySubcats.clothing || []}
-                openDropdown={openDropdown}
-                setOpenDropdown={setOpenDropdown}
-                onNavigate={onNavToCategoryOrSubcategory}
-              />
-              <HeaderNavDropdown
-                id="electronics"
-                to="/category/electronics"
-                label="אלקטרוניקה"
-                subcats={categorySubcats.electronics || []}
-                openDropdown={openDropdown}
-                setOpenDropdown={setOpenDropdown}
-                onNavigate={onNavToCategoryOrSubcategory}
-              />
-              <HeaderNavDropdown
-                id="kitchen"
-                to="/category/kitchen"
-                label="מטבח"
-                subcats={categorySubcats.kitchen || []}
-                openDropdown={openDropdown}
-                setOpenDropdown={setOpenDropdown}
-                onNavigate={onNavToCategoryOrSubcategory}
-              />
-              <HeaderNavDropdown
-                id="pets"
-                to="/category/pets"
-                label="חיות מחמד"
-                subcats={categorySubcats.pets || []}
-                openDropdown={openDropdown}
-                setOpenDropdown={setOpenDropdown}
-                onNavigate={onNavToCategoryOrSubcategory}
-              />
+              {DEPARTMENTS.map(({ slug, labelHe }) => (
+                <HeaderNavDropdown
+                  key={slug}
+                  id={slug}
+                  to={departmentPath(slug)}
+                  label={labelHe}
+                  subcats={categorySubcats[slug] || []}
+                  openDropdown={openDropdown}
+                  setOpenDropdown={setOpenDropdown}
+                  onNavigate={onNavToCategoryOrSubcategory}
+                />
+              ))}
 
               {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 

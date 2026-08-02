@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleWishlistItem } from '../store/actions/wishlist.actions'
-import { getVariantColorValue } from '../services/util.service'
+import { getVariantColorValue, onProductImageError } from '../services/util.service'
 import imageFit from '../data/product-image-fit.json'
 import { SaleBadge } from './SaleBadge'
 import { StarRating } from './StarRating'
@@ -84,7 +84,7 @@ function ProductPreview({ product }) {
     <article className={`product-card ${!product.inStock ? 'out-of-stock' : ''}`}>
       <Link className="card-media" to={to}>
         {img ? (
-          <img src={img} alt={title} loading="lazy" style={getImageFitStyle(img)} />
+          <img src={img} alt={title} loading="lazy" style={getImageFitStyle(img)} onError={onProductImageError} />
         ) : (
           <div className="media-placeholder">אין תמונה</div>
         )}

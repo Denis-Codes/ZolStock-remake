@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
 
 /**
  * This page was the starter template's demo screen — lorem ipsum, a pink
@@ -12,14 +13,6 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
  * inventing it would put false claims on a real chain's page.
  */
 
-const DEPARTMENTS = [
-  { slug: 'furniture', labelHe: 'רהיטים' },
-  { slug: 'clothing', labelHe: 'ביגוד' },
-  { slug: 'electronics', labelHe: 'אלקטרוניקה' },
-  { slug: 'kitchen', labelHe: 'מטבח' },
-  { slug: 'pets', labelHe: 'חיות מחמד' },
-]
-
 export function AboutUs() {
   return (
     <section className="about-page">
@@ -27,7 +20,7 @@ export function AboutUs() {
         <h1>אודות זול סטוק</h1>
         <p className="about-lead">
           זול סטוק היא רשת קמעונאית שמביאה מגוון רחב של מוצרים לבית ולמשפחה
-          במחירים נגישים. מרהיטים ועד כלי מטבח, מביגוד ועד מוצרי חשמל — הכול
+          במחירים נגישים. מכלי בית וטקסטיל ועד אפייה, יצירה וכלי עבודה — הכול
           תחת קורת גג אחת, ובמחיר שמתאים לכל תקציב.
         </p>
       </header>
@@ -47,7 +40,7 @@ export function AboutUs() {
         <ul>
           {DEPARTMENTS.map(({ slug, labelHe }) => (
             <li key={slug}>
-              <Link to={`/category/${slug}`}>{labelHe}</Link>
+              <Link to={departmentPath(slug)}>{labelHe}</Link>
             </li>
           ))}
         </ul>
@@ -72,8 +65,8 @@ export function AboutStory() {
     <article className="about-article">
       <h2>הסיפור שלנו</h2>
       <p>
-        הרעיון פשוט: לרכז תחת קורת גג אחת את מה שמשפחה צריכה — רהיטים, ביגוד,
-        מוצרי חשמל, כלי מטבח וציוד לחיות מחמד — ולמכור אותו במחיר שלא מחייב
+        הרעיון פשוט: לרכז תחת קורת גג אחת את מה שמשפחה צריכה — כלי בית, טקסטיל,
+        אפייה, נקיון, יצירה, צעצועים וכלי עבודה — ולמכור אותו במחיר שלא מחייב
         להתפשר על האיכות.
       </p>
       <p>

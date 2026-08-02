@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { onProductImageError } from '../services/util.service'
 
 export function ImageGallery({ images, productName }) {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -31,6 +32,7 @@ export function ImageGallery({ images, productName }) {
           alt={`${productName} - ${activeIndex + 1}`}
           className="main-image"
           onClick={handleMainImageClick}
+          onError={onProductImageError}
         />
 
         {imageList.length > 1 && (
@@ -61,7 +63,7 @@ export function ImageGallery({ images, productName }) {
               className={`thumbnail ${index === activeIndex ? 'active' : ''}`}
               onClick={() => handleThumbnailClick(index)}
             >
-              <img src={img} alt={`${productName} thumbnail ${index + 1}`} />
+              <img src={img} alt={`${productName} thumbnail ${index + 1}`} onError={onProductImageError} />
             </button>
           ))}
         </div>

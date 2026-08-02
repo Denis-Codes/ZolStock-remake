@@ -5,6 +5,7 @@ import { faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons'
 // Tightly cropped copy of logo.png, which carries ~53% transparent width
 // and ~42% transparent height. The original is kept alongside it.
 import logo from '../assets/styles/img/logo-trimmed.png'
+import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
 
 // Below this width the link groups collapse into accordions, so the footer
 // is a short list of headings instead of a wall of links. Keep in step with
@@ -18,13 +19,10 @@ const SECTIONS = [
   {
     id: 'categories',
     title: 'קטגוריות',
-    links: [
-      { to: '/category/furniture', label: 'רהיטים' },
-      { to: '/category/clothing', label: 'ביגוד' },
-      { to: '/category/electronics', label: 'אלקטרוניקה' },
-      { to: '/category/kitchen', label: 'מטבח' },
-      { to: '/category/pets', label: 'חיות מחמד' },
-    ],
+    links: DEPARTMENTS.map(({ slug, labelHe }) => ({
+      to: departmentPath(slug),
+      label: labelHe,
+    })),
   },
   {
     id: 'service',

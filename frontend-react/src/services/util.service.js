@@ -68,6 +68,43 @@ export function getVariantColorValue(colorName) {
   return colorMap[colorName] || '#cccccc'
 }
 
+/*
+ * Stand-in for a product photo that fails to load.
+ *
+ * The catalogue was rebuilt against the chain's eight real departments before
+ * the photography for it existed, so every row currently points at a file that
+ * is not on disk yet. Without this, each of those renders as the browser's
+ * broken-image glyph — which reads as a bug rather than as pending content.
+ *
+ * Drawn rather than borrowed: a flat parcel outline on the sunken-surface
+ * tone, one stroke weight, no shadow, sized to sit inside the same 1:1
+ * contain box a real photo gets. It disappears on its own as soon as the real
+ * files land — nothing needs unwiring.
+ */
+const PRODUCT_IMAGE_FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <rect width="120" height="120" fill="#F1F3F5"/>
+  <g fill="none" stroke="#dddddd" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M30 47l30-15 30 15v26L60 88 30 73z"/>
+    <path d="M30 47l30 15 30-15"/>
+    <path d="M60 62v26"/>
+  </g>
+</svg>`
+
+export const PRODUCT_IMAGE_FALLBACK =
+  'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(PRODUCT_IMAGE_FALLBACK_SVG)
+
+/**
+ * onError handler for any <img> showing a product photo. The dataset flag
+ * matters: assigning src from inside onError fires onError again if the
+ * fallback itself ever fails, and an unguarded handler would spin.
+ */
+export function onProductImageError(ev) {
+  const img = ev.currentTarget
+  if (img.dataset.fallbackApplied) return
+  img.dataset.fallbackApplied = 'true'
+  img.src = PRODUCT_IMAGE_FALLBACK
+}
+
 const RECENTLY_VIEWED_KEY = 'zolstock_recently_viewed'
 const RECENTLY_VIEWED_LIMIT = 10
 

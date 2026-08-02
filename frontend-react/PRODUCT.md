@@ -20,7 +20,7 @@ The product is a full Hebrew RTL e-commerce storefront: browse by category and s
 
 ## Positioning
 
-The product's angle is discount retail across an unusually wide category spread — furniture, clothing, electronics, kitchen, and pets in one shop. The buying proposition is the markdown itself; a neighboring storefront that hides or de-emphasizes the discount is not selling the same thing.
+The product's angle is discount retail across an unusually wide category spread — housewares, gifts, textiles, crafts, cleaning, baking, toys, and tools in one shop. The buying proposition is the markdown itself; a neighboring storefront that hides or de-emphasizes the discount is not selling the same thing.
 
 ## Operating Context
 
@@ -44,7 +44,7 @@ Fixed constraints — future work must not change these:
 Undecided / known gaps:
 
 - No checkout or payment flow exists — the cart is currently the end of the purchase path.
-- `src/pages/AboutUs.jsx` is unmodified starter-template boilerplate (lorem ipsum, "Popo Decaprio", demo SplitPane/FancyBox). Its real content is undecided.
+- `src/pages/AboutUs.jsx` has been rewritten from the starter-template boilerplate into real Hebrew copy (departments list, branch CTA). It deliberately makes no claims about founding dates, store counts, or history, since none are known — future work must not invent them.
 - `index.html` still carries the Vite starter title and favicon.
 - The footer's shortcut links (branches, accessibility, terms, privacy, returns, contact) point nowhere; whether those pages will exist is undecided.
 
@@ -57,8 +57,10 @@ Undecided / known gaps:
 
 ## Evidence on Hand
 
-- `src/data/products.json` — 38 products across furniture, clothing, electronics, kitchen, and pets, with Hebrew display names, ILS pricing, specs, and images. **This is placeholder data.** Brands (e.g. "HomeLab"), ratings, review counts, and stock quantities are invented and must never be presented as real ZolStock facts or cited as evidence anywhere in copy.
-- Product imagery lives under `assets/img/products/`.
+- The chain's real departments are כלי בית (housewares), מתנות (gifts), טקסטיל (textiles), יצירה (crafts), נקיון (cleaning), אפייה (baking), צעצועים (toys), and כלי עבודה (tools). Supplied by the repo owner from the chain's own signage; this is the authoritative list and `src/services/taxonomy.service.js` is its single source in code. An earlier catalogue used an invented five (furniture / clothing / electronics / kitchen / pets) that matched no real shop.
+- `src/data/products.json` — 40 products, five per department, with Hebrew display names, ILS pricing, subcategories, specs, and variants. **This is placeholder data.** Product names, brands (e.g. "HomeLab", "ToolCraft"), ratings, review counts, and stock quantities are invented and must never be presented as real ZolStock facts or cited as evidence anywhere in copy. Only the department names are real.
+- **There is currently no product photography.** All 40 rows reference files under `public/assets/img/products/` that do not exist; a drawn placeholder stands in for each. `IMAGES.md` is the sourcing manifest. Future work must not describe the catalogue as illustrated or photographed until those files land, and must not source them from the real chain's site.
+- ~23 images from the previous invented catalogue remain in `public/assets/img/products/` and are referenced by nothing.
 - Playwright smoke tests, including mobile coverage, exist in the repo.
 - No real customer testimonials, sales figures, press, or partnership claims exist. Future work must not fabricate any.
 
@@ -66,6 +68,6 @@ Undecided / known gaps:
 
 1. **The markdown is the merchandise.** Price, original price, and percent off travel together everywhere a product appears; never let a layout bury the saving.
 2. **Design at arm's length, one-handed.** Mobile Hebrew RTL is the reference case for every decision; desktop adapts from it, not the other way round.
-3. **Breadth without disorientation.** Five unrelated categories share one shop — navigation and filtering must make the range feel deliberate rather than scattered.
+3. **Breadth without disorientation.** Eight loosely related departments share one shop — navigation and filtering must make the range feel deliberate rather than scattered.
 4. **Read as a real chain, not a demo.** Placeholder data may sit behind the interface, but nothing in the experience should feel like a template or a stub.
 5. **The brand marks are inherited, not authored.** ZolStock's blue, yellow, name, and logo are fixed inputs; expression happens in everything around them.

@@ -11,7 +11,7 @@ test.describe('Homepage - Smoke Tests', () => {
   });
 
   test('the page loads successfully with the correct title @smoke', async ({ page }) => {
-    await expect(page).toHaveTitle(/React Starter - Coding Academy/);
+    await expect(page).toHaveTitle(/זול סטוק/);
   });
 
   test('the header is displayed @smoke', async () => {

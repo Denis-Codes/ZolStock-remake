@@ -8,13 +8,13 @@ test.describe('Product Pages - Smoke Tests', () => {
   test('the product listing page loads and displays products @smoke', async ({ page }) => {
     const productIndexPage = new ProductIndexPage(page);
 
-    // "furniture" is a known-valid category slug (confirmed directly
+    // "housewares" is a known-valid category slug (confirmed directly
     // against products.json's own category field, and against the
     // category ids used in the header's nav dropdowns) — not derived
     // from a specific product, so this doesn't carry the same routing
     // risk we hit earlier when picking a product first and assuming
     // its `category` field matched a real route.
-    await productIndexPage.gotoCategory('furniture');
+    await productIndexPage.gotoCategory('housewares');
 
     // A direct check that the page actually rendered products, rather
     // than silently showing the empty state or having crashed. This is

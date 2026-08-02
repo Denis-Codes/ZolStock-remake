@@ -16,14 +16,14 @@ test.describe('Header Navigation - Smoke Tests', () => {
 
     await appHeaderPage.openMenu();
     await expect(appHeaderPage.drawer).toBeVisible();
-    await expect(appHeaderPage.categoryLink('רהיטים')).toBeVisible();
+    await expect(appHeaderPage.categoryLink('כלי בית')).toBeVisible();
 
-    await appHeaderPage.navigateToCategory('רהיטים');
+    await appHeaderPage.navigateToCategory('כלי בית');
 
     // Navigating via a category link should both route correctly and
     // close the drawer — closeAndReset() calls onNavigate + handleClose
     // together, so this one assertion pair covers both behaviors.
-    await expect(page).toHaveURL(/\/category\/furniture/);
+    await expect(page).toHaveURL(/\/category\/housewares/);
     await expect(appHeaderPage.drawer).not.toBeVisible();
   });
 });
