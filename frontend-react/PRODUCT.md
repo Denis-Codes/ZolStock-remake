@@ -31,19 +31,25 @@ The product's angle is discount retail across an unusually wide category spread 
 
 ## Capabilities and Constraints
 
-Implemented surfaces (routes in `src/RootCmp.jsx`): home, category and subcategory index, product details, search results, cart, wishlist, login/signup, user details, reviews, chat, admin, about.
+Implemented surfaces (routes in `src/RootCmp.jsx`): home, category and subcategory index, product details, search results, cart, wishlist, checkout, order confirmation, order history, login/signup, user details, reviews, chat, admin, about.
 
-Supporting capabilities: sidebar filters, variant selection, star ratings, stock warnings, sale badges, cart and wishlist persisted to localStorage, image galleries and carousels (Embla, Slick), toast messages, skeleton loading states.
+Supporting capabilities: sidebar filters, variant selection, star ratings, stock warnings, sale badges, image galleries and carousels (Embla, Slick), toast messages, skeleton loading states.
+
+Cart and wishlist have two backings, chosen per call: a signed-in shopper's live on the server and survive a change of device; a guest's stay in localStorage. Whatever a guest collected merges into their account on login, quantities summed rather than overwritten.
 
 Fixed constraints — future work must not change these:
 
 - **Hebrew RTL is the only locale.** No LTR or English mode is planned; layout may assume RTL permanently.
 - **Discount-first pricing display.** `originalPrice`, `salePrice`, and `discountPercent` are core product truth and must stay visible wherever a product appears.
-- **Stack and data shape.** React 18 + Vite + Redux (with thunks) + SCSS on the frontend; the existing `src/data/products.json` schema and the Node/Express backend at `localhost:3030` (REST + socket.io) are fixed.
+- **Stack and data shape.** React 18 + Vite + Redux (with thunks) + SCSS on the frontend; the Node/Express backend at `localhost:3030` (REST + socket.io) is fixed.
+- **Products are keyed by Mongo ObjectId.** The catalogue is served from MongoDB, seeded from `src/data/products.json`, which remains the source of truth for its contents. The `p1001`-style id survives as an indexed `sku` and is what the מק״ט line shows; the API resolves either form, so older product URLs keep working. `VITE_LOCAL=true` still reads the JSON directly with no backend, and the `github` build always does.
+- **The server prices everything.** Carts store product references and quantities, never prices; item prices, discounts and delivery are resolved from the catalogue on read and again at checkout. A client cannot state what an order costs.
 
 Undecided / known gaps:
 
-- No checkout or payment flow exists — the cart is currently the end of the purchase path.
+- **Delivery pricing is part placeholder.** The ₪300 free-delivery threshold comes from copy the cart already showed; the flat fee beneath it (currently ₪29, in `backend/api/cart/cart.service.js` and mirrored in `cart.actions.js`) was chosen, not sourced. Confirm before it is presented as the chain's real terms.
+- Payment is simulated. No gateway is wired up and no card details are collected or stored; an order records a `SIM-` reference and is marked paid. The checkout screen says so in plain Hebrew.
+- `score` on a user is a leftover from the starter template. It is server-owned (only an admin can set it) and nothing spends it; whether it becomes real store credit is undecided.
 - `src/pages/AboutUs.jsx` has been rewritten from the starter-template boilerplate into real Hebrew copy (departments list, branch CTA). It deliberately makes no claims about founding dates, store counts, or history, since none are known — future work must not invent them.
 - `index.html` still carries the Vite starter title and favicon.
 - The footer's shortcut links (branches, accessibility, terms, privacy, returns, contact) point nowhere; whether those pages will exist is undecided.

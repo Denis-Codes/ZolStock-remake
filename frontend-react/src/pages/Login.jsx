@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 
 import { login } from '../store/actions/user.actions'
 
@@ -18,6 +18,12 @@ export function Login() {
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const navigate = useNavigate()
+    const location = useLocation()
+
+    // Where to land after signing in. Checkout sends shoppers here when they
+    // are signed out, and dropping them on the homepage made them hunt for
+    // their cart again — on the main entrance to the purchase path.
+    const redirectTo = location.state?.from || '/'
 
     function handleChange(ev) {
         const { name, value } = ev.target
@@ -45,7 +51,7 @@ export function Login() {
                 setError('שם המשתמש אינו קיים. בדקו את הפרטים ונסו שוב.')
                 return
             }
-            navigate('/')
+            navigate(redirectTo)
         } catch {
             setError('ההתחברות נכשלה. נסו שוב בעוד רגע.')
         } finally {

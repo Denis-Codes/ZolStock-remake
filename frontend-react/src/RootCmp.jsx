@@ -34,6 +34,15 @@ const CartPage = lazy(() =>
 const WishlistPage = lazy(() =>
   import('./pages/WishlistPage.jsx').then(m => ({ default: m.WishlistPage }))
 )
+const CheckoutPage = lazy(() =>
+  import('./pages/CheckoutPage.jsx').then(m => ({ default: m.CheckoutPage }))
+)
+const OrderConfirmation = lazy(() =>
+  import('./pages/OrderConfirmation.jsx').then(m => ({ default: m.OrderConfirmation }))
+)
+const OrdersPage = lazy(() =>
+  import('./pages/OrdersPage.jsx').then(m => ({ default: m.OrdersPage }))
+)
 // These three export named functions, not defaults. `lazy()` reads
 // `module.default`, so without the mapping it rendered `undefined` and the
 // whole /login route crashed the tree — no header, no footer, blank page.
@@ -46,6 +55,7 @@ const Signup = lazy(() => import('./pages/Signup.jsx').then(m => ({ default: m.S
 import { rememberShoppingRoute } from './services/last-shopping-route.service'
 import { loadCart } from './store/actions/cart.actions'
 import { loadWishlist } from './store/actions/wishlist.actions'
+import { reconcilePersistedCatalogueState } from './services/catalogue-version.service'
 
 // Loading fallback component
 function PageLoader() {
@@ -74,8 +84,14 @@ export function RootCmp() {
     rememberShoppingRoute(location.pathname + location.search)
   }, [location.pathname, location.search])
 
-  // Initialize cart and wishlist from localStorage on app load
+  const isCheckout = location.pathname.startsWith('/checkout')
+
+  // Initialize cart and wishlist from localStorage on app load.
+  // The reconcile has to run first: it clears state left over from a previous
+  // catalogue, and loadCart/loadWishlist would otherwise read the stale values
+  // straight into the store before it got the chance.
   useEffect(() => {
+    reconcilePersistedCatalogueState()
     dispatch(loadCart())
     dispatch(loadWishlist())
   }, [dispatch])
@@ -106,6 +122,12 @@ export function RootCmp() {
             <Route path="cart" element={<CartPage />} />
             <Route path="wishlist" element={<WishlistPage />} />
 
+            {/* Checkout and orders all redirect to /login when signed out;
+                the guard lives in the pages so a deep link behaves too. */}
+            <Route path="checkout" element={<CheckoutPage />} />
+            <Route path="orders" element={<OrdersPage />} />
+            <Route path="order/:orderId" element={<OrderConfirmation />} />
+
             <Route path="user/:id" element={<UserDetails />} />
             <Route path="review" element={<ReviewIndex />} />
             <Route path="chat" element={<ChatApp />} />
@@ -121,7 +143,12 @@ export function RootCmp() {
 
       <AppFooter />
 
-      <ScrollToTopBtn />
+      {/* Suppressed on checkout: the scroll-to-top button is fixed to the
+          inline-start bottom corner at z-index 999999 and portals to <body>,
+          which put it directly over the docked total — the one element the
+          checkout layout exists to keep visible. No CSS scoping can reach a
+          portal, so the decision belongs here. */}
+      {!isCheckout && <ScrollToTopBtn />}
     </div>
   )
 }

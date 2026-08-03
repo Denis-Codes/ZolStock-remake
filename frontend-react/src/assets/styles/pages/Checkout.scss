@@ -1,0 +1,778 @@
+/* Checkout, order confirmation and order history.
+ *
+ * Composition: two panes. The form leads on the inline-start (right) edge and
+ * the order manifest holds the other side, each scrolling independently from
+ * $bp-lg up, so the running total and the aggregate saving stay on screen
+ * while the form is being filled.
+ *
+ * Note what that does and does not cover: the manifest carries the order-level
+ * saving, not a per-line struck original. Adding the markdown to each line
+ * would state Principle 1 more fully here; today the lines show a quantity,
+ * a name and a sum.
+ *
+ * Below $bp-lg the panes stack and the action moves into a docked bar, because
+ * a split pane on a phone is two cramped columns rather than one readable one.
+ */
+
+.checkout-page {
+  background: $page-bg;
+  min-height: 60vh;
+
+  /* Room for the docked bar so the last field is never trapped under it. */
+  @include until($bp-lg) {
+    padding-block-end: rem(88px);
+  }
+}
+
+.checkout-split {
+  display: grid;
+  gap: rem(24px);
+  align-items: start;
+  padding-block: rem(24px);
+
+  @include from($bp-lg) {
+    grid-template-columns: minmax(0, 1fr) rem(380px);
+    gap: rem(32px);
+  }
+}
+
+/* ---------- form pane ---------- */
+
+.checkout-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: rem(16px);
+  margin-block-end: rem(20px);
+
+  h1 {
+    font-size: rem(28px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* Sized to the 44px touch minimum — it was a ~20px-tall text link, which is
+     the thumb-first rule's whole point. */
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    min-height: rem(44px);
+    padding-inline: rem(8px);
+    margin-inline-end: rem(-8px);
+    font-size: rem(14px);
+    font-weight: 700;
+    color: $clr1;
+    text-decoration: none;
+    border-radius: $r-md;
+    transition: background-color $dur $ease;
+
+    &:hover { background: rgba($clr1, 0.08); }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr1;
+      outline-offset: rem(2px);
+    }
+  }
+}
+
+.checkout-form-pane,
+.checkout-manifest {
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(24px);
+
+  @include until($bp-sm) {
+    border-radius: 0;
+    border-inline: none;
+    padding: rem(18px);
+  }
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: rem(16px);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+  min-width: 0;
+
+  &--span-2 { grid-column: span 2; }
+  &--span-1 { grid-column: span 1; }
+
+  label {
+    font-size: rem(13px);
+    font-weight: 700;
+    color: $clr3;
+    display: flex;
+    align-items: baseline;
+    gap: rem(6px);
+  }
+
+  &__optional {
+    font-size: rem(11px);
+    font-weight: 600;
+    color: $text-muted;
+  }
+
+  input {
+    height: rem(46px);
+    padding-inline: rem(12px);
+    font-family: inherit;
+    font-size: rem(16px); /* 16px stops iOS zooming the page on focus */
+    color: $clr3;
+    background: $surface;
+    border: 1px solid $line;
+    border-radius: $r-md;
+    transition: border-color $dur $ease, box-shadow $dur $ease;
+
+    /* One focus indicator, not two. Declaring the halo on :focus and an
+       outline on :focus-visible fired both for keyboard users and drew a
+       concentric double ring; DESIGN.md specifies the halo replaces the
+       outline. */
+    &:focus-visible {
+      outline: none;
+      border-color: rgba($clr1, 0.55);
+      box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12);
+    }
+
+    &:focus:not(:focus-visible) {
+      outline: none;
+      border-color: rgba($clr1, 0.55);
+      box-shadow: 0 0 0 rem(4px) rgba($clr1, 0.12);
+    }
+  }
+
+  /* Form errors use the out-of-stock red, not the markdown red. In this
+     system red-as-markdown means "you are saving money"; an invalid field
+     must not borrow the discount colour.
+     The :focus variants are declared here too because `.field input:focus`
+     (0,2,1) outranks `.field--invalid input` (0,1,1) — without them, focusing
+     an invalid field turned its border blue again and dropped the only signal
+     that it was still wrong. */
+  &--invalid input,
+  &--invalid input:focus,
+  &--invalid input:focus-visible {
+    border-color: rgba($out-of-stock-red, 0.65);
+  }
+
+  &--invalid input:focus,
+  &--invalid input:focus-visible {
+    box-shadow: 0 0 0 rem(4px) rgba($out-of-stock-red, 0.12);
+  }
+
+  &__error {
+    margin: 0;
+    font-size: rem(12.5px);
+    font-weight: 600;
+    color: darken($out-of-stock-red, 6%);
+  }
+}
+
+.pay-note {
+  margin-block-start: rem(24px);
+  padding: rem(16px);
+  background: $surface-sunken;
+  border-radius: $r-md;
+
+  h2 {
+    margin: 0 0 rem(6px);
+    font-size: rem(15px);
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    font-size: rem(14px);
+    line-height: 1.55;
+    color: $text-muted;
+  }
+}
+
+/* ---------- the action ---------- */
+
+.place-order {
+  min-height: rem(52px);
+  padding-inline: rem(24px);
+  font-family: inherit;
+  font-size: rem(16px);
+  font-weight: 700;
+  color: $clr4;
+  background: $clr1;
+  border: none;
+  border-radius: $r-md;
+  cursor: pointer;
+  transition: background-color $dur $ease;
+
+  &:hover:not(:disabled) { background: darken($clr1, 8%); }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+
+  &:disabled {
+    background: $control-disabled;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  /* Placing is the most anxious moment in the flow, so it keeps the blue fill
+     and its white label stays legible. Greying out here rendered white on
+     #ccc at roughly 1.5:1 — and since an empty cart never reaches this button,
+     the disabled treatment WAS the loading state. */
+  &--placing,
+  &--placing:disabled {
+    background: $clr1;
+    opacity: 1;
+    cursor: progress;
+  }
+
+  &__spinner {
+    display: inline-block;
+    width: rem(16px);
+    height: rem(16px);
+    margin-inline-end: rem(8px);
+    vertical-align: -2px;
+    border: rem(2px) solid rgba(255, 255, 255, 0.4);
+    border-block-start-color: $clr4;
+    border-radius: 50%;
+    animation: place-order-spin 0.6s linear infinite;
+  }
+
+  &--inline {
+    width: 100%;
+    margin-block-start: rem(24px);
+
+    /* The docked bar owns the action below the split. Without this hide, a
+       phone renders BOTH submit buttons for the same form. */
+    @include until($bp-lg) { display: none; }
+  }
+}
+
+@keyframes place-order-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-order__spinner { animation-duration: 2s; }
+}
+
+/* Checkout failures stay on the page. A 3s toast is the wrong container for
+   "the thing you were buying just sold out". */
+.checkout-error {
+  margin-block-start: rem(16px);
+  padding: rem(14px) rem(16px);
+  background: $out-of-stock-bg;
+  border: 1px solid rgba($out-of-stock-red, 0.35);
+  border-radius: $r-md;
+  color: darken($out-of-stock-red, 10%);
+  font-size: rem(14px);
+  font-weight: 600;
+}
+
+/* ---------- manifest pane ---------- */
+
+.checkout-manifest {
+  /* Offsets clear the sticky header (~54px) rather than the viewport top —
+     the project's existing convention, see ProductIndex.scss. Anchoring at
+     24px tucked the manifest title under the opaque bar and overshot the
+     viewport by the header's height, pushing the total below the fold. */
+  @include from($bp-lg) {
+    position: sticky;
+    top: rem(72px);
+    max-height: calc(100vh - #{rem(88px)});
+    overflow-y: auto;
+  }
+}
+
+.manifest__title {
+  margin: 0 0 rem(16px);
+  font-size: rem(18px);
+  font-weight: 800;
+}
+
+.manifest__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+}
+
+.manifest-line {
+  display: grid;
+  grid-template-columns: rem(56px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: rem(12px);
+
+  &__media {
+    position: relative;
+    width: rem(56px);
+    height: rem(56px);
+    background: $surface-sunken;
+    border-radius: $r-md;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  /* Quantity rides the corner of the thumbnail rather than taking a column of
+     its own — the manifest is a reference, not an editor. */
+  &__qty {
+    position: absolute;
+    inset-block-start: rem(-2px);
+    inset-inline-start: rem(-2px);
+    min-width: rem(20px);
+    height: rem(20px);
+    padding-inline: rem(5px);
+    display: grid;
+    place-items: center;
+    font-size: rem(11px);
+    font-weight: 800;
+    color: $clr4;
+    background: $clr1;
+    border-radius: $r-pill;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: rem(2px);
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: rem(14px);
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__variant {
+    font-size: rem(12px);
+    color: $text-muted;
+  }
+
+  &__sum {
+    font-size: rem(14px);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+.manifest__totals {
+  margin: rem(18px) 0 0;
+  padding-block-start: rem(16px);
+  border-block-start: 1px solid $line-soft;
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+}
+
+.manifest-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: rem(12px);
+  font-size: rem(14px);
+
+  dt { color: $text-muted; }
+  dd { margin: 0; font-weight: 700; }
+
+  /* Red states a fact here: a real saving computed from real prices. */
+  &--savings dd { color: darken($markdown-red, 8%); }
+}
+
+.manifest__nudge {
+  margin: rem(12px) 0 0;
+  padding: rem(10px) rem(12px);
+  font-size: rem(13px);
+  font-weight: 700;
+  color: $clr1;
+  background: rgba($clr1, 0.08);
+  border-radius: $r-md;
+}
+
+.manifest__grand {
+  margin-block-start: rem(18px);
+  padding-block-start: rem(16px);
+  border-block-start: 1px solid $line-soft;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(12px);
+
+  &-label {
+    font-size: rem(15px);
+    font-weight: 800;
+  }
+}
+
+/* The signature price tag, reused at the one moment the total matters most.
+   Yellow fill under dark text — never yellow text on a light surface. */
+/* The JSX sets dir="ltr" on the tag, which is what locks ₪ → whole → agorot.
+   This previously ALSO set flex-direction: row-reverse, and the two cancelled
+   out — the tag rendered "119₪" while the rows directly above it rendered
+   "₪130". One reversal only. */
+.price-tag--total {
+  display: inline-flex;
+  align-items: baseline;
+  gap: rem(2px);
+  padding: rem(8px) rem(14px);
+  background: $clr2;
+  color: $clr3;
+  border-radius: $r-md;
+
+  .price-tag__currency {
+    font-size: rem(14px);
+    opacity: 0.9;
+  }
+
+  .price-tag__whole {
+    font-size: rem(28px);
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    line-height: 1;
+  }
+
+  /* Agorot ride as a superscript, per DESIGN.md's price-tag anatomy. */
+  .price-tag__agorot {
+    font-size: rem(14px);
+    font-weight: 800;
+    align-self: flex-start;
+    margin-block-start: rem(2px);
+  }
+}
+
+/* ---------- docked action (below $bp-lg) ---------- */
+
+.checkout-dock {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(12px);
+  padding: rem(12px) rem(16px);
+  padding-block-end: max(#{rem(12px)}, env(safe-area-inset-bottom));
+  background: $surface;
+  border-block-start: 1px solid $line-soft;
+
+  @include from($bp-lg) { display: none; }
+
+  &__sum {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  &__label {
+    font-size: rem(12px);
+    color: $text-muted;
+  }
+
+  &__value {
+    font-size: rem(20px);
+    font-weight: 800;
+  }
+
+  .place-order { flex: 0 0 auto; }
+}
+
+/* ---------- empty state ---------- */
+
+.checkout-empty {
+  text-align: center;
+  padding: rem(64px) rem(24px);
+
+  h1, h2 {
+    margin: 0 0 rem(8px);
+    font-size: rem(24px);
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0 0 rem(24px);
+    color: $text-muted;
+  }
+
+  &__cta {
+    display: inline-block;
+    min-height: rem(48px);
+    padding: rem(13px) rem(28px);
+    font-weight: 700;
+    color: $clr4;
+    background: $clr1;
+    border-radius: $r-md;
+    text-decoration: none;
+    transition: background-color $dur $ease;
+
+    &:hover { background: darken($clr1, 8%); }
+  }
+}
+
+/* ---------- order confirmation ---------- */
+
+.order-confirmation {
+  background: $page-bg;
+  padding-block: rem(32px) rem(48px);
+}
+
+.order-hero {
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(32px) rem(24px);
+  text-align: center;
+  margin-block-end: rem(20px);
+
+  @include until($bp-sm) {
+    border-radius: 0;
+    border-inline: none;
+  }
+
+  /* The one authored motion moment in the flow: the check draws itself once
+     on arrival. Everything else in this system is still. */
+  &__mark {
+    width: rem(56px);
+    height: rem(56px);
+    margin-inline: auto;
+    margin-block-end: rem(16px);
+    display: grid;
+    place-items: center;
+    color: $clr4;
+    background: $in-stock-green;
+    border-radius: 50%;
+
+    svg {
+      width: rem(28px);
+      height: rem(28px);
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: order-check-draw 420ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+    }
+  }
+
+  h1 {
+    margin: 0 0 rem(8px);
+    font-size: rem(26px);
+    font-weight: 800;
+  }
+
+  &__sub {
+    margin: 0;
+    color: $text-muted;
+  }
+
+  /* The reference is the only part worth carrying colour — the date rides
+     along in muted text rather than competing with it. */
+  &__ref {
+    margin-block-start: rem(16px);
+    font-size: rem(13px);
+    color: $text-muted;
+
+    span {
+      font-weight: 700;
+      color: $clr1;
+      font-variant-numeric: tabular-nums;
+      unicode-bidi: plaintext;
+    }
+  }
+}
+
+@keyframes order-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .order-hero__mark svg {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+.order-panels {
+  display: grid;
+  gap: rem(20px);
+  /* Without this the shorter address panel stretched to match the items
+     panel and rendered as a mostly-empty box. */
+  align-items: start;
+
+  @include from($bp-lg) {
+    grid-template-columns: minmax(0, 1fr) rem(380px);
+  }
+}
+
+.order-panel {
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(24px);
+
+  @include until($bp-sm) {
+    border-radius: 0;
+    border-inline: none;
+    padding: rem(18px);
+  }
+
+  h2 {
+    margin: 0 0 rem(14px);
+    font-size: rem(17px);
+    font-weight: 800;
+  }
+
+  address {
+    font-style: normal;
+    line-height: 1.7;
+    color: $clr3;
+  }
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(12px);
+  margin-block-start: rem(20px);
+}
+
+.order-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: rem(44px);
+  padding-inline: rem(20px);
+  font-size: rem(14px);
+  font-weight: 700;
+  border-radius: $r-md;
+  text-decoration: none;
+  transition: background-color $dur $ease, color $dur $ease, border-color $dur $ease;
+
+  &--primary {
+    color: $clr4;
+    background: $clr1;
+
+    &:hover { background: darken($clr1, 8%); }
+  }
+
+  &--ghost {
+    color: $clr1;
+    background: transparent;
+    border: 1px solid rgba($clr1, 0.35);
+
+    &:hover {
+      background: $clr1;
+      color: $clr4;
+    }
+  }
+}
+
+/* ---------- order history ---------- */
+
+.orders-page {
+  background: $page-bg;
+  padding-block: rem(24px) rem(48px);
+
+  > h1 {
+    margin: 0 0 rem(20px);
+    font-size: rem(26px);
+    font-weight: 800;
+  }
+}
+
+.order-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+}
+
+.order-card {
+  display: block;
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(18px);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color $dur $ease;
+
+  &:hover { border-color: rgba($clr1, 0.35); }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+
+  &__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: rem(12px);
+    flex-wrap: wrap;
+  }
+
+  &__date {
+    font-size: rem(13px);
+    color: $text-muted;
+  }
+
+  &__total {
+    font-size: rem(18px);
+    font-weight: 800;
+  }
+
+  &__meta {
+    margin-block-start: rem(8px);
+    font-size: rem(13px);
+    color: $text-muted;
+  }
+
+  &__ref {
+    margin: rem(4px) 0 0;
+    font-size: rem(12px);
+    color: $text-muted;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Tone follows the status. A single green pill made a cancelled order read as
+   a success. Foregrounds are darkened past the 4.5:1 floor at this size. */
+.order-status {
+  display: inline-block;
+  padding: rem(3px) rem(10px);
+  font-size: rem(12px);
+  font-weight: 700;
+  border-radius: $r-pill;
+
+  &.is-good {
+    background: rgba($in-stock-green, 0.12);
+    color: darken($in-stock-green, 14%);
+  }
+
+  &.is-pending {
+    background: rgba($low-stock-amber, 0.14);
+    color: darken($low-stock-amber, 10%);
+  }
+
+  &.is-bad {
+    background: rgba($out-of-stock-red, 0.12);
+    color: darken($out-of-stock-red, 10%);
+  }
+}

@@ -1,9 +1,8 @@
 import express from 'express'
 
-import { requireAuth } from '../../middlewares/requireAuth.middleware.js'
 import { log } from '../../middlewares/logger.middleware.js'
+import { requireAuth, requireAdmin } from '../../middlewares/requireAuth.middleware.js'
 
-// import { getProducts, getProductById, addProduct, updateProduct, removeProduct, addProductMsg, removeProductMsg } from './product.controller.js'
 import {
   getProducts,
   getProductById,
@@ -16,38 +15,28 @@ import {
   removeProductMsg,
 } from './product.controller.js'
 
-
 const router = express.Router()
-
-// We can add a middleware for the entire router:
-// router.use(requireAuth)
-
-// router.get('/', log, getProducts)
-// router.get('/:id', log, getProductById)
-// router.post('/', log, requireAuth, addProduct)
-// router.put('/:id', requireAuth, updateProduct)
-// router.delete('/:id', requireAuth, removeProduct)
-// // router.delete('/:id', requireAuth, requireAdmin, removeProduct)
-
-// router.post('/:id/msg', requireAuth, addProductMsg)
-// router.delete('/:id/msg/:msgId', requireAuth, removeProductMsg)
 
 router.get('/', log, getProducts)
 
-// meta routes לפני ה-id
+// Meta routes are declared before the :id route so "category" and
+// "sub-category" are not swallowed as product identifiers.
 router.get('/category', log, getCategories)
 router.get('/sub-category', log, getSubCategories)
 
-// id routes - רק ObjectId
-router.get('/:id([0-9a-fA-F]{24})', log, getProductById)
+// The id param is deliberately unconstrained. It previously required a
+// 24-char ObjectId hex, so /api/product/p1001 matched no route at all and
+// fell through to the SPA catch-all, returning HTML. Products carry both an
+// ObjectId and a legacy sku, and the service resolves either form.
+router.get('/:id', log, getProductById)
 
-router.post('/', log, requireAuth, addProduct)
-router.put('/:id([0-9a-fA-F]{24})', requireAuth, updateProduct)
-router.delete('/:id([0-9a-fA-F]{24})', requireAuth, removeProduct)
+// Catalogue writes are admin-only: these are shop products, not user-owned
+// content, so any authenticated shopper being able to POST one was wrong.
+router.post('/', log, requireAuth, requireAdmin, addProduct)
+router.put('/:id', requireAuth, requireAdmin, updateProduct)
+router.delete('/:id', requireAuth, requireAdmin, removeProduct)
 
-router.post('/:id([0-9a-fA-F]{24})/msg', requireAuth, addProductMsg)
-router.delete('/:id([0-9a-fA-F]{24})/msg/:msgId([0-9a-fA-F]{24})', requireAuth, removeProductMsg)
-
-
+router.post('/:id/msg', requireAuth, addProductMsg)
+router.delete('/:id/msg/:msgId', requireAuth, removeProductMsg)
 
 export const productRoutes = router

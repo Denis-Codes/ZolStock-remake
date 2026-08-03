@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { getLastShoppingRoute } from '../services/last-shopping-route.service'
 import { removeFromCart, updateCartItemQty, clearCart, getCartTotals } from '../store/actions/cart.actions'
 import { onProductImageError } from '../services/util.service'
+import { formatMoney } from '../services/money.service'
 
 function CartBreadcrumbs() {
   return (
@@ -22,7 +23,7 @@ function CartBreadcrumbs() {
 export function CartPage() {
   const dispatch = useDispatch()
   const cart = useSelector((storeState) => storeState.cartModule.cart)
-  const { itemCount, subtotal, savings } = getCartTotals(cart)
+  const { itemCount, subtotal, savings, shipping, amountToFreeShipping, total } = getCartTotals(cart)
 
   function handleQuantityChange(variantKey, newQty) {
     dispatch(updateCartItemQty(variantKey, newQty))
@@ -90,9 +91,9 @@ export function CartPage() {
 
                   <div className="item-price-row">
                     {item.originalPrice > item.price && (
-                      <span className="original-price">₪{item.originalPrice}</span>
+                      <span className="original-price">{formatMoney(item.originalPrice)}</span>
                     )}
-                    <span className="current-price">₪{item.price}</span>
+                    <span className="current-price">{formatMoney(item.price)}</span>
                   </div>
                 </div>
 
@@ -115,7 +116,7 @@ export function CartPage() {
                 </div>
 
                 <div className="item-total">
-                  ₪{(item.price * item.quantity).toFixed(0)}
+                  {formatMoney(item.price * item.quantity)}
                 </div>
 
                 <button
@@ -142,31 +143,37 @@ export function CartPage() {
 
             <div className="summary-row">
               <span>סה״כ מוצרים ({itemCount})</span>
-              <span>₪{subtotal.toFixed(0)}</span>
+              <span>{formatMoney(subtotal)}</span>
             </div>
 
             {savings > 0 && (
               <div className="summary-row savings">
                 <span>חיסכון</span>
-                <span className="savings-amount">-₪{savings.toFixed(0)}</span>
+                <span className="savings-amount">−{formatMoney(savings)}</span>
               </div>
             )}
 
             <div className="summary-row shipping">
               <span>משלוח</span>
-              <span>חינם מעל ₪300</span>
+              <span>{shipping > 0 ? formatMoney(shipping) : 'חינם'}</span>
             </div>
+
+            {amountToFreeShipping > 0 && (
+              <div className="summary-row shipping-nudge">
+                <span>עוד {formatMoney(amountToFreeShipping)} ומשלוח חינם</span>
+              </div>
+            )}
 
             <div className="summary-divider"></div>
 
             <div className="summary-row total">
               <span>סה״כ לתשלום</span>
-              <span>₪{subtotal.toFixed(0)}</span>
+              <span>{formatMoney(total)}</span>
             </div>
 
-            <button className="checkout-btn" disabled>
-              מעבר לתשלום (בקרוב)
-            </button>
+            <Link to="/checkout" className="checkout-btn">
+              מעבר לתשלום
+            </Link>
 
             <Link to="/" className="continue-shopping-link">
               המשך בקניות

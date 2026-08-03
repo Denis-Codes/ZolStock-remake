@@ -28,7 +28,7 @@ async function getSimilarProducts(curr, limit = 8) {
   const all = await productService.query({})
 
   const scored = all
-    .filter(p => p.id !== curr.id)
+    .filter(p => p._id !== curr._id)
     .map(p => {
       let score = 0
       if ((p.category || p.displayCategoryHe) && (p.category || p.displayCategoryHe) === currCat) score += 4
@@ -72,11 +72,11 @@ export function ProductDetails() {
         // Read the list from *before* this visit so the current product
         // never shows up in its own "recently viewed" strip, then record
         // this visit for the next page load.
-        const recentIds = getRecentlyViewed().filter((id) => id !== prod.id)
+        const recentIds = getRecentlyViewed().filter((id) => id !== prod._id)
         const recentProducts = await Promise.all(recentIds.map((id) => productService.getById(id)))
         setRecentlyViewed(recentProducts.filter(Boolean))
 
-        addRecentlyViewed(prod.id)
+        addRecentlyViewed(prod._id)
       }
     }
     loadProduct()
@@ -84,8 +84,8 @@ export function ProductDetails() {
 
   // Memoize wishlist check to prevent unnecessary recalculations
   const isWishlisted = useMemo(
-    () => (product ? wishlist.includes(product.id) : false),
-    [product?.id, wishlist]
+    () => (product ? wishlist.includes(product._id) : false),
+    [product?._id, wishlist]
   )
 
   // Memoize derived product values to prevent recalculation on every render.
@@ -130,7 +130,7 @@ export function ProductDetails() {
   const { title, categoryHe, subCategoryHe, tagsHe, hasVariants, hasDiscount, displayPrice, originalPrice } = productInfo
 
   function handleWishlistClick() {
-    dispatch(toggleWishlistItem(product.id))
+    dispatch(toggleWishlistItem(product._id))
   }
 
   function handleQuantityChange(delta) {
@@ -186,7 +186,9 @@ export function ProductDetails() {
 
             {/* Product meta */}
             <div className="pd-meta">
-              {product.id && <div className="pd-sku">מק״ט: <span>{product.id}</span></div>}
+              {/* The catalogue number stays the readable p1001 sku, not the
+                  Mongo ObjectId that now keys the product. */}
+              {product.sku && <div className="pd-sku">מק״ט: <span>{product.sku}</span></div>}
               {product.brand && <div className="pd-brand">מותג: <span>{product.brand}</span></div>}
               {(categoryHe || subCategoryHe) && (
                 <div className="pd-cat">

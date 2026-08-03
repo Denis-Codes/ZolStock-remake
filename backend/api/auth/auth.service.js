@@ -19,16 +19,19 @@ async function login(username, password) {
 	const user = await userService.getByUsername(username)
 	if (!user) return Promise.reject('Invalid username or password')
 
-	// TODO: un-comment for real login
-	// const match = await bcrypt.compare(password, user.password)
-	// if (!match) return Promise.reject('Invalid username or password')
+	const match = await bcrypt.compare(password, user.password)
+	if (!match) return Promise.reject('Invalid username or password')
 
 	delete user.password
 	user._id = user._id.toString()
 	return user
 }
 
-async function signup({ username, password, fullname, imgUrl, isAdmin }) {
+// isAdmin is deliberately NOT destructured from the caller's payload. Public
+// signup always creates a non-admin account; admins are created only by the
+// seed script. This is defence in depth — the Zod schema already strips the
+// field — because the escalation is silent and unrecoverable if it slips.
+async function signup({ username, password, fullname, imgUrl }) {
 	const saltRounds = 10
 
 	logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
@@ -38,7 +41,7 @@ async function signup({ username, password, fullname, imgUrl, isAdmin }) {
 	if (userExist) return Promise.reject('Username already taken')
 
 	const hash = await bcrypt.hash(password, saltRounds)
-	return userService.add({ username, password: hash, fullname, imgUrl, isAdmin })
+	return userService.add({ username, password: hash, fullname, imgUrl, isAdmin: false })
 }
 
 function getLoginToken(user) {

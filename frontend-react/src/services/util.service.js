@@ -1,3 +1,5 @@
+import { RECENTLY_VIEWED_KEY } from './storage-keys'
+
 export function makeId(length = 6) {
     var txt = ''
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -105,7 +107,6 @@ export function onProductImageError(ev) {
   img.src = PRODUCT_IMAGE_FALLBACK
 }
 
-const RECENTLY_VIEWED_KEY = 'zolstock_recently_viewed'
 const RECENTLY_VIEWED_LIMIT = 10
 
 // Most-recent-first list of product ids the user has viewed, deduped,

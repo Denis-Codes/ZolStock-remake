@@ -477,3 +477,16 @@
     transition: none;
   }
 }
+/* The search results page has no stylesheet of its own, so below $bp-sm —
+   where <main> drops its inline padding to let card grids run edge to edge —
+   its heading sat flush against the screen edge. The grid below keeps running
+   to the edge, as intended; only the text takes the gutter. */
+.search-results-page {
+  @include until($bp-sm) {
+    > h1,
+    > h2,
+    > p {
+      padding-inline: rem(16px);
+    }
+  }
+}

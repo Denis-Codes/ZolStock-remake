@@ -1,48 +1,42 @@
-import {userService} from './user.service.js'
-import {logger} from '../../services/logger.service.js'
-import {socketService} from '../../services/socket.service.js'
+import { userService } from './user.service.js'
+import { toNumber } from '../../services/query.util.js'
+import { asyncHandler, ForbiddenError } from '../../middlewares/error.middleware.js'
 
-export async function getUser(req, res) {
-    try {
-        const user = await userService.getById(req.params.id)
-        res.send(user)
-    } catch (err) {
-        logger.error('Failed to get user', err)
-        res.status(400).send({ err: 'Failed to get user' })
-    }
-}
+export const getUser = asyncHandler(async (req, res) => {
+  const user = await userService.getById(req.params.id)
+  res.json(user)
+})
 
-export async function getUsers(req, res) {
-    try {
-        const filterBy = {
-            txt: req.query?.txt || '',
-            minBalance: +req.query?.minBalance || 0
-        }
-        const users = await userService.query(filterBy)
-        res.send(users)
-    } catch (err) {
-        logger.error('Failed to get users', err)
-        res.status(400).send({ err: 'Failed to get users' })
-    }
-}
+export const getUsers = asyncHandler(async (req, res) => {
+  const filterBy = {
+    txt: req.query?.txt || '',
+    minBalance: toNumber(req.query?.minBalance) ?? 0,
+  }
+  const users = await userService.query(filterBy)
+  res.json(users)
+})
 
-export async function deleteUser(req, res) {
-    try {
-        await userService.remove(req.params.id)
-        res.send({ msg: 'Deleted successfully' })
-    } catch (err) {
-        logger.error('Failed to delete user', err)
-        res.status(400).send({ err: 'Failed to delete user' })
-    }
-}
+export const deleteUser = asyncHandler(async (req, res) => {
+  await userService.remove(req.params.id)
+  res.json({ msg: 'Deleted successfully' })
+})
 
-export async function updateUser(req, res) {
-    try {
-        const user = req.body
-        const savedUser = await userService.update(user)
-        res.send(savedUser)
-    } catch (err) {
-        logger.error('Failed to update user', err)
-        res.status(400).send({ err: 'Failed to update user' })
-    }
-}
+export const updateUser = asyncHandler(async (req, res) => {
+  const { loggedinUser } = req
+  const targetId = req.params.id
+
+  // The previous version updated whatever _id arrived in the body, so any
+  // authenticated user could rewrite any other user's record. Bind the update
+  // to the URL and require ownership (or admin).
+  if (!loggedinUser.isAdmin && loggedinUser._id !== targetId) {
+    throw new ForbiddenError('You can only update your own profile')
+  }
+
+  const userToUpdate = { ...req.body, _id: targetId }
+
+  // score is server-owned; only an admin may set it.
+  if (!loggedinUser.isAdmin) delete userToUpdate.score
+
+  const savedUser = await userService.update(userToUpdate)
+  res.json(savedUser)
+})

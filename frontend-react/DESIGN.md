@@ -323,6 +323,40 @@ On the listing page the filter panel is a sidebar column from 1024px up and a ri
 
 The product shots are all 1024×1024, but each subject fills a different share of its own canvas (75%–97%), so identical tiles rendered products at visibly different sizes. `src/data/product-image-fit.json` holds a measured per-file scale and centring offset, applied as CSS custom properties, putting every product's longest side at the same share of the frame. Regenerate with `npm run gen:image-fit` after changing any product photo. Unmapped files fall back to `scale(1)`.
 
+### The Order Manifest
+
+The checkout's right-hand companion: a white panel listing every line as a 56px square thumbnail with the quantity riding its inline-start corner as a blue pill, the title clamped to two lines, and the line sum pinned to the far edge. Below the lines sit the totals — products, savings, delivery — and then the price tag carrying the grand total.
+
+It is `position: sticky` from `$bp-lg` up, and its offsets clear the sticky header rather than the viewport top: `top: rem(72px)` with `max-height: calc(100vh - rem(88px))`, the same pair `ProductIndex.scss` uses for the filter sidebar. Anchoring at `24px` tucks the panel's own heading under the opaque bar and overshoots the viewport by the header's height, pushing the total below the fold.
+
+The manifest is a reference, not an editor — no quantity steppers, no remove buttons. Changing the order means going back to the cart.
+
+### The Docked Action Bar
+
+Below `$bp-lg` the checkout's primary action leaves the form and docks: a fixed bar at the block-end edge carrying the total on the inline-start side and the submit button on the other, with `padding-block-end: max(12px, env(safe-area-inset-bottom))` for the home indicator. The page adds matching bottom padding so the last field is never trapped under it.
+
+The button sits outside the `<form>` in the DOM and is associated by `form="checkout-form"` rather than by nesting.
+
+**The Dock Owns The Corner Rule.** A docked bar is only honest if nothing covers it. The scroll-to-top button is `position: fixed` at the inline-start bottom corner with `z-index: 999999` and portals to `<body>`, so it landed directly on top of the total — and no CSS scoping can reach a portal. Any route that docks an action suppresses competing fixed furniture at the render site (`RootCmp`), not in stylesheets.
+
+### Form Fields
+
+White fill, hairline border, `$r-md`, 46px tall, `font-size: 16px` — below 16px iOS zooms the page on focus. Labels sit above at 13px/700, with an optional-marker at 11px in muted ink.
+
+**The Error Red Is Not The Markdown Red Rule.** Invalid fields and their messages use `$out-of-stock-red`, never `$markdown-red`. In this system red-as-markdown means *you are saving money*; an invalid field borrowing the discount colour tells the shopper the opposite of what it means. `_variables.scss` already documents `$out-of-stock-red` as the form-error token.
+
+The invalid state must be declared on `:focus` and `:focus-visible` as well as at rest: `.field input:focus` (0,2,1) outranks `.field--invalid input` (0,1,1), so without it, focusing a bad field turns its border blue again and drops the only signal that it is still wrong. Focus draws the blue halo **or** the outline, never both — declaring one on `:focus` and the other on `:focus-visible` fires both for keyboard users and paints a concentric double ring.
+
+Submit buttons are never disabled on validity. A greyed-out primary action gives the shopper nothing to act on; submitting an incomplete form marks every problem, focuses the first, and names each one. Disabled is reserved for states the shopper cannot resolve by typing.
+
+**The Loading State Keeps Its Fill Rule.** A button that is working keeps its blue and swaps its label for the white spinner. Greying it out renders white on `#cccccc` at roughly 1.5:1 — illegible at exactly the moment a shopper most needs to know something is happening.
+
+### Money
+
+Prices are never rounded to whole shekels. 38 of the 40 catalogue products are priced with agorot, so `toFixed(0)` printed ₪119 for an order that charged ₪118.80 — under the label שולם. `src/services/money.service.js` is the single formatter: `formatMoney()` for prices in a run of text, `moneyParts()` for the composed tag, `moneyAriaLabel()` for the spoken form. Agorot are omitted only when they are genuinely `00`.
+
+The tag reverses **once**. `dir="ltr"` on the element and `flex-direction: row-reverse` in CSS cancel each other out — applying both rendered `119₪` while the rows above it rendered `₪130`.
+
 ## Do's and Don'ts
 
 ### Do:

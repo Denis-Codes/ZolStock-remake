@@ -295,6 +295,20 @@
         color: $text-secondary;
       }
 
+      /* Same chip as the checkout manifest's nudge, so the two surfaces state
+         the delivery threshold identically. Was an unstyled row that read as
+         stray body text between the shipping line and the divider. */
+      &.shipping-nudge {
+        display: block;
+        margin-top: rem(10px);
+        padding: rem(10px) rem(12px);
+        font-size: rem(13px);
+        font-weight: 700;
+        color: $clr1;
+        background: rgba($clr1, 0.08);
+        border-radius: $r-md;
+      }
+
       &.total {
         font-size: rem(19px);
         font-weight: 700;
@@ -310,7 +324,13 @@
       margin: rem(16px) 0;
     }
 
+    /* This is an <a> now, not a <button>. An anchor is inline, so the
+       `width: 100%` below was silently ignored and the primary action
+       collapsed to shrink-to-fit, sitting off-centre in the panel. The
+       display / text-align / text-decoration trio is what makes a link render
+       as the full-width primary button DESIGN.md specifies for this variant. */
     .checkout-btn {
+      display: block;
       width: 100%;
       padding: rem(16px) rem(24px);
       background: $clr1;
@@ -319,12 +339,21 @@
       border-radius: $r-lg;
       font-size: rem(16px);
       font-weight: 600;
+      text-align: center;
+      text-decoration: none;
       cursor: pointer;
       margin-top: rem(20px);
       transition: background 200ms ease;
 
       &:hover:not(:disabled) {
         background: darken($clr1, 8%);
+        /* Without this the global link colour wins back on hover. */
+        color: #fff;
+      }
+
+      &:focus-visible {
+        outline: rem(2px) solid $clr1;
+        outline-offset: rem(2px);
       }
 
       &:disabled {

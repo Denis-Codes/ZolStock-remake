@@ -1,5 +1,28 @@
 import { httpService } from '../http.service'
 
+/**
+ * Where the API serves product images from.
+ *
+ * The API returns root-relative paths ("/assets/img/products/x.png"), which is
+ * what they are relative to the server. In dev the app runs on :5173 and the
+ * API on :3030, so an unqualified path would be requested from Vite, which
+ * does not hold these files. In production both share an origin and
+ * VITE_API_URL is empty, leaving the path untouched.
+ */
+const ASSET_ORIGIN = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+
+function normalizeProduct(product) {
+  if (!product) return product
+
+  return {
+    ...product,
+    images: product.images?.map(img => {
+      if (img.startsWith('http://') || img.startsWith('https://')) return img
+      return `${ASSET_ORIGIN}${img.startsWith('/') ? '' : '/'}${img}`
+    }),
+  }
+}
+
 export const productService = {
   query,
   getById,
@@ -7,35 +30,24 @@ export const productService = {
   getSubCategories,
 }
 
+// GET /api/product?category=...&subCategory=...&txt=... etc.
 async function query(filterBy = {}) {
-  // מצפה ל-API: GET /api/product?category=...&subCategory=...&txt=... וכו'
-  return httpService.get('product', filterBy)
+  const products = await httpService.get('product', filterBy)
+  return products.map(normalizeProduct)
 }
 
-function getById(productId) {
-  // מצפה ל-API: GET /api/product/:id
-  return httpService.get(`product/${productId}`)
+// GET /api/product/:id — accepts an ObjectId or a legacy sku.
+async function getById(productId) {
+  const product = await httpService.get(`product/${productId}`)
+  return normalizeProduct(product)
 }
 
+// GET /api/product/category -> [{ slug, labelHe }]
 function getCategories() {
-  // אופציה A (מומלץ): מצפה ל-API ייעודי שמחזיר קטגוריות
-  // GET /api/product/category
   return httpService.get('product/category')
-
-  // אופציה B (אם אין endpoint כזה): תעשה query() ותוציא ייחודי בצד לקוח
-  // return httpService.get('product', {}).then(products => {
-  //   const map = new Map()
-  //   products.forEach(p => {
-  //     if (!map.has(p.category)) map.set(p.category, { slug: p.category, labelHe: p.displayCategoryHe })
-  //   })
-  //   return Array.from(map.values())
-  // })
 }
 
+// GET /api/product/sub-category?category=... -> [{ slug, labelHe, category }]
 function getSubCategories(categorySlug) {
-  // אופציה A: API ייעודי לפי קטגוריה
-  // GET /api/product/sub-category?category=furniture
   return httpService.get('product/sub-category', { category: categorySlug })
-
-  // אופציה B: אם אין endpoint כזה, אפשר להביא מוצרים ולחלץ בצד לקוח (כמו למעלה)
 }

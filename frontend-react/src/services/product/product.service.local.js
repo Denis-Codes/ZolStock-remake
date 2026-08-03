@@ -7,6 +7,13 @@ function normalizeProduct(product) {
 
   return {
     ...product,
+    // The API keys products by a Mongo ObjectId and keeps the p1001-style id
+    // as `sku`, and the components read `_id`/`sku` accordingly. products.json
+    // predates that split, so mirror the same shape here — otherwise the
+    // github build, which is pinned to this local service, renders every card
+    // with an undefined key and a dead link.
+    _id: product._id || product.id,
+    sku: product.sku || product.id,
     images: product.images?.map(img => {
       if (img.startsWith('http') || img.startsWith('/')) return img
       return BASE_URL + img
@@ -88,7 +95,8 @@ async function query(filterBy = {}) {
 }
 
 async function getById(productId) {
-  const product = products.find(p => p.id === productId) || null
+  // Matches either key, mirroring the API's byIdOrSku lookup.
+  const product = products.find(p => p.id === productId || p._id === productId) || null
   return normalizeProduct(product)
 }
 

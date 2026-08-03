@@ -1,6 +1,8 @@
 import { userService } from '../../services/user'
 import { socketService } from '../../services/socket.service'
 import { store } from '../store'
+import { mergeGuestCart, loadCart } from './cart.actions'
+import { mergeGuestWishlist, loadWishlist } from './wishlist.actions'
 
 import { showErrorMsg } from '../../services/event-bus.service'
 import { LOADING_DONE, LOADING_START } from '../reducers/system.reducer'
@@ -42,11 +44,32 @@ export async function login(credentials) {
             user
         })
         socketService.login(user._id)
+
+        // Whatever was collected as a guest belongs to this account now. The
+        // merge is awaited so the header badges are correct on the first
+        // render after the redirect, rather than flicking from guest counts to
+        // server counts a moment later.
+        await syncShoppingStateOnAuth()
+
         return user
     } catch (err) {
         console.log('Cannot login', err)
         throw err
     }
+}
+
+/**
+ * Folds guest cart and wishlist into the signed-in account.
+ *
+ * Failures are swallowed inside the merge thunks: a shopper who has just
+ * logged in successfully should not be shown an error because a cart merge
+ * hiccuped, and the next loadCart will reconcile anyway.
+ */
+async function syncShoppingStateOnAuth() {
+    await Promise.all([
+        store.dispatch(mergeGuestCart()),
+        store.dispatch(mergeGuestWishlist()),
+    ])
 }
 
 export async function signup(credentials) {
@@ -57,6 +80,9 @@ export async function signup(credentials) {
             user
         })
         socketService.login(user._id)
+
+        await syncShoppingStateOnAuth()
+
         return user
     } catch (err) {
         console.log('Cannot signup', err)
@@ -72,6 +98,13 @@ export async function logout() {
             user: null
         })
         socketService.logout()
+
+        // Reload from the guest backing so the previous account's cart and
+        // wishlist do not stay on screen after signing out.
+        await Promise.all([
+            store.dispatch(loadCart()),
+            store.dispatch(loadWishlist()),
+        ])
     } catch (err) {
         console.log('Cannot logout', err)
         throw err

@@ -57,7 +57,7 @@ function getSwatchColors(variants) {
 function ProductPreview({ product }) {
   const dispatch = useDispatch()
   const wishlist = useSelector((storeState) => storeState.wishlistModule.wishlist)
-  const isWishlisted = wishlist.includes(product.id)
+  const isWishlisted = wishlist.includes(product._id)
 
   // Use sale price if available, otherwise regular price
   const displayPrice = product.salePrice || product.price
@@ -67,7 +67,7 @@ function ProductPreview({ product }) {
   const originalPriceParts = hasDiscount ? formatPriceParts(product.originalPrice) : null
 
   const title = product.displayNameHe || product.name || ''
-  const to = `/product/${product.id}`
+  const to = `/product/${product._id}`
   const img = product.images?.[0] || product.imgUrl || product.image || ''
 
   const swatchColors = getSwatchColors(product.variants)
@@ -77,7 +77,7 @@ function ProductPreview({ product }) {
   function handleWishlistClick(ev) {
     ev.preventDefault()
     ev.stopPropagation()
-    dispatch(toggleWishlistItem(product.id))
+    dispatch(toggleWishlistItem(product._id))
   }
 
   return (
@@ -171,7 +171,7 @@ function ProductPreview({ product }) {
 export default memo(ProductPreview, (prevProps, nextProps) => {
   // Only re-render if these specific properties change
   return (
-    prevProps.product.id === nextProps.product.id &&
+    prevProps.product._id === nextProps.product._id &&
     prevProps.product.price === nextProps.product.price &&
     prevProps.product.salePrice === nextProps.product.salePrice &&
     prevProps.product.discountPercent === nextProps.product.discountPercent &&

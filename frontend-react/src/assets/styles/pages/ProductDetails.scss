@@ -392,3 +392,30 @@
     max-width: 34rem;
   }
 }
+
+/* Below $bp-sm, <main> drops its inline padding to zero (see _layout.scss) so
+ * the product grid can run edge to edge. That is the right call for a wall of
+ * cards and the wrong one for a reading surface: it left the breadcrumbs,
+ * title, price, מק״ט, specs and tags flush against both screen edges, with
+ * glyphs touching the boundary.
+ *
+ * The gutter is restored here at the same 1rem the page-gutter mixin resolves
+ * to at this width, so the details page lines up with every other page. Only
+ * the blocks whose full-bleed treatment is deliberate break back out.
+ */
+@include until($bp-sm) {
+  $pd-mobile-gutter: rem(16px);
+
+  .pd-container {
+    padding-inline: $pd-mobile-gutter;
+  }
+
+  /* Media and the card grids stay edge to edge — DESIGN.md drops their radius
+     to 0 for exactly this reason, and a 2-up grid at 375px is the intended
+     shelf-scanning density. */
+  .pd-media,
+  .pd-similar .product-list,
+  .pd-recently .product-list {
+    margin-inline: -$pd-mobile-gutter;
+  }
+}

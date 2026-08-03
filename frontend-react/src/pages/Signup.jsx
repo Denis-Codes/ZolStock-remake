@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 
 import { signup } from '../store/actions/user.actions'
 
@@ -9,6 +9,11 @@ import { userService } from '../services/user'
 export function Signup() {
     const [credentials, setCredentials] = useState(userService.getEmptyUser())
     const navigate = useNavigate()
+    const location = useLocation()
+
+    // Same as Login: checkout sends signed-out shoppers here and expects them
+    // back afterwards rather than on the homepage.
+    const redirectTo = location.state?.from || '/'
 
     function clearState() {
         setCredentials({ username: '', password: '', fullname: '', imgUrl: '' })
@@ -35,7 +40,7 @@ export function Signup() {
         try {
             await signup(credentials)
             clearState()
-            navigate('/')
+            navigate(redirectTo)
         } catch {
             setError('ההרשמה נכשלה. נסו שוב בעוד רגע.')
         }
