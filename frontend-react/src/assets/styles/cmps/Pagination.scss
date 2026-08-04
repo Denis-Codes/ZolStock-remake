@@ -1,0 +1,108 @@
+/* ============================= */
+/* PAGINATION */
+/* ============================= */
+/* Sits under the shelf as a rule-topped row, the same way the toolbar sits
+   above it — the grid is bracketed by two pieces of furniture that look
+   related, rather than ending in a floating cluster of buttons. */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: rem(8px);
+
+  padding-block: rem(20px);
+  margin-block-start: rem(8px);
+  border-block-start: rem(1px) solid $line-soft;
+}
+
+.pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: rem(4px);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Both control types share the 44px floor and the squared-off corner the rest
+   of the listing uses. The current page is the only filled thing in the row. */
+.pagination__page,
+.pagination__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem(6px);
+
+  min-width: rem(44px);
+  min-height: rem(44px);
+  margin: 0;
+  padding-inline: rem(12px);
+
+  border: rem(1px) solid $line;
+  border-radius: $r-md;
+  background: $surface;
+  color: $clr3;
+
+  font-family: inherit;
+  font-size: rem(14px);
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: border-color $dur $ease, background-color $dur $ease, color $dur $ease;
+
+  &:hover:not(:disabled):not(.is-current) {
+    border-color: $clr1;
+    color: $clr1;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+
+  &:disabled {
+    color: $text-muted;
+    border-color: $line-soft;
+    background: $surface-sunken;
+    cursor: not-allowed;
+  }
+}
+
+.pagination__page.is-current {
+  background: $clr1;
+  border-color: $clr1;
+  color: $surface;
+  cursor: default;
+}
+
+.pagination__chevron {
+  width: rem(16px);
+  height: rem(16px);
+  flex: 0 0 auto;
+}
+
+.pagination__gap {
+  min-width: rem(24px);
+  text-align: center;
+  color: $text-muted;
+  user-select: none;
+}
+
+/* On a phone the two step buttons carry the whole interaction and the numbers
+   are a position readout beside them, so the row keeps its labels rather than
+   collapsing to bare arrows a thumb has to aim at. */
+@include until($bp-sm) {
+  .pagination {
+    gap: rem(6px);
+    padding-block: rem(16px);
+  }
+
+  .pagination__page,
+  .pagination__step {
+    padding-inline: rem(10px);
+    font-size: rem(13px);
+  }
+}

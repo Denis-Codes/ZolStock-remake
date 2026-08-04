@@ -12,6 +12,7 @@
 - After each change, explicitly check that those dependencies still work — don't just check that the changed piece looks right in isolation.
 - If a change would require breaking one of those ties (e.g. a class name that JS hooks into, a structural assumption another component relies on), stop and flag it before proceeding — don't silently sever it and hope nothing notices.
 - When in doubt between "cleaner code" and "definitely not breaking anything," choose not breaking anything, and tell me about the tradeoff.
+- Do not make any changes until you have 95% confidence in what you need to build. Ask me follow up questions until you reach that confidence.
 
 ## Git discipline
 - **Never run `git commit` or `git push`.** Not even for "safe" intermediate steps.

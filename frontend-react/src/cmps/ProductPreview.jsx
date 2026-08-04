@@ -120,6 +120,7 @@ function ProductPreview({ product }) {
             rating={product.rating}
             reviewCount={product.reviewCount}
             size="small"
+            compact
           />
 
           {visibleSwatches.length > 0 && (
@@ -139,15 +140,12 @@ function ProductPreview({ product }) {
           )}
         </div>
 
-        {/* Price section */}
+        {/* Price section. The price the shopper pays comes first in the DOM,
+            which in RTL puts it rightmost and therefore first in reading order
+            — and first for a screen reader. It used to sit after the struck
+            original, so every card announced a price the shopper would not be
+            charged before the one they would. */}
         <div className="card-price-section">
-          {hasDiscount && originalPriceParts && (
-            <div className="original-price" aria-label={`מחיר מקורי ${originalPriceParts.whole} שקלים`}>
-              <span className="currency">₪</span>
-              <span className="amount">{originalPriceParts.whole}</span>
-            </div>
-          )}
-
           <div
             className="card-price"
             aria-label={`מחיר ${whole}.${frac} שקלים`}
@@ -156,6 +154,13 @@ function ProductPreview({ product }) {
             <span className="whole">{whole}</span>
             {frac !== '00' && <span className="frac">{frac}</span>}
           </div>
+
+          {hasDiscount && originalPriceParts && (
+            <div className="original-price" aria-label={`מחיר מקורי ${originalPriceParts.whole} שקלים`}>
+              <span className="currency">₪</span>
+              <span className="amount">{originalPriceParts.whole}</span>
+            </div>
+          )}
 
           <StockWarning stockQty={product.stockQty} inStock={product.inStock} />
         </div>

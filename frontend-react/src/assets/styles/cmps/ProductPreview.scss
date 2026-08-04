@@ -74,8 +74,8 @@
   left: rem(8px);
   z-index: 3;
 
-  width: rem(40px);
-  height: rem(40px);
+  width: rem(44px);
+  height: rem(44px);
 
   border-radius: $r-md;
   border: rem(1px) solid $line-soft;
@@ -142,7 +142,16 @@
 .card-title-link   { grid-row: 1; }
 .card-meta         { grid-row: 2; }
 .card-price-section { grid-row: 4; }
-.card-body .add-to-cart-btn { grid-row: 5; }
+
+/* The margin zeroing is not cosmetic. `basics/_forms.scss` puts `margin: 5px`
+   on every bare `button`, which this one inherited — so the card's action row
+   measured 54px for a 44px control and the button sat inset 17px from the card
+   edge while everything above it sat at 12px. Scoped to the card rather than
+   fixed at the global rule, which has the rest of the app hanging off it. */
+.card-body .add-to-cart-btn {
+  grid-row: 5;
+  margin: 0;
+}
 
 /* One line carrying every secondary fact, truncating rather than wrapping. */
 .card-meta {
@@ -230,9 +239,12 @@
   font-size: rem(11px);
 }
 
+/* $text-muted, not $text-faint. The struck price is the anchor the discount is
+   measured against — it is quiet, but it is information, and #999 renders it at
+   2.85:1 on white, which is unreadable rather than de-emphasised. */
 .original-price {
   text-decoration: line-through;
-  color: $text-faint;
+  color: $text-muted;
   font-size: rem(13px);
   font-weight: 500;
   display: flex;
@@ -301,8 +313,22 @@
   gap: rem(12px);
   padding: rem(8px) 0 1.5rem;
 
-  /* ✅ קסם: ממלא שורות אוטומטית ולא נופל ל"מוצר בודד" */
-  grid-template-columns: repeat(auto-fit, minmax(rem(200px), 1fr));
+  /* auto-FILL, never auto-fit. auto-fit collapses the empty tracks to zero and
+     hands their width to whatever survived, so a search or filter that returns
+     a single product rendered it as a 993px card with a 991px photo — taller
+     than the viewport. Most Hebrew queries against this catalogue return one
+     to three results, so that was the common path, not the edge case.
+     auto-fill keeps the empty tracks at their minimum and one result stays
+     exactly the size it was before the filter narrowed.
+
+     The minimum is a clamp rather than a value that steps at each breakpoint.
+     A stepped minimum makes the column count fall at the step: 165px on tablet
+     against 200px on desktop meant widening the window from 1023 to 1024 took
+     the shelf from five columns to four. Growing the track continuously with
+     the viewport keeps the count monotonic — a wider window never shows fewer
+     products — while still letting cards breathe on a large screen instead of
+     multiplying to nine 165px slivers at 1920. */
+  grid-template-columns: repeat(auto-fill, minmax(clamp(rem(165px), 13vw, rem(220px)), 1fr));
 
   /* Cards fill the row's height so their bottom edges line up even if one
      title wraps to two lines and its neighbour does not. */
@@ -320,10 +346,12 @@
 }
 
 /* טאבלט */
+/* Gap only. The track minimum is deliberately NOT re-declared here — the clamp
+   above already covers this range, and overriding it at a breakpoint is exactly
+   what made the column count fall as the window grew. */
 @include until($bp-md) {
   .product-list {
     gap: rem(10px);
-    grid-template-columns: repeat(auto-fit, minmax(rem(165px), 1fr));
   }
 }
 

@@ -1,0 +1,110 @@
+/* ============================= */
+/* ACTIVE FILTER CHIPS */
+/* ============================= */
+/* A summary line, not a second toolbar: it carries no border and no fill of its
+   own, so it reads as an annotation on the results below rather than another
+   band of furniture between the shopper and the products. It only exists when
+   something is actually filtering, so its vertical space is never spent on an
+   unfiltered shelf. */
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: rem(8px) rem(10px);
+
+  margin-block-end: rem(16px);
+}
+
+.active-filters__label {
+  font-size: rem(13px);
+  font-weight: 600;
+  color: $text-muted;
+}
+
+.active-filters__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: rem(8px);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* DESIGN.md's chip: rgba($clr1, 0.08) fill, blue text, pill radius. The
+   difference here is that this one is a control — it removes the filter it
+   names — so it takes a hover state and inverts to the solid fill on it,
+   matching the outline button rather than sprouting a third interaction look. */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(6px);
+
+  min-height: rem(34px);
+  padding: rem(6px) rem(12px);
+
+  border: 0;
+  border-radius: $r-pill;
+  background: rgba($clr1, 0.08);
+  color: $clr1;
+
+  font-family: inherit;
+  font-size: rem(13px);
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background-color $dur $ease, color $dur $ease;
+
+  &:hover {
+    background: $clr1;
+    color: $surface;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+/* Below the 44px floor on purpose, and the one control on the listing that is.
+   A chip is a redundant exit — every filter it removes is also removable from
+   the control that set it — and a row of 44px pills reads as the page's primary
+   navigation, which is exactly what this is not. The tap area is still 34px
+   tall and at least 90px wide, comfortably above the point where a thumb
+   misses. */
+.filter-chip__x {
+  width: rem(13px);
+  height: rem(13px);
+  flex: 0 0 auto;
+  opacity: 0.75;
+}
+
+.active-filters__clear {
+  min-height: rem(34px);
+  padding: 0 rem(4px);
+
+  border: 0;
+  background: transparent;
+  color: $text-muted;
+
+  font-family: inherit;
+  font-size: rem(13px);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: rem(3px);
+  cursor: pointer;
+
+  transition: color $dur $ease;
+
+  &:hover {
+    color: $clr1;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+    border-radius: $r-sm;
+  }
+}

@@ -55,12 +55,91 @@
   }
 }
 
+/* Cards stack with a rule between them rather than a gap alone — with three
+   sections the panel needed a way to say where one filter ends and the next
+   begins without turning each into a box of its own. */
 .filter-card {
   h4 {
     margin: 0 0 rem(14px);
     color: $clr3;
     font-size: rem(15px);
     font-weight: 700;
+  }
+
+  &+.filter-card {
+    margin-block-start: rem(20px);
+    padding-block-start: rem(20px);
+    border-block-start: rem(1px) solid $line-soft;
+  }
+}
+
+/* ============================= */
+/* SUB-CATEGORY LIST */
+/* ============================= */
+/* Links, not checkboxes: each one is a real route with its own breadcrumb and
+   its own shareable address. The active row takes the brand fill rather than a
+   marker glyph, matching how the header nav shows the current department. */
+
+.subcategory-list {
+  display: grid;
+  gap: rem(2px);
+
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.subcategory-link {
+  display: block;
+
+  padding: rem(9px) rem(10px);
+  border-radius: $r-md;
+
+  color: $clr3;
+  font-size: rem(14px);
+  line-height: rem(20px);
+  text-decoration: none;
+
+  transition: background-color $dur $ease, color $dur $ease;
+
+  &:hover {
+    background: $surface-hover;
+    color: $clr1;
+  }
+
+  &.is-active {
+    background: rgba($clr1, 0.1);
+    color: $clr1;
+    font-weight: 700;
+  }
+}
+
+/* ============================= */
+/* CHECKBOX ROW */
+/* ============================= */
+
+.filter-check {
+  display: flex;
+  align-items: center;
+  gap: rem(10px);
+
+  min-height: rem(44px);
+  cursor: pointer;
+
+  font-size: rem(14px);
+  color: $clr3;
+
+  input {
+    width: rem(18px);
+    height: rem(18px);
+    flex: 0 0 auto;
+    margin: 0;
+    accent-color: $clr1;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: $clr1;
   }
 }
 

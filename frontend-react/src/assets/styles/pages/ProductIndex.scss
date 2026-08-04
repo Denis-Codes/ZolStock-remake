@@ -194,7 +194,7 @@
   align-items: center;
   justify-content: center;
 
-  height: rem(42px);
+  height: rem(44px);
   padding-inline: rem(16px);
 
   border-radius: $r-lg;
@@ -232,9 +232,12 @@
   border-block: rem(1px) solid $line-soft;
   margin-bottom: rem(20px);
 
+  /* 44px, not 42. Every interactive control on this page now clears the same
+     floor, so the bar reads as one row of equal-weight controls instead of
+     three near-misses. */
   .toolbar-select,
   .toolbar-search {
-    height: rem(42px);
+    height: rem(44px);
 
     border-radius: $r-md;
     border: rem(1px) solid $line;
@@ -271,19 +274,20 @@
   }
 
   /* Desktop keeps the filters permanently in the sidebar, so the button that
-     opens them as a sheet only exists below that breakpoint. */
+     opens them as a sheet only exists below that breakpoint. The threshold is
+     $bp-lg, not $bp-md — see the sheet block below for why. */
   .toolbar-filters-btn {
     display: none;
   }
 
-  @include until($bp-md) {
+  @include until($bp-lg) {
     .toolbar-filters-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
 
-      height: rem(42px);
+      height: rem(44px);
       padding-inline: rem(18px);
 
       border: rem(1px) solid $clr1;
@@ -346,8 +350,15 @@
      single page-gutter, so adding it again here would double the inset. */
 
   display: grid;
-  grid-template-columns: rem(300px) 1fr;
-  gap: rem(32px);
+  /* 210 + 20 rather than 300 + 32. Introducing a permanent column always costs
+     the grid something at the exact width it appears — the viewport gains 1px
+     and the shelf loses a whole sidebar — so strict monotonicity across that
+     threshold is not achievable. What is achievable is keeping the loss to a
+     single column: at 300px the shelf fell from six tracks to four and every
+     card inflated; at 230px total it falls from six to five and the cards stay
+     within 15% of their previous size. */
+  grid-template-columns: rem(210px) 1fr;
+  gap: rem(20px);
   align-items: start;
 
   padding-block: rem(24px) rem(40px);
@@ -376,13 +387,21 @@
 }
 
 /* ============================= */
-/* MOBILE: filters as a sheet     */
+/* MOBILE + TABLET: filters as a sheet */
 /* ============================= */
 /* Stacking the filter panel above the grid meant scrolling past a price
    slider to reach the first product. It becomes a drawer instead, opened
-   from the toolbar, so the products start at the top of the page. */
+   from the toolbar, so the products start at the top of the page.
 
-@include until($bp-md) {
+   The threshold is $bp-lg (1200), not $bp-md (1024). A permanent 300px column
+   plus its 32px gap takes 332px off the grid, which at 1024 left 610px — two
+   tracks that stretched to 299px each. Widening the window from 1023 to 1024
+   therefore dropped the shelf from five columns to two and inflated every card
+   by 66%. 1024 is a landscape tablet and a small laptop; the sheet serves both
+   better than a column that costs more than it earns. From 1200 the sidebar
+   has room to exist without taking the shelf apart. */
+
+@include until($bp-lg) {
   .products-page {
     grid-template-columns: 1fr;
     gap: rem(20px);
@@ -408,23 +427,53 @@
     z-index: 1101;
 
     width: min(86vw, rem(360px));
-    max-height: 100dvh;
-    overflow-y: auto;
+
+    /* Explicit, not inferred. `inset-block: 0` with `height: auto` should
+       stretch a fixed box to the viewport, and does not here — the panel
+       resolved to its content height (785px inside an 812px screen), leaving a
+       strip of page visible under a drawer that is meant to cover the screen
+       edge to edge. The dvh unit is the one that survives a mobile URL bar
+       collapsing; the vh line above it is the fallback for anything that does
+       not know dvh. */
+    block-size: 100vh;
+    block-size: 100dvh;
+
+    /* And the desktop rule's ceiling has to come off with it. `max-height:
+       calc(100vh - 88px)` keeps the sticky column clear of the header up there;
+       left in place here it clipped the drawer 88px short of the bottom of the
+       screen at every width — which is what made the sheet look content-sized
+       in the first place. */
+    max-block-size: none;
+
+    /* The panel itself no longer scrolls: its head is pinned and only the
+       filters move. With three filter sections the list is now taller than a
+       phone screen, and a scrolling header takes the close button with it. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
     background: $surface;
     box-shadow: $shadow-overlay;
 
     /* Off-canvas until opened. Transform only — nothing reflows. */
     transform: translateX(100%);
-    transition: transform 220ms ease, visibility 220ms ease;
 
     /* Belt and braces: a transformed-away panel must not be hit-testable or
        reachable by tab, regardless of how the transform resolves. */
     visibility: hidden;
 
+    /* Visibility is stepped, not eased. Transitioning it over 220ms means it
+       flips at the halfway mark, so for the first ~110ms of opening the panel
+       is still `hidden` — and an element that is hidden cannot take focus, so
+       moving focus to the close button on open silently did nothing. It now
+       becomes visible at once on the way in and waits out the full slide on the
+       way back, which is the only asymmetry this drawer needs. */
+    transition: transform 220ms ease, visibility 0s linear 220ms;
+
     &.is-open {
       transform: translateX(0);
       visibility: visible;
+      transition: transform 220ms ease, visibility 0s linear 0s;
     }
   }
 
@@ -433,6 +482,7 @@
     align-items: center;
     justify-content: space-between;
     gap: rem(12px);
+    flex: 0 0 auto;
 
     padding: rem(14px) rem(16px);
     border-block-end: rem(1px) solid $line-soft;
@@ -444,9 +494,20 @@
     }
   }
 
+  /* The panel carries its own "סינון" heading, which is correct in the desktop
+     column but a second identical title once the sheet supplies one above it.
+     The heading goes; the ניקוי button stays and takes the row on its own. */
+  .products-sidebar .sidebar-head {
+    justify-content: flex-end;
+
+    h3 {
+      display: none;
+    }
+  }
+
   .products-sidebar__close {
-    width: rem(40px);
-    height: rem(40px);
+    width: rem(44px);
+    height: rem(44px);
 
     border: 0;
     border-radius: $r-md;
@@ -464,11 +525,17 @@
     }
   }
 
-  /* Inside the sheet the panel is the sheet — it drops its own frame. */
+  /* Inside the sheet the panel is the sheet — it drops its own frame, and it
+     is the part that scrolls. */
   .products-sidebar .sidebar-filters {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
     border: 0;
     border-radius: 0;
     padding: rem(16px);
+    padding-block-end: max(#{rem(16px)}, env(safe-area-inset-bottom));
   }
 }
 
@@ -480,13 +547,19 @@
 /* The search results page has no stylesheet of its own, so below $bp-sm —
    where <main> drops its inline padding to let card grids run edge to edge —
    its heading sat flush against the screen edge. The grid below keeps running
-   to the edge, as intended; only the text takes the gutter. */
+   to the edge, as intended; only the text takes the gutter. The empty state is
+   in that group rather than the grid's: it is a bordered, rounded card, and a
+   rounded corner pressed against the screen edge reads as a clipping bug. */
 .search-results-page {
   @include until($bp-sm) {
     > h1,
     > h2,
     > p {
       padding-inline: rem(16px);
+    }
+
+    > .empty-state {
+      margin-inline: rem(16px);
     }
   }
 }

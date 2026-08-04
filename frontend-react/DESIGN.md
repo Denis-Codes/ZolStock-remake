@@ -5,7 +5,7 @@ colors:
   zolstock-blue: "#1c41b4"
   zolstock-blue-deep: "#173491"
   high-voltage-yellow: "#FFF200"
-  markdown-red: "#e53935"
+  markdown-red: "#d32f2f"
   markdown-red-deep: "#c62828"
   ink: "#333333"
   pure-white: "#FFFFFF"
@@ -15,7 +15,7 @@ colors:
   quiet-gray: "#777777"
   hairline-gray: "#DDDDDD"
   in-stock-green: "#28a745"
-  low-stock-amber: "#f57c00"
+  low-stock-amber: "#a85400"
   out-of-stock-red: "#dc3545"
   star-gold: "#ffc107"
 typography:
@@ -183,8 +183,8 @@ A two-note brand — a deep saturated blue and a near-fluorescent yellow — sit
 - **High-Voltage Yellow** (`#FFF200`): Used sparingly and always as a *fill*, never as a floating text colour. It backs the product price tag, fills the nav-link hover state, colours the hero headline over a dark photo scrim, and lights social icons when their blue circle fills on hover. Its job is to be the brightest object in the frame exactly once per card. **Frozen brand value.**
 
 ### Tertiary
-- **Markdown Red** (`#e53935`): Strictly factual. Discount badge fill, cart/wishlist count bubbles, the active (saved) heart. Never decorative, never used to imply scarcity that the data does not support.
-- **Markdown Red Deep** (`#c62828`): Text colour inside the discounted price tag, where the red tint background needs a darker foreground to hold contrast.
+- **Markdown Red** (`#d32f2f`): Strictly factual. Discount badge fill, cart/wishlist count bubbles, the active (saved) heart. Never decorative, never used to imply scarcity that the data does not support. It was `#e53935` — Material Red 600 — which carried white badge text at only 4.23:1; this is Red 700, the next step on the same ramp, at 4.98:1. It is now *darker* than Out of Stock Red rather than lighter, which is a reversal but not a merge: the two remain separate values for the reason given in The Error Red Is Not The Markdown Red Rule.
+- **Markdown Red Deep** (`#c62828`): Documented for a discounted price tag with a red tint background that no longer exists — the tag is yellow always (see The Tag Is Yellow Always). **Currently unused in the codebase.** Kept as the bottom of the red ramp rather than retired, since Markdown Red now sits one step above it.
 
 ### Neutral
 - **Page Paper** (`#F7F8FA`): The page background — a soft off-white, not a lightbox. It is what lets flat white surfaces separate by tone instead of by shadow.
@@ -192,10 +192,12 @@ A two-note brand — a deep saturated blue and a near-fluorescent yellow — sit
 - **Pure White** (`#FFFFFF`): All elevated surfaces — product cards, the filter sidebar, inputs, the mobile drawer, the product-details canvas.
 - **Fog White** (`#F5F5F5`): A legacy neutral still used by the top utility strip. The header itself is opaque white.
 - **Ink** (`#333333`): All primary text. Secondary text is the same ink at reduced alpha (`0.78` for supporting lines, `0.6`/`0.55` for muted), not a separate gray.
-- **Quiet Gray** (`#777777`) and **Hairline Gray** (`#DDDDDD`): Review counts and empty star glyphs respectively. Borders are `rgba(0,0,0,0.06–0.12)` rather than a named gray.
+- **Hairline Gray** (`#DDDDDD`): Empty star glyphs. Borders are `rgba(0,0,0,0.06–0.12)` rather than a named gray.
+- **Quiet Gray** (`#777777`): **Currently unused.** It was the review-count colour, at 4.48:1 on white — just under the floor. Review counts, struck-through original prices and card subcategories are all Ink at `0.72` now, which is the alpha that exists precisely to mark that boundary (5.24:1 measured). Kept as a documented value rather than retired, but nothing should reach for it: the Ink ramp already covers this job and passes.
 
 ### Status
-- **In Stock Green** (`#28a745`), **Low Stock Amber** (`#f57c00`), **Out of Stock Red** (`#dc3545`), **Star Gold** (`#ffc107`). These are a functional set, deliberately outside the brand palette so a stock signal is never confused with a brand moment.
+- **In Stock Green** (`#28a745`), **Low Stock Amber** (`#a85400`), **Out of Stock Red** (`#dc3545`), **Star Gold** (`#ffc107`). These are a functional set, deliberately outside the brand palette so a stock signal is never confused with a brand moment.
+- Low Stock Amber was `#f57c00`, which as text on white measured 2.70:1 — the worst contrast in the system, on the one line ("נותרו רק 3!") whose entire job is to be noticed. Material's orange ramp bottoms out at `#e65100` / 3.6:1, so this value is off-ramp by necessity: the same 30° hue, darkened until it cleared the floor at 5.34:1. Star Gold stays bright because it is a glyph fill, never text.
 
 ### Named Rules
 
@@ -239,7 +241,11 @@ The header is its own three-column grid, and its columns are **content-sized on 
 
 Spacing is a 4px-derived scale expressed through the `rem()` function — `rem(4px)` through `rem(32px)` covers almost everything, with `clamp()` used for anything that must breathe across the full range. Below 480px `<main>` drops its inline padding to zero and lets cards run to the edge.
 
-The product grid is `repeat(auto-fit, minmax(rem(260px), 1fr))` with a `rem(32px)` gap, tightening to `minmax(rem(210px), 1fr)` / `rem(20px)` on tablet, and pinned to exactly `repeat(2, minmax(0, 1fr))` with a `rem(14px)` gap on mobile. Two columns on a phone is a decision, not a fallback: it is what makes browsing feel like scanning a shelf.
+The product grid is `repeat(auto-fill, minmax(clamp(rem(165px), 13vw, rem(220px)), 1fr))` with a `rem(12px)` gap, tightening to `rem(10px)` on tablet, and pinned to exactly `repeat(2, minmax(0, 1fr))` with a `rem(8px)` gap on mobile. Two columns on a phone is a decision, not a fallback: it is what makes browsing feel like scanning a shelf.
+
+**`auto-fill`, never `auto-fit`.** `auto-fit` collapses empty tracks to zero and gives their width to whatever survived, so a filter or search returning one product rendered it as a 993px card with a 991px photo — taller than the viewport. Against a 40-product catalogue most Hebrew queries return one to three results, so that was the common path. `auto-fill` holds the empty tracks at their minimum and a single result stays the size it was before the filter narrowed.
+
+**The track minimum is a clamp, not a per-breakpoint value.** A minimum that steps at a breakpoint makes the column count fall exactly where the screen grew: 165px on tablet against 200px on desktop took the shelf from five columns to four between 1023px and 1024px. Growing the track continuously with the viewport keeps the count monotonic everywhere except the one place it cannot be — see the sidebar note under Filter Sheet.
 
 **The One Gutter Rule.** `page-gutter` is the only source of page inset. A component that needs to align with the header aligns by inheriting it, not by guessing a matching value.
 
@@ -289,11 +295,19 @@ The shared character is **tactile and confident**, but the confidence is in weig
 ### Cards / Containers
 - **Corner Style:** `8px` on product cards and on panels alike; `0` wherever a block runs edge to edge on a phone.
 - **Background:** Pure White on Cool Ash.
-- **Border:** `1px solid rgba(0,0,0,0.08)`, warming to `rgba($clr1, 0.18)` on hover and `rgba($clr1, 0.5)` on `:focus-within`.
+- **Border:** Product cards use `$line` (`rgba(0,0,0,0.16)`), darkening to `$line-strong` (`rgba(0,0,0,0.32)`) on hover and to solid `$clr1` on `:focus-within`. The filter panel sits a step lighter at `rgba(0,0,0,0.08)`, because it is furniture rather than content.
 - **Shadow Strategy:** None. See Elevation & Depth — cards are flat at rest and flat on hover.
-- **Internal Padding:** `16px 16px 18px` on cards, `24px` on panels (`18px` on mobile).
+- **Internal Padding:** `10px 12px 12px` on product cards (`8px 10px 10px` below `$bp-sm`), `24px` on panels. Cards are tight on purpose: five to a row at 1440px, the padding is the only thing competing with the photo.
 - **Behaviour:** Nothing moves. Hover darkens the hairline and stops there — forty cards in a grid make any movement read as a twitch. Out-of-stock cards drop the image to `0.6` opacity with `grayscale(30%)`.
-- **Row alignment:** `.card-body` declares all seven rows explicitly and every child is pinned to a numbered row, so a product missing its subtitle, swatches or stock line leaves that row empty rather than dragging the rest upward. Buttons and price tags line up across a row regardless of which optional fields each product has.
+- **Row alignment:** `.card-body` is a five-row grid — title, meta, slack, price, action — and every child is pinned to a numbered row, so a product missing its subtitle, swatches or stock line leaves that row empty rather than dragging the rest upward. The single `1fr` slack row is row three, not the last: fixed row heights put the leftover space above the meta line, where it read as uneven padding. Collecting it once, below the meta, pins price and button to the bottom edge so they line up across a row regardless of which optional fields each product has.
+- **Touch targets:** Every control on a card clears `44px` in both axes — the add-to-cart button by `min-height` (its padding alone gave 32px), the wishlist heart by being `44×44`. The listing toolbar's select, filter field and sheet controls match, so the whole page has one target floor rather than a spread of 32/40/42/46.
+
+### The Card Meta Line
+One line under the title carries every secondary fact: subcategory, rating, colour swatches. It truncates rather than wraps, which means whatever sits on it has to actually fit.
+
+**Ratings are compact on cards, full on the product page.** Five 12px star glyphs cost 87px of a 147px meta line on a phone-width card, which left the subcategory 53px of the 67px it needed and truncated four cards in five to `סירים ומ…`. The card renders one star plus the number instead, at 51px, and nothing is lost: at 12px a glyph row cannot express 4.5 against 4.2 — the number always did that work. The five-star display stays on the product page, where it has the size to read as a scale. Measured across all eight departments at six widths, no card truncates its subcategory.
+
+**Value before count.** The rating reads `★ 4.5 (24)`, right to left. The count used to come first, so every card announced how many people rated the product before saying what they rated it.
 
 ### Inputs / Fields
 - **Style:** White fill, `1px` hairline border, `12–14px` radius, `44–46px` tall.
@@ -311,13 +325,59 @@ The defining object of the storefront: a filled, self-sized tag of High-Voltage 
 
 **The tag is yellow always — resolved.** A discount does not change its fill. The markdown is carried by the red corner badge and the struck-through original price beside it. The earlier behaviour flipped the tag to a red tint, which meant a row of cards showed two different coloured blobs and the brand mark disappeared exactly where the saving mattered most. The product page uses the same tag at a larger size rather than bare red text.
 
+**The Price You Pay Comes First Rule.** In the price row the tag is the first child, so in RTL it sits rightmost and is read first — by eye and by screen reader. The struck-through original follows it, and the stock line is pushed to the far edge. The struck price used to lead, which meant every discounted card stated a number the shopper would *not* be charged before the one they would. The struck price is also Ink at `0.72`, not `#999`: it is quiet, but it is the figure the whole discount is measured against, and `#999` renders it at 2.85:1.
+
 ### Search Overlay
 
 There is no permanent search field anywhere. A magnifier in the header opens a full-width panel that drops from the bar's bottom edge, autofocuses, and closes on Escape, on outside click, or on submit — restoring focus to the toggle. One `180ms ease-out` fade-and-drop; nothing else on the page moves. Removing the field is what lets the header be symmetric: two icon clusters against equal gutters at every width, with no middle column to balance.
 
 ### Filter Sheet
 
-On the listing page the filter panel is a sidebar column from 1024px up and a right-anchored drawer below it, opened from the toolbar. The drawer is `visibility: hidden` and translated off-canvas when closed — in RTL, `inset-inline-start` is the right edge, and anchoring to the wrong side once left the closed panel sitting over the page silently swallowing every click.
+On the listing page the filter panel is a sidebar column from `$bp-lg` (1200px) up and a right-anchored drawer below it, opened from the toolbar. The drawer is `visibility: hidden` and translated off-canvas when closed — in RTL, `inset-inline-start` is the right edge, and anchoring to the wrong side once left the closed panel sitting over the page silently swallowing every click.
+
+**The sidebar has to pay for itself.** It used to arrive at 1024px at 300px wide, which with its gap took 332px off the grid and left 610px — two tracks that stretched to 299px each. Widening the window from 1023px to 1024px therefore dropped the shelf from five columns to two and inflated every card by 66%, on the landscape tablets and small laptops that sit exactly there. It now arrives at 1200px at `rem(210px)` with a `rem(20px)` gap.
+
+Introducing a permanent column always costs the grid something at the width it appears — the viewport gains one pixel and the shelf loses a whole sidebar — so monotonicity across that single threshold is not achievable. Keeping the loss to one column is: the shelf goes six to five and the cards stay within 15% of their previous size. Any change to the sidebar's width must be re-measured across the full 360–1920 sweep, not spot-checked at one width.
+
+**The drawer covers the screen, and its head does not move.** The panel takes an explicit `100dvh` with `max-block-size: none`. Both are needed: `inset-block: 0` with `height: auto` did not stretch it, and the sidebar's desktop ceiling (`calc(100vh - 88px)`, which keeps the sticky column clear of the header) clipped the drawer 88px short of the bottom at every width. Inside, only the filter list scrolls — with three filter sections it is now taller than a phone screen, and a scrolling header takes the close button with it.
+
+**Visibility steps, it does not ease.** `transition: visibility 220ms` flips the property at the halfway mark, so for the first ~110ms of opening the panel is still `hidden` — and a hidden element cannot take focus, which silently defeated moving focus to the close button. It is `visibility 0s linear 220ms` when closing and `0s linear 0s` when open: visible at once on the way in, waiting out the full slide on the way back.
+
+**The open drawer is a modal, and only then.** It takes `role="dialog"`, `aria-modal`, and `aria-labelledby` **only while open** — the same element is a plain column from `$bp-lg` up, and announcing a static sidebar as a modal would be a lie. Opening moves focus to the close button rather than the first filter, because a panel that has just opened should not look like it has already changed something; closing returns focus to the toolbar button that opened it. Tab cycles inside the panel: without the trap it walked out onto the product links behind the scrim, where focus was invisible and Enter navigated away from a page that still looked open.
+
+One breakpoint is written twice — `(min-width: 75rem)` in a `matchMedia` listener that closes the sheet when the window grows past `$bp-lg`. Without it, a drawer left open while the window widens keeps the page scroll locked and a focus trap running around an ordinary sidebar column. It must track `$bp-lg` in `setup/_breakpoints.scss`.
+
+**The heading is the place, not a label for the place.** The listing H1 read `קטגוריה: כלי בית` — the noun "category" prefixed to a category name, on a page already carrying breadcrumbs that say exactly that — and on a sub-category it printed the full path a second time, so the department name appeared twice within 40px of itself. The heading now names the narrowest thing in view (`סירים ומחבתות`) and the breadcrumbs carry the path. This is the eyebrow/kicker reflex in inline form; the same rule applies anywhere else a heading is tempted to label itself.
+
+### Listing Controls
+
+**The URL Is The Shareable Copy Rule.** The store is the working copy of the filter; the query string is the copy a shopper can link, bookmark, refresh and back out of. A filtered shelf used to survive nowhere — narrow forty products to two, hit reload, get forty. The listing now writes `q`, `min`, `max`, `stock` and `sort` to the address bar and reads them back on arrival. Category and sub-category are deliberately **not** among them: those are route segments (`/category/housewares/cookware`), and duplicating them as params would give the page two disagreeing accounts of where the shopper is.
+
+Both directions of the mapping live in one module so they cannot drift, and both effects open with an equality check so neither can drive the other into a loop. There is one extra guard: at a category change the route lands before the store catches up, so store→URL refuses to write until `filterBy.category` matches the route — without it, a search made in one department is copied onto the next department's address as the shopper walks into it.
+
+**Deliberate acts push; continuous ones replace.** Choosing a sort or toggling in-stock is a single decision, and going back from it is exactly what a shopper means by "undo that", so those push a history entry. Typing in the filter field and dragging the price slider emit a change per keystroke and per pixel — those replace, or several hundred entries would sit between the shopper and the page they arrived from.
+
+**Sorting is a list, not a switch.** `SORT_OPTIONS` builds the `<select>`, maps a token to a filter, and maps a filter back to a token. Adding a sort is adding a row, rather than editing three hard-coded ladders that had to agree. The list now opens with **`הנחה: מהגבוהה לנמוכה`** — this storefront's whole proposition is the markdown, every card carries a discount badge, and there was no way to ask for the deepest one.
+
+**Paging slices what is already loaded.** The product query returns the whole match set in one response, so the page slices locally rather than asking the API for a window. That is not laziness about the API's `pageIdx`/`pageSize` — it is what lets the count line say `מציג 25–48 מתוך 60`, which a server-paginated response cannot, because it only knows the twenty-four rows it sent. When the catalogue outgrows one response this moves to the API and the endpoint will need to return a total alongside the rows.
+
+Page size is 24. **At the catalogue's present size — forty products across eight departments — the paginator never renders**, and that is the correct behaviour rather than a sign it is broken: one page is not a choice, so it gets no control, and the count line drops the range because `מציג 1–5 מתוך 5` is three numbers saying one thing. Verified against an inflated result set: 60 products give three pages, the last holding 12; `?page=99` clamps to the last page rather than showing an empty grid; 300 products give `1 … 6 7 8 … 13`.
+
+`page` lives in the URL but not in the filter — it never reaches the query. The store→URL effect therefore compares only the params the *filter* owns; comparing whole query strings would read `?page=2` as a difference, rewrite the URL without it, and undo every page move on the next render. A genuine filter change does drop the page, which is right: page 3 of a result set that no longer exists is not where the shopper wants to be.
+
+**The Active Filters Line Rule.** Three of the four filters live somewhere the shopper cannot see while looking at the results: below 1200px the price slider and the stock toggle are inside a drawer, and the sub-category shows only as a breadcrumb. A shelf holding two of forty products gave no on-screen account of why. The chips row states each active filter and removes exactly that one — one chip for the price range rather than two, since removing a floor and leaving a ceiling is not a state the shopper built. `נקה הכל` appears only once undoing them one at a time is a chore. The sub-category chip navigates rather than dispatching, because removing it means going up a route.
+
+Chips are the one place on the listing that sits **below the 44px floor**, at 34px, on purpose: every filter a chip removes is also removable from the control that set it, and a row of 44px pills reads as the page's primary navigation, which is precisely what a redundant exit is not.
+
+### Empty & Loading States
+
+**The Empty State Names Its Cause Rule.** A grid with nothing in it is a state the shopper landed in, not a fact to report. `EmptyState` is a white card on the page tone — the same treatment as the products it replaces — carrying a drawn 44px glyph, a title that names *why* it is empty, an optional line echoing the shopper's own choices back to them (`חיפוש: "מגש" · מחיר: 20–50 ₪`), and one 44px exit. The listing's exit is `נקה סינון`, which dispatches the identical action as the filter panel's `ניקוי`: an empty result offering a way out has to undo exactly what the panel would, or the two disagree about what "cleared" means. A department with no products at all is a different situation and gets a different exit (`לכל המחלקות`), because clearing filters would not help.
+
+The list component takes the empty state as a *node*, never a message string. Only the caller knows why its own list came back empty — a filter that matched nothing, a search with no hits and an empty wishlist are three situations with three exits, and the list cannot tell them apart from the outside.
+
+**The Skeleton Is The Card Rule.** Placeholders reuse `.product-card` and `.card-body` wholesale, including the five-row grid, and pin their four lines to the same numbered rows real content occupies — otherwise they auto-place into rows 1/2/3, the price lands in the slack row, and the card comes out short. The heights are measured against what actually renders (19px title, 18px meta, 36px price tag, 44px action), which puts a skeleton card within **0.4px** of the real one, so the shelf does not resize when results arrive. A placeholder that is a different size from the thing it stands in for is worse than no placeholder.
+
+**Skeletons only when the shelf is genuinely bare.** Every keystroke in the in-category filter refetches, so keying the placeholder off `isLoading` alone would blank the whole grid and rebuild it on each letter typed. While results are already on screen the existing `aria-live` count line carries the loading state instead, and the stale results stay put. A search results page has the opposite need — its old results belong to the old query — so it shows skeletons on every load.
 
 ### Product Media Normalisation
 
@@ -350,6 +410,8 @@ The invalid state must be declared on `:focus` and `:focus-visible` as well as a
 Submit buttons are never disabled on validity. A greyed-out primary action gives the shopper nothing to act on; submitting an incomplete form marks every problem, focuses the first, and names each one. Disabled is reserved for states the shopper cannot resolve by typing.
 
 **The Loading State Keeps Its Fill Rule.** A button that is working keeps its blue and swaps its label for the white spinner. Greying it out renders white on `#cccccc` at roughly 1.5:1 — illegible at exactly the moment a shopper most needs to know something is happening.
+
+**The Disabled State Reads By Tone Rule.** The same failure applied to genuinely disabled buttons, where the add-to-cart control on an out-of-stock card carried the word `אזל מהמלאי` in white on `#cccccc` at 1.61:1 with a further `0.7` opacity on top. A disabled control now takes the sunken fill (`$surface-sunken`) with muted ink and a `$line-soft` hairline: inert by tone, at 4.96:1, still shaped like a button, and the same 44px box as its enabled sibling. Never signal "unavailable" by making the word unavailable too.
 
 ### Money
 

@@ -49,12 +49,24 @@
     }
   }
 
+  /* Was #777 — 4.48:1 on white, just under the 4.5 floor for text this small.
+     $text-muted is the token that exists precisely to mark that boundary. */
   .review-count {
-    color: #777;
+    color: $text-muted;
   }
 
   .rating-number {
     font-weight: 600;
-    color: #333;
+    color: $clr3;
+  }
+
+  /* One star, then the number. The glyph is a label for what the number means,
+     not a scale, so it never varies — see the note in StarRating.jsx. */
+  &.compact {
+    gap: rem(4px);
+
+    .star {
+      flex: 0 0 auto;
+    }
   }
 }

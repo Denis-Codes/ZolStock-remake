@@ -1,0 +1,93 @@
+/* ============================= */
+/* EMPTY STATE */
+/* ============================= */
+/* A white card on the page tone, matching the product cards it replaces —
+   an empty grid should still read as the shop, not as a broken page. It sits
+   flat and hairlined for the same reason cards do (see The Flat-At-Rest Rule),
+   and it centres its own text rather than inheriting the page's RTL start
+   alignment, because there is no column here for the text to align to. */
+
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: rem(10px);
+
+  padding: rem(48px) rem(24px);
+  margin-block: rem(8px) rem(24px);
+
+  background: $surface;
+  border: rem(1px) solid $line;
+  border-radius: $r-lg;
+
+  text-align: center;
+}
+
+/* Decorative only — the title carries the meaning, so this may sit below the
+   text contrast floor. $icon-empty exists in the token file for exactly this
+   and had no consumer until now. */
+.empty-state__icon {
+  width: rem(44px);
+  height: rem(44px);
+  color: $icon-empty;
+}
+
+.empty-state__title {
+  margin: 0;
+  max-width: 42ch;
+
+  font-size: rem(17px);
+  line-height: rem(24px);
+  font-weight: 700;
+  color: $clr3;
+}
+
+.empty-state__hint {
+  margin: 0;
+  max-width: 52ch;
+
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: $text-muted;
+}
+
+/* The way out. Same 44px floor and same square-ish corner as every other
+   control on the listing; blue-on-white rather than filled, because it undoes
+   something rather than being the page's primary action. */
+.empty-state__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: rem(44px);
+  margin-block-start: rem(6px);
+  padding-inline: rem(20px);
+
+  border: rem(1px) solid $clr1;
+  border-radius: $r-md;
+  background: $surface;
+  color: $clr1;
+
+  font-family: inherit;
+  font-size: rem(14px);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: background-color $dur $ease, color $dur $ease;
+
+  &:hover {
+    background: $clr1;
+    color: $surface;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+@include until($bp-sm) {
+  .empty-state {
+    padding: rem(36px) rem(18px);
+  }
+}

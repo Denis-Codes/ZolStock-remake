@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { setFilterBy } from '../store/actions/product.actions'
+import { clearFilters, setFilterBy } from '../store/actions/product.actions'
 import { productService } from '../services/product'
 
 const DEFAULT_BOUNDS = { min: 0, max: 1000 }
@@ -10,6 +11,32 @@ export function ProductSidebarFilters() {
   const filterBy = useSelector(storeState => storeState.productModule.filterBy)
 
   const [bounds, setBounds] = useState(DEFAULT_BOUNDS)
+  const [subCategories, setSubCategories] = useState([])
+
+  /* The taxonomy has eight departments and every one of them is subdivided, but
+     the only way into a sub-category was the header dropdown — so once a
+     shopper was on a listing page, the narrowest cut they could make was a
+     price range. These are links, not filters: sub-category is a route segment,
+     and treating it as filter state would give the page two ideas about where
+     the shopper is. */
+  useEffect(() => {
+    let isCancelled = false
+    const category = filterBy?.category || ''
+
+    if (!category) {
+      setSubCategories([])
+      return
+    }
+
+    productService.getSubCategories(category).then(subs => {
+      if (isCancelled) return
+      setSubCategories(subs || [])
+    })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [filterBy?.category])
 
   // The slider's own min/max come from the category's full price range
   // (ignoring the current price filter, so the track doesn't shrink as the
@@ -60,25 +87,18 @@ export function ProductSidebarFilters() {
     updateFilter({ maxPrice: ev.target.value })
   }
 
+  // ✅ שומרים הקשר (קטגוריה/תת־קטגוריה) ומאפסים רק פילטרים.
+  // The body moved to clearFilters() so the empty state's נקה סינון button
+  // undoes exactly what this one does — see the note on the action.
   function onClearFilters() {
-    // ✅ שומרים הקשר (קטגוריה/תת־קטגוריה) ומאפסים רק פילטרים
-    dispatch(
-      setFilterBy({
-        ...(filterBy || {}),
-        // keep context:
-        category: filterBy?.category || '',
-        subCategory: filterBy?.subCategory || '',
-
-        // reset filters:
-        txt: '',
-        minPrice: '',
-        maxPrice: '',
-        inStock: '',
-        sortField: '',
-        sortDir: '1',
-      })
-    )
+    dispatch(clearFilters())
   }
+
+  function onToggleInStock(ev) {
+    updateFilter({ inStock: ev.target.checked ? 'true' : '' })
+  }
+
+  const isInStockOnly = filterBy?.inStock === 'true' || filterBy?.inStock === true
 
   const range = Math.max(1, bounds.max - bounds.min)
   const minPercent = ((minPrice - bounds.min) / range) * 100
@@ -91,6 +111,48 @@ export function ProductSidebarFilters() {
         <button type="button" className="clear-btn" onClick={onClearFilters}>
           ניקוי
         </button>
+      </div>
+
+      {subCategories.length > 1 && (
+        <div className="filter-card">
+          <h4>תת־מחלקה</h4>
+
+          <ul className="subcategory-list">
+            <li>
+              <NavLink
+                to={`/category/${filterBy.category}`}
+                end
+                className={({ isActive }) => `subcategory-link ${isActive ? 'is-active' : ''}`}
+              >
+                הכל
+              </NavLink>
+            </li>
+
+            {subCategories.map(sub => (
+              <li key={sub.slug}>
+                <NavLink
+                  to={`/category/${filterBy.category}/${sub.slug}`}
+                  className={({ isActive }) => `subcategory-link ${isActive ? 'is-active' : ''}`}
+                >
+                  {sub.labelHe || sub.slug}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="filter-card">
+        <h4>זמינות</h4>
+
+        <label className="filter-check">
+          <input
+            type="checkbox"
+            checked={isInStockOnly}
+            onChange={onToggleInStock}
+          />
+          <span>הצג רק מוצרים במלאי</span>
+        </label>
       </div>
 
       <div className="filter-card">

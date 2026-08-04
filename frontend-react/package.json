@@ -12,6 +12,7 @@
     "build": "vite build",
     "build:github": "vite build --mode github",
     "gen:image-fit": "node src/scripts/gen-image-fit.mjs",
+    "clean:product-images": "node src/scripts/clean-product-images.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

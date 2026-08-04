@@ -4,9 +4,12 @@ Generated from `src/data/products.json` — do not hand-edit; regenerate if the
 catalogue changes.
 
 The catalogue was rebuilt around the chain's eight real departments before the
-photography existed, so **all 40 files below are missing**. Until they land,
-every product image falls back to a drawn placeholder (`onProductImageError`
-in `src/services/util.service.js`); nothing renders as a broken image.
+photography existed. **All 40 files below are now in place** — the generated
+set from `src/assets/styles/img/Product Images for ZolStock/` was matched to
+each product by eye and copied in under the filenames listed in the table.
+The placeholder fallback (`onProductImageError` in
+`src/services/util.service.js`) stays wired up and still covers the orphaned
+images at the bottom of this file.
 
 ## What each file needs
 
@@ -30,6 +33,9 @@ This measures each photo's subject-to-canvas ratio and writes
 `src/data/product-image-fit.json`, so products with different framing still
 render at a consistent visual size. Skipping it leaves everything at
 `scale(1)`, which is functional but visually uneven.
+
+Already run for the current set — 63/63 images mapped, scale range
+0.841 .. 1.196. Re-run it if any product photo is swapped out.
 
 ## Files
 

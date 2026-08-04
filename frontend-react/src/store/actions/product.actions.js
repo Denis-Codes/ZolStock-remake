@@ -44,3 +44,48 @@ export function resetFilterAndLoad() {
     return dispatch(loadProducts())
   }
 }
+
+/**
+ * The four fields a shopper can set that are able to empty a list. Category and
+ * sub-category are deliberately not among them: those come from the URL, not
+ * from the filter panel, so clearing them would navigate the page out from
+ * under the button that was clicked. Sort cannot empty anything.
+ */
+const BROWSING_FILTERS = ['txt', 'minPrice', 'maxPrice', 'inStock']
+
+function isSet(value) {
+  return value !== '' && value !== null && value !== undefined
+}
+
+export function hasActiveFilters(filterBy) {
+  if (!filterBy) return false
+  return BROWSING_FILTERS.some(key => isSet(filterBy[key]))
+}
+
+/**
+ * Clears the browsing filters while keeping the shopper where they are. Shared
+ * by the filter panel's ניקוי button and the empty state's נקה סינון exit — an
+ * empty result that offers a way out has to undo exactly what the panel would,
+ * or the two disagree about what "cleared" means.
+ */
+export function clearFilters() {
+  return (dispatch, getState) => {
+    const filterBy = getState().productModule.filterBy || {}
+
+    dispatch(setFilterBy({
+      ...filterBy,
+
+      // keep context:
+      category: filterBy.category || '',
+      subCategory: filterBy.subCategory || '',
+
+      // reset filters:
+      txt: '',
+      minPrice: '',
+      maxPrice: '',
+      inStock: '',
+      sortField: '',
+      sortDir: '1',
+    }))
+  }
+}

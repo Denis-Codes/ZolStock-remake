@@ -1,29 +1,48 @@
+/* The skeleton borrows .product-card and .card-body wholesale, which means it
+   also inherits the five-row grid. Its four lines are therefore pinned to the
+   same rows real content occupies — otherwise they auto-place into 1/2/3 and
+   the price line lands in the slack row, leaving the card short. Heights match
+   what each row actually renders: one 19px title line, the 18px meta line, the
+   34px price tag, and the 44px action button. */
+
 .product-card.skeleton {
   pointer-events: none;
 
   .card-media {
-    background: #f0f0f0;
+    background: $surface-sunken;
   }
 
+  /* $surface-sunken for the media well and $hairline-gray for the lines: both
+     were untokenised literals (#f0f0f0 / #e0e0e0) at essentially these values.
+     The lines need the darker of the two — a placeholder that is barely
+     distinguishable from the card it sits in has stopped being a placeholder. */
   .skeleton-line {
     border-radius: $r-sm;
-    background: #e0e0e0;
+    background: $hairline-gray;
 
     &.title {
-      height: 18px;
+      grid-row: 1;
+      height: rem(19px);
       width: 80%;
-      margin-bottom: 8px;
     }
 
     &.subtitle {
-      height: 14px;
+      grid-row: 2;
+      height: rem(18px);
       width: 60%;
-      margin-bottom: 8px;
     }
 
     &.price {
-      height: 22px;
-      width: 40%;
+      grid-row: 4;
+      height: rem(36px);
+      width: 45%;
+    }
+
+    &.action {
+      grid-row: 5;
+      height: rem(44px);
+      width: 100%;
+      border-radius: $r-md;
     }
   }
 }
@@ -46,6 +65,14 @@
       transparent
     );
     animation: shimmer 1.5s infinite;
+  }
+}
+
+/* A screen of shimmering rectangles is the one place on this site where motion
+   is unavoidable, so it is also the one place that has to opt out cleanly. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none;
   }
 }
 

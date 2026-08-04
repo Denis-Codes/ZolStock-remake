@@ -76,11 +76,25 @@ $gray4: #333;            // same colour as $clr3, kept as-is to avoid churn
 // sits "deliberately outside the brand palette". Similar hues, different
 // jobs; that is not a reason to collapse them.
 
-$markdown-red:     #e53935;  // sale badge, discounted price, cart/wishlist counters
+/* Both reds and the amber are read against white, and two of the three failed
+   it. The values below are the nearest passing step, not new colours:
+
+   $markdown-red was #e53935 — Material Red 600 — which carries white text at
+   4.23:1. It is now Red 700, one step down the same ramp, at 4.98:1. Same hue
+   (0°), same family, and it stays distinguishable from $out-of-stock-red, which
+   is lighter and pinker (354°). Note the two have swapped which one is darker;
+   they are still separate values for the reasons above.
+
+   $low-stock-amber was #f57c00 at 2.70:1 as text on white — the worst contrast
+   in the system, on a line ("נותרו רק 3!") whose whole job is to be noticed.
+   Material's orange ramp bottoms out at #e65100 / 3.6:1, so this one had to go
+   off-ramp: same 30° hue, darkened until it cleared the floor at 5.34:1. */
+
+$markdown-red:     #d32f2f;  // sale badge, discounted price, cart/wishlist counters
 $out-of-stock-red: #dc3545;  // out of stock, unavailable variant, form errors
 $out-of-stock-bg:  #fee;     // pale wash behind a failure message
 $in-stock-green:   #28a745;  // in stock, added to cart
-$low-stock-amber:  #f57c00;  // low stock
+$low-stock-amber:  #a85400;  // low stock
 $star-gold:        #ffc107;  // review stars
 
 
