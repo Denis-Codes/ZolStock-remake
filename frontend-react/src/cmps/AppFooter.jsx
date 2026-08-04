@@ -28,8 +28,7 @@ const SECTIONS = [
     id: 'service',
     title: 'שירות לקוחות',
     links: [
-      // HomePage reads this state and scrolls to the branches map.
-      { to: '/', label: 'סניפים', state: { scrollTo: 'branches-map' } },
+      { to: '/branches', label: 'סניפים' },
       { to: '/chat', label: 'צור קשר' },
       { to: '/about', label: 'אודות' },
       { to: '/wishlist', label: 'המועדפים שלי' },

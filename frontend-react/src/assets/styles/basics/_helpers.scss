@@ -27,6 +27,25 @@
     }
 }
 
+// A11y helpers
+
+/* Present to a screen reader, absent to the eye. Used for the homepage's h1:
+   that page's visual title is the logo lockup in the header, and the document
+   still needs exactly one h1, first in the outline. `clip-path` rather than the
+   old `clip` rect, and `white-space: nowrap` so the text cannot reflow into a
+   1px column and be read out one character per line. */
+.visually-hidden {
+    position: absolute;
+    width: rem(1px);
+    height: rem(1px);
+    margin: rem(-1px);
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
 // Media helpers
 
 .square-ratio {

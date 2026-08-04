@@ -11,6 +11,10 @@ import { ScrollToTopBtn } from './cmps/ScrollToTopBtn'
 
 // Lazy load - routes (improves initial load time)
 const HomePage = lazy(() => import('./pages/HomePage'))
+const BranchesPage = lazy(() =>
+  import('./pages/BranchesPage.jsx').then(m => ({ default: m.BranchesPage }))
+)
+const NotFound = lazy(() => import('./pages/NotFound.jsx').then(m => ({ default: m.NotFound })))
 const AboutUs = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutUs })))
 const AboutTeam = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutTeam })))
 const AboutStory = lazy(() => import('./pages/AboutUs').then(m => ({ default: m.AboutStory })))
@@ -113,6 +117,11 @@ export function RootCmp() {
               <Route path="vision" element={<AboutVision />} />
             </Route>
 
+            {/* The locator used to be the homepage's closing block. It is a
+                destination now, reachable from the header, the drawer and the
+                homepage's closing band. */}
+            <Route path="branches" element={<BranchesPage />} />
+
             <Route path="category/:categorySlug" element={<ProductIndex />} />
             <Route path="category/:categorySlug/:subCategorySlug" element={<ProductIndex />} />
 
@@ -137,6 +146,10 @@ export function RootCmp() {
               <Route index element={<Login />} />
               <Route path="signup" element={<Signup />} />
             </Route>
+
+            {/* Without this, an address matching nothing rendered a blank page
+                between the header and the footer. */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </main>

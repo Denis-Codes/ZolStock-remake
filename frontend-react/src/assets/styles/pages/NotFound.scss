@@ -1,0 +1,88 @@
+/* The catch-all route. It has to look like a considered page rather than an
+   accident, because the two links that used to reach it (/jobs, /franchise)
+   rendered nothing at all. */
+
+.not-found {
+  @include page-container;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(14px);
+
+  padding-block: clamp(rem(48px), 10vh, rem(96px));
+  padding-inline: rem(20px);
+  text-align: center;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(rem(26px), 4vw, rem(38px));
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: rem(-0.5px);
+    color: $clr3;
+  }
+
+  p {
+    margin: 0;
+    max-width: 46ch;
+    font-size: rem(16px);
+    line-height: 1.6;
+    color: $text-muted;
+  }
+}
+
+.not-found__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: rem(44px);
+  margin-top: rem(4px);
+  padding-inline: rem(24px);
+
+  background-color: $clr1;
+  color: $clr4;
+  border-radius: $r-md;
+
+  font-size: rem(16px);
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: background-color $dur $ease;
+
+  &:hover {
+    background-color: darken($clr1, 8%);
+  }
+}
+
+.not-found__departments {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: rem(6px);
+
+  margin-top: rem(12px);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: rem(44px);
+    padding-inline: rem(14px);
+
+    background-color: rgba($clr1, 0.08);
+    border-radius: $r-pill;
+
+    color: $clr1;
+    font-size: rem(14px);
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: background-color $dur $ease, color $dur $ease;
+
+    &:hover {
+      background-color: $clr1;
+      color: $clr4;
+    }
+  }
+}

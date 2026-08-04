@@ -1,7 +1,14 @@
-/* Two artworks, two shapes. Below $bp-lg the component renders the square
-   1080×1080 campaign tiles and runs edge to edge with square corners; from
-   $bp-lg it renders the wide 1920×700 banners at their native ratio. Neither
-   set is ever cropped — see EmblaCarousel.jsx for the source swap. */
+/* The homepage hero.
+ *
+ * One authored slide type at every width — a brand-blue field carrying the
+ * department name, its real deepest markdown, its real entry price on the
+ * yellow tag, and its own artwork in a square well. The two fixed-size image
+ * sets (1920×700 / 1080×1080) and the JS breakpoint that swapped them are gone
+ * with the hotlinked campaign art they existed to serve.
+ *
+ * Blue is also what earns the yellow tag its bed: High-Voltage Yellow needs a
+ * dark surface under it, and the hero is the one place on the page that has
+ * one. See DESIGN.md, The Yellow Needs A Bed Rule. */
 
 .embla {
   overflow: hidden;
@@ -13,51 +20,291 @@
 
 .embla__container {
   display: flex;
+  /* Slides match the tallest of them, so a longer department name never
+     clips and the control row never jumps between slides. */
+  align-items: stretch;
 }
 
 .embla__slide {
   flex: 0 0 100%;
   min-width: 0;
-  overflow: hidden;
+  display: flex;
 }
 
-/* Two classes deep on purpose: `.main-container img` in basics/_layout.scss
-   forces `height: auto` on every image and would otherwise win on
-   specificity, leaving the image at its natural size inside the slide. */
-.embla__slide .embla__slide__img {
+/* ============================= */
+/* SLIDE                          */
+/* ============================= */
+
+.hero-slide {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: rem(16px);
+  align-items: center;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 
-/* ============================= */
-/* SQUARE SET (below $bp-lg)      */
-/* ============================= */
+  background-color: $clr1;
+  color: $clr4;
+  text-decoration: none;
 
-.embla--square {
-  .embla__slide {
-    aspect-ratio: 1 / 1;
-    /* Full-bleed on a phone, so corners stay square — a rounded edge against
-       the screen edge reads as a mistake. */
-    border-radius: 0;
+  padding: rem(20px) rem(18px) rem(24px);
+  border-radius: 0;
+
+  /* Colour only, at the system duration — the hero does not move on hover. */
+  transition: background-color $dur $ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: darken($clr1, 8%);
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr2;
+    outline-offset: rem(-6px);
   }
 }
 
-/* Two tiles side by side once there is room for them to still read. */
+.hero-slide__media {
+  /* A square well rather than a crop: the artwork is 1024×1024 and fills the
+     frame exactly, so nothing is ever cut off. DESIGN.md, Don't Crop. */
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: rem(300px);
+  margin-inline: auto;
+
+  background-color: $surface-sunken;
+  border-radius: $r-lg;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.hero-slide__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem(10px);
+  min-width: 0;
+}
+
+.hero-slide__title {
+  margin: 0;
+  font-size: clamp(rem(28px), 6vw, rem(40px));
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: rem(-0.6px);
+  color: $clr4;
+}
+
+.hero-slide__markdown {
+  margin: 0;
+  font-size: rem(15px);
+  font-weight: 700;
+  line-height: 1.3;
+
+  /* Markdown Red states a fact from the data. On the blue field it needs its
+     own chip to stay legible rather than sitting as red text on blue. */
+  background-color: $markdown-red;
+  color: $clr4;
+  border-radius: $r-sm;
+  padding: rem(4px) rem(10px);
+}
+
+.hero-slide__price {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(8px);
+  margin-block-start: rem(2px);
+}
+
+.hero-slide__price-lead {
+  font-size: rem(14px);
+  font-weight: 600;
+  color: rgba($clr4, 0.86);
+}
+
+/* The signature tag, at hero size. Same three parts and the same reversal as
+   the card: ₪ then whole then agorot, locked LTR inside the RTL page. */
+.hero-slide__price-tag {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  align-items: baseline;
+  gap: rem(4px);
+
+  background-color: $clr2;
+  color: $clr3;
+  font-weight: 800;
+
+  padding: rem(6px) rem(12px);
+  border-radius: $r-md;
+
+  .ils {
+    font-size: rem(14px);
+    opacity: 0.9;
+  }
+
+  .whole {
+    font-size: rem(28px);
+    line-height: rem(30px);
+    letter-spacing: rem(-0.6px);
+  }
+
+  .frac {
+    font-size: rem(14px);
+    opacity: 0.85;
+    transform: translateY(rem(-8px));
+  }
+}
+
+.hero-slide__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: rem(44px);
+
+  font-size: rem(15px);
+  font-weight: 700;
+  color: $clr2;
+
+  /* The underline is the affordance; the whole slide is the link, so this
+     names the destination rather than pretending to be a second button. */
+  text-decoration: underline;
+  text-underline-offset: rem(4px);
+  text-decoration-thickness: rem(2px);
+}
+
+/* ============================= */
+/* SIDE BY SIDE                   */
+/* ============================= */
+/* From tablet up the artwork sits beside the type instead of above it, and
+   the panel leads in the reading direction (inline-start is the right edge). */
+/* From tablet up the artwork sits beside the type instead of above it. The
+   two columns are close to equal so the blue field never becomes a mostly
+   empty backdrop with a small picture stranded in it — the artwork carries its
+   half, and the type block sits centred in the other. */
 @include from($bp-tablet-min) {
-  .embla--square .embla__slide {
-    flex-basis: 50%;
+  .hero-slide {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(rem(24px), 4vw, rem(56px));
+    padding: rem(28px) rem(32px);
+    align-items: center;
+  }
+
+  /* Both are pinned to row 1. The media comes first in the DOM so the phone
+     stack leads with the picture, and naming only the columns let the grid's
+     sparse auto-placement push the panel down onto a second row — which is
+     what left a 480px picture at the top of the field and its price stranded
+     536px below it. */
+  .hero-slide__panel {
+    grid-area: 1 / 1;
+    gap: rem(16px);
+  }
+
+  .hero-slide__media {
+    grid-area: 1 / 2;
+    /* Sized off the slide rather than pinned, so it grows with the field
+       instead of leaving a blue margin around itself. */
+    max-width: min(100%, rem(440px));
+    margin-inline: 0 auto;
+  }
+
+  .hero-slide__title {
+    font-size: clamp(rem(34px), 3.4vw, rem(52px));
   }
 }
 
-/* ============================= */
-/* WIDE SET ($bp-lg and up)       */
-/* ============================= */
-
-.embla--wide {
-  .embla__slide {
-    aspect-ratio: 1920 / 700;
+@include from($bp-lg) {
+  .hero-slide {
+    padding: clamp(rem(36px), 3vw, rem(56px));
     border-radius: $r-lg;
   }
+
+  .hero-slide__media {
+    max-width: min(100%, rem(480px));
+  }
+
+  .hero-slide__price-tag {
+    .whole {
+      font-size: rem(34px);
+      line-height: rem(36px);
+    }
+
+    .ils,
+    .frac {
+      font-size: rem(16px);
+    }
+  }
+}
+
+/* ============================= */
+/* CONTROLS                       */
+/* ============================= */
+
+.embla__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem(12px);
+
+  padding-block: rem(12px);
+}
+
+.embla__dots {
+  display: flex;
+  align-items: center;
+  gap: rem(2px);
+}
+
+/* 44px of hit area around a small mark: the target is thumb-sized even though
+   the dot reads as a dot. */
+.embla__dot,
+.embla__play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: rem(44px);
+  height: rem(44px);
+  padding: 0;
+
+  background-color: transparent;
+  border: 0;
+  border-radius: $r-md;
+  color: $clr1;
+  cursor: pointer;
+
+  transition: background-color $dur $ease;
+
+  &:hover {
+    background-color: rgba($clr1, 0.1);
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+.embla__dot-mark {
+  display: block;
+  width: rem(10px);
+  height: rem(10px);
+  border-radius: 50%;
+
+  background-color: transparent;
+  border: rem(2px) solid rgba($clr1, 0.45);
+
+  transition: background-color $dur $ease, border-color $dur $ease;
+}
+
+.embla__dot.is-selected .embla__dot-mark {
+  background-color: $clr1;
+  border-color: $clr1;
+}
+
+.embla__play {
+  font-size: rem(13px);
 }

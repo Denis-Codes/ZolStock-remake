@@ -1,243 +1,102 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { EmblaCarousel } from '../cmps/EmblaCarousel.jsx'
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
-import { AppAccordion } from '../cmps/AppAccordion'
-import { MyComponent } from '../cmps/MapsCmp.jsx'
-import rawRegions from '../data/branches.withLatLng.json'
-import { productService } from '../services/product'
+import { HomeDeals } from '../cmps/HomeDeals.jsx'
 import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
-import { onProductImageError } from '../services/util.service'
+import { departmentImage } from '../services/department-highlights.service'
+import branchRegions from '../data/branches.withLatLng.json'
+
+const BRANCH_COUNT = branchRegions.reduce(
+  (total, region) => total + (region.branches?.length ?? 0),
+  0
+)
+
+/* "א, ב, ג ו-ד" — the departments read as a Hebrew sentence rather than a
+   comma-separated dump, and the list stays derived from taxonomy.service so
+   the copy cannot drift from the nav the way the old welcome block did. */
+const DEPARTMENT_SENTENCE = DEPARTMENTS.map(({ labelHe }) => labelHe)
+  .reduce((sentence, label, index, all) => {
+    if (index === 0) return label
+    if (index === all.length - 1) return `${sentence} ו${label}`
+    return `${sentence}, ${label}`
+  }, '')
 
 /**
- * Three branches in branches.withLatLng.json share one `_placeId`
- * (ChIJi8mnMiRJABURuiw1EyBCa2o) — אום אל פחם, ירכא and בית אל all failed to
- * geocode and fell back to the same record. That id was doing three jobs at
- * once: React key, ref lookup, and selected-branch identity, so the list threw
- * duplicate-key warnings and clicking a pin scrolled to the wrong shop.
+ * The homepage.
  *
- * A positional id is unique by construction and independent of the data's
- * quality. `_placeId` stays on the object for anything that genuinely needs
- * the Google reference.
+ * It used to run carousel → category tiles → welcome copy → store locator, and
+ * sold nothing: no product, no price, no struck-through original, no discount
+ * badge anywhere on it. The signature price tag — DESIGN.md's "defining object
+ * of the storefront" — never appeared on the surface every shopper lands on,
+ * and the page closed on a map of car parks.
  *
- * NOTE: those three branches also share fallback coordinates in the Negev, so
- * their pins sit far from their real addresses. That is a data fix (re-run
- * src/scripts/geocode-branches.mjs), not a UI one.
+ * It now states a price in the first viewport (the hero), puts the deepest
+ * markdowns in the catalogue directly under it, and only then offers the
+ * departments. The locator moved to /branches, where a shopper goes when they
+ * want it.
  */
-function withBranchIds(regions) {
-  return regions.map((region) => ({
-    ...region,
-    branches: (region.branches ?? []).map((branch, idx) => ({
-      ...branch,
-      _uid: `${region.id}:${idx}`,
-    })),
-  }))
-}
-
 function HomePage() {
-  const location = useLocation()
-  const regions = useMemo(() => withBranchIds(rawRegions), [])
-
-  const [categoryTiles, setCategoryTiles] = useState([])
-
-  // Every region starts collapsed, so the map is the first thing you meet and
-  // the list stays a short, scannable set of region names underneath it.
-  const [selectedRegionId, setSelectedRegionId] = useState('')
-  const [selectedBranchId, setSelectedBranchId] = useState(null)
-  const branchRefs = useRef({})
-
-  const selectedRegion = useMemo(
-    () => regions.find((r) => r.id === selectedRegionId),
-    [selectedRegionId]
-  )
-
-  function handleRegionChange(id) {
-    setSelectedRegionId(id)
-    setSelectedBranchId(null)
-  }
-
-  function handleBranchClick(branch) {
-    setSelectedBranchId(branch?._uid ?? null)
-  }
-
-  function handleSelectFromMap({ regionId, branchId }) {
-    if (regionId) setSelectedRegionId(regionId)
-    setSelectedBranchId(branchId ?? null)
-  }
-
-  function getScrollParent(node) {
-    let parent = node?.parentElement
-    while (parent) {
-      const style = window.getComputedStyle(parent)
-      const overflowY = style.overflowY
-      if (overflowY === 'auto' || overflowY === 'scroll') return parent
-      parent = parent.parentElement
-    }
-    return null
-  }
-
-  useEffect(() => {
-    let isCancelled = false
-
-    Promise.all(
-      DEPARTMENTS.map(async (def) => {
-        const products = await productService.query({ category: def.slug })
-        const withImage = products.find((p) => p.images?.[0] || p.imgUrl || p.image)
-        if (!withImage) return null
-
-        const image = withImage.images?.[0] || withImage.imgUrl || withImage.image
-        return { ...def, image }
-      })
-    ).then((tiles) => {
-      if (!isCancelled) setCategoryTiles(tiles.filter(Boolean))
-    })
-
-    return () => {
-      isCancelled = true
-    }
-  }, [])
-
-  useEffect(() => {
-    if (location.state?.scrollTo !== 'branches-map') return
-
-    const el = document.getElementById('branches-map')
-    if (!el) return
-
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [location.state])
-
-  useEffect(() => {
-    if (!selectedBranchId) return
-    const el = branchRefs.current[selectedBranchId]
-    if (!el) return
-
-    const container = getScrollParent(el)
-
-    // On mobile the list is no longer its own scroller, so there is no
-    // scroll parent to move — bring the branch into view on the page instead.
-    if (!container) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      return
-    }
-
-    const containerRect = container.getBoundingClientRect()
-    const elRect = el.getBoundingClientRect()
-    const elTopInContainer = elRect.top - containerRect.top + container.scrollTop
-
-    const targetTop =
-      elTopInContainer - (container.clientHeight / 2 - el.clientHeight / 2)
-
-    container.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' })
-  }, [selectedBranchId, selectedRegionId])
-
   return (
-    <section>
+    <section className="home-page">
+      {/* The visual title of this page is the logo lockup in the header, so
+          the document's h1 is here rather than duplicated on screen. The page
+          previously ran h2 → h1 → h2, with the only h1 buried three blocks
+          down inside the welcome copy. */}
+      <h1 className="visually-hidden">זול סטוק — קניות לבית במחירים זולים</h1>
+
       <div className="gallery">
         <EmblaCarousel />
+      </div>
+
+      <div className="section-separator">
+        <h2>המבצעים הגדולים</h2>
+      </div>
+
+      <div className="home-deals">
+        <HomeDeals />
       </div>
 
       <div className="section-separator">
         <h2>קנייה לפי קטגוריה</h2>
       </div>
 
-      <div className="category-tiles">
-        {categoryTiles.map((tile) => (
-          <Link key={tile.slug} to={departmentPath(tile.slug)} className="category-tile">
-            <img src={tile.image} alt={tile.labelHe} loading="lazy" onError={onProductImageError} />
-            <span className="category-tile-label">{tile.labelHe}</span>
+      {/* Straight from the department list, with artwork keyed by slug. It
+          used to query the API eight times to borrow the first product photo
+          it could find in each department — which meant eight round trips, a
+          zero-height hole under a labelled band while they resolved, and, when
+          those files turned out not to exist, eight identical grey
+          placeholders where the category system should have been. The tiles
+          are static content; they render with the page. */}
+      <nav className="category-tiles" aria-label="מחלקות החנות">
+        {DEPARTMENTS.map(({ slug, labelHe }, index) => (
+          <Link key={slug} to={departmentPath(slug)} className="category-tile">
+            <img
+              src={departmentImage(slug)}
+              alt=""
+              loading={index === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+            <span className="category-tile-label">{labelHe}</span>
           </Link>
         ))}
-      </div>
+      </nav>
 
-      <div className="welcome">
-        <h1>ברוכים הבאים לרשת זול סטוק!</h1>
+      {/* The page used to end on a 62vh map and 74 branch rows, and carried a
+          separate `.welcome` block of brochure copy that advertised three
+          departments this chain does not have (מוצרי פארם, ציוד משרדי, מוצרי
+          חשמל) while omitting four it does. One closing block now, saying only
+          what is true, and ending on something to do rather than on a car
+          park. */}
+      <div className="home-close">
+        <h2>כל הבית במקום אחד</h2>
         <p>
-          רשת זול סטוק מציעה חוויית קנייה משתלמת עם מגוון עצום של מוצרי צריכה לבית
-          ולמשפחה במחירים זולים במיוחד. ברשת תוכלו למצוא צעצועים, כלי בית, טקסטיל,
-          מוצרי פארם וניקיון, ציוד משרדי, מוצרי חשמל ועוד – הכול מתחדש באופן קבוע.
-          בזול סטוק שמים את הלקוח והמחיר במרכז, עם שירות מקצועי והתאמה לכל תקציב.
+          {DEPARTMENT_SENTENCE} — {DEPARTMENTS.length} מחלקות במחירים זולים,
+          ב-{BRANCH_COUNT} סניפים ברחבי הארץ.
         </p>
-        <h2>
-          <strong> "זול סטוק – כשמחיר וחוויה נפגשים"</strong>
-        </h2>
-      </div>
 
-      <div className="section-separator">
-        <h2>הסניפים שלנו</h2>
-      </div>
-
-      <div className="branches-container" id="branches-map">
-        <div className="branches-menu" data-testid="branch-accordion">
-          <AppAccordion
-            items={regions}
-            allowMultiple={false}
-            defaultExpandedId={null}
-            expandedId={selectedRegionId}
-            getId={(r) => r.id}
-            onExpandedChange={handleRegionChange}
-            /* Height is capped in CSS on the desktop two-column layout only.
-               Passing it here applied a nested scroller at every width. */
-            sx={{ border: '1px solid #ddd' }}
-            renderSummary={(region) => (
-              <Typography sx={{ fontWeight: 700 }}>{region.name}</Typography>
-            )}
-            renderDetails={(region) => (
-              <>
-                {region.branches.length === 0 ? (
-                  <Typography sx={{ opacity: 0.7 }}>אין סניפים להצגה</Typography>
-                ) : (
-                  region.branches.map((b, idx) => {
-                    const isActive =
-                      selectedBranchId && b._uid === selectedBranchId
-
-                    return (
-                      <div
-                        key={b._uid}
-                        ref={(node) => {
-                          if (node) branchRefs.current[b._uid] = node
-                        }}
-                        onClick={() => handleBranchClick(b)}
-                        style={{
-                          cursor: 'pointer',
-                          padding: '10px 10px',
-                          borderRadius: 10,
-                          background: isActive ? '#f2f2f2' : 'transparent',
-                          border: isActive
-                            ? '1px solid #d0d0d0'
-                            : '1px solid transparent',
-                        }}
-                      >
-                        <Typography sx={{ fontWeight: 700 }}>{b.title}</Typography>
-                        <Typography>{b.address}</Typography>
-
-                        {b.hours.map((line) => (
-                          <Typography key={line}>{line}</Typography>
-                        ))}
-
-                        {idx !== region.branches.length - 1 && (
-                          <Divider sx={{ my: 2 }} />
-                        )}
-                      </div>
-                    )
-                  })
-                )}
-              </>
-            )}
-          />
-        </div>
-
-        <div className="map-container" data-testid="branch-map">
-          <div className="map">
-            <MyComponent
-              regions={regions}
-              selectedRegionId={selectedRegionId}
-              selectedBranchId={selectedBranchId}
-              onSelectFromMap={handleSelectFromMap}
-            />
-          </div>
-        </div>
+        <Link className="home-close__cta" to="/branches">
+          למצוא סניף קרוב
+        </Link>
       </div>
     </section>
   )

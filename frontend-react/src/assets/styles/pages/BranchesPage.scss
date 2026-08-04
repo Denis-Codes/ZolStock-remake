@@ -1,0 +1,334 @@
+/* The branch locator, moved off the homepage onto its own route.
+ *
+ * The layout decisions are carried over intact — they were the good part of
+ * the old block. What changed is that the branch rows are real buttons with
+ * real focus states instead of clickable divs, and the text is the site's own
+ * typography rather than MUI's Roboto. */
+
+.branches-page__head {
+  @include page-container;
+
+  padding-block: rem(24px) rem(8px);
+
+  h1 {
+    margin: 0 0 rem(8px);
+    font-size: clamp(rem(26px), 3vw, rem(36px));
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: rem(-0.5px);
+    color: $clr3;
+  }
+
+  p {
+    margin: 0;
+    max-width: 60ch;
+    font-size: rem(16px);
+    line-height: 1.6;
+    color: $text-muted;
+  }
+
+  @include until($bp-sm) {
+    padding-inline: rem(16px);
+  }
+}
+
+/* ============================= */
+/* BRANCHES + MAP */
+/* ============================= */
+/* Grid rather than flex: two exactly equal columns, so the list and the map
+   are the same width without anyone tuning flex-basis. */
+.branches-container {
+  @include page-container;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: rem(16px) 0 rem(32px);
+
+  min-width: 0;
+}
+
+.branches-menu,
+.map-container {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  background: $surface;
+  border: rem(1px) solid $line-soft;
+  border-radius: $r-lg;
+  padding: rem(16px);
+}
+
+/* Side by side, the list matches the map's height and scrolls inside its own
+   column. This is the ONLY place a nested scroll is acceptable — see the
+   mobile block, where it is explicitly undone. */
+@include from($bp-lg) {
+  .branches-menu,
+  .map-container {
+    min-height: rem(420px);
+    overflow: hidden;
+  }
+
+  .branches-menu .MuiAccordionDetails-root {
+    max-height: rem(420px);
+    overflow-y: auto;
+  }
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  min-height: rem(300px);
+  border-radius: $r-md;
+  overflow: hidden;
+}
+
+/* ============================= */
+/* REGION SUMMARY + BRANCH ROWS   */
+/* ============================= */
+
+.branch-region-name {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(10px);
+
+  font-weight: 700;
+  font-size: rem(16px);
+  color: $clr3;
+}
+
+.branch-region-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: rem(24px);
+  height: rem(20px);
+  padding-inline: rem(6px);
+
+  background-color: rgba($clr1, 0.08);
+  border-radius: $r-pill;
+
+  color: $clr1;
+  font-size: rem(12px);
+  font-weight: 700;
+}
+
+.branch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+/* Was a `<div onClick>` with inline styles, no role, no tabIndex and no focus
+   state — 74 interactive elements a keyboard user could not reach. */
+.branch-row {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  width: 100%;
+
+  min-height: rem(44px);
+  padding: rem(10px) rem(12px);
+
+  background-color: transparent;
+  border: rem(1px) solid transparent;
+  border-radius: $r-md;
+
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  transition: background-color $dur $ease, border-color $dur $ease;
+
+  &:hover {
+    background-color: $surface-hover;
+  }
+
+  &.is-active {
+    background-color: $surface-hover;
+    border-color: rgba($clr1, 0.35);
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+.branch-row__title {
+  font-size: rem(15px);
+  font-weight: 700;
+  color: $clr3;
+}
+
+.branch-row__address,
+.branch-row__hours {
+  font-size: rem(14px);
+  line-height: 1.5;
+  color: $text-muted;
+}
+
+.branch-empty {
+  margin: 0;
+  padding: rem(12px);
+  color: $text-muted;
+}
+
+/* ============================= */
+/* MAP LOADING + FAILURE          */
+/* ============================= */
+/* The map used to render `null` on any failure, leaving a silent blank
+   rectangle under the heading. Both states say what is happening, and the
+   failure keeps the shopper moving. */
+.map-loading,
+.map-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: rem(10px);
+
+  width: 100%;
+  height: 100%;
+  min-height: rem(300px);
+  padding: rem(24px);
+
+  background-color: $surface-sunken;
+  text-align: center;
+  color: $text-muted;
+  font-size: rem(15px);
+}
+
+.map-fallback__title {
+  margin: 0;
+  font-size: rem(17px);
+  font-weight: 700;
+  color: $clr3;
+}
+
+.map-fallback__body {
+  margin: 0;
+  max-width: 40ch;
+  line-height: 1.5;
+}
+
+.map-fallback__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: rem(44px);
+  padding-inline: rem(18px);
+
+  background-color: $clr1;
+  color: $clr4;
+  border-radius: $r-md;
+
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: background-color $dur $ease;
+
+  &:hover {
+    background-color: darken($clr1, 8%);
+  }
+}
+
+.map-loading__spinner {
+  width: rem(22px);
+  height: rem(22px);
+  border: rem(2px) solid rgba($clr1, 0.25);
+  border-top-color: $clr1;
+  border-radius: 50%;
+
+  animation: map-spin 0.7s linear infinite;
+}
+
+@keyframes map-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-loading__spinner {
+    animation: none;
+  }
+}
+
+/* ============================= */
+/* MOBILE / TABLET: one column    */
+/* ============================= */
+@include until($bp-lg) {
+  /* Full-bleed: the map and the branch list are the content here, so they take
+     the whole screen width. Corners and side borders go with the gutter —
+     a rounded panel flush against the screen edge reads as a mistake. */
+  .branches-container {
+    grid-template-columns: 1fr;
+    padding: rem(8px) 0 rem(24px);
+    gap: 0;
+  }
+
+  /* No panel chrome at all: the map sits directly on top of the region list
+     with nothing between them. Borders and padding are what made two
+     full-width blocks still read as two floating cards. */
+  .branches-menu,
+  .map-container {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  /* The accordion keeps its horizontal rules — they separate one region from
+     the next — but loses the side borders that boxed it in. */
+  .branches-menu .MuiAccordion-root {
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  /* Map first: it orients you, then you pick a region from the list below. */
+  .map-container {
+    order: -1;
+  }
+
+  /* The accordion previously carried `maxHeight: 248px; overflow-y: auto`,
+     which turned the branch list into a small nested scroller inside the
+     page — a swipe over it scrolled the inner box instead of the document,
+     and the list could not be read normally. Off the desktop two-column
+     layout there is no height to match, so the details expand naturally and
+     the page scrolls as one surface. */
+  .branches-menu {
+    overflow: visible;
+  }
+
+  .branches-menu .MuiAccordionDetails-root {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* The map is the primary way to find a branch on a phone, so it gets real
+     height instead of a 300px letterbox — capped so the region list below
+     still peeks above the fold and signals there is more to scroll. */
+  .map {
+    border-radius: 0;
+    min-height: min(62vh, rem(560px));
+  }
+
+  .map-container {
+    min-height: 0;
+  }
+}
+
+@include until($bp-sm) {
+  .map,
+  .map-loading,
+  .map-fallback {
+    border-radius: 0;
+  }
+}

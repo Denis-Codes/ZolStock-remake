@@ -10,7 +10,6 @@ export function HamburgerMenu({
   categorySubcats,
   onNavigate,
   onPickSubcat,
-  onGoToBranches,
   user,
   onLogout,
 }) {
@@ -216,29 +215,19 @@ export function HamburgerMenu({
           <p className="hamburger-section">מידע ושירות</p>
 
           <ul className="hamburger-list">
-            {onGoToBranches && (
-              <li className="hamburger-item">
-                <button
-                  type="button"
-                  className="hamburger-link"
-                  onClick={() => { closeAndReset(); onGoToBranches() }}
-                >
-                  סניפים
-                </button>
-              </li>
-            )}
+            <li className="hamburger-item">
+              <NavLink to="/branches" className="hamburger-link" onClick={closeAndReset}>סניפים</NavLink>
+            </li>
             <li className="hamburger-item">
               <NavLink to="/about" className="hamburger-link" onClick={closeAndReset}>אודות</NavLink>
             </li>
             <li className="hamburger-item">
               <NavLink to="/chat" className="hamburger-link" onClick={closeAndReset}>צור קשר</NavLink>
             </li>
-            <li className="hamburger-item">
-              <NavLink to="/jobs" className="hamburger-link" onClick={closeAndReset}>דרושים</NavLink>
-            </li>
-            <li className="hamburger-item">
-              <NavLink to="/franchise" className="hamburger-link" onClick={closeAndReset}>זכיינות</NavLink>
-            </li>
+            {/* /jobs and /franchise used to sit here. Neither matched a route,
+                and there was no catch-all, so both rendered a blank page under
+                the header. PRODUCT.md records that whether those pages will
+                exist is undecided. */}
           </ul>
 
           <div className="hamburger-divider" />

@@ -101,7 +101,12 @@ $r-pill: rem(999px);  // status pills only
 // header's separation. Resting surfaces are flat.
 
 $shadow-overlay: 0 rem(4px) rem(16px) rgba(0, 0, 0, 0.12);
-$shadow-header:  0 rem(1px) 0 $line-soft;
+
+/* Not a shadow so much as a rule: it separates the sticky bar from content
+   passing under it. Its alpha is spelled out rather than borrowed from
+   $line-soft, which is 0.10 — DESIGN.md documents this hairline at 0.08, and
+   sharing the divider token quietly made the two disagree. */
+$shadow-header:  0 rem(1px) 0 rgba(0, 0, 0, 0.08);
 
 
 // ========== MOTION ==========

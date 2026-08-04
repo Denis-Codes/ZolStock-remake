@@ -18,7 +18,7 @@ export function MyComponent({
   selectedBranchId,
   onSelectFromMap, // ({ regionId, branchId }) => void
 }) {
-  const { isLoaded } = useJsApiLoader(loaderOptions)
+  const { isLoaded, loadError } = useJsApiLoader(loaderOptions)
 
   const mapRef = React.useRef(null)
   const [isMapReady, setIsMapReady] = React.useState(false)
@@ -97,6 +97,30 @@ export function MyComponent({
     }
   }, [isLoaded])
 
+  /* The map used to return `null` whenever it could not load — no key, no
+     network, no quota — which left a silent blank rectangle the height of the
+     map under the "הסניפים שלנו" heading. Nothing told anyone it had failed.
+     Both states are authored now, and the failure keeps the shopper moving:
+     the branch list beside it still works, and Google Maps is one tap away. */
+  if (!apiKey || loadError) {
+    return (
+      <div className="map-fallback" role="status">
+        <p className="map-fallback__title">המפה לא נטענה</p>
+        <p className="map-fallback__body">
+          אפשר לבחור אזור ברשימה שלצד המפה ולראות את כל הכתובות ושעות הפתיחה.
+        </p>
+        <a
+          className="map-fallback__link"
+          href="https://www.google.com/maps/search/%D7%96%D7%95%D7%9C+%D7%A1%D7%98%D7%95%D7%A7"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          פתיחת הסניפים ב-Google Maps
+        </a>
+      </div>
+    )
+  }
+
   return isLoaded ? (
     <div dir="ltr" style={{ width: '100%', height: '100%' }}>
       <GoogleMap
@@ -133,5 +157,10 @@ export function MyComponent({
           })}
       </GoogleMap>
     </div>
-  ) : null
+  ) : (
+    <div className="map-loading" role="status" aria-live="polite">
+      <span className="map-loading__spinner" aria-hidden="true" />
+      <span>טוענים את המפה…</span>
+    </div>
+  )
 }

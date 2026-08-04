@@ -88,16 +88,6 @@ export function AppHeader() {
     }
   }
 
-  function onGoToBranches() {
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollTo: 'branches-map' } })
-      return
-    }
-    const el = document.getElementById('branches-map')
-    if (!el) return
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
-
   function resetFilterForSearch(txt) {
     dispatch(
       setFilterBy({
@@ -155,10 +145,11 @@ export function AppHeader() {
           <NavLink to="chat">צור קשר</NavLink>
         </div>
 
-        <div className="left-links">
-          <a href="">דרושים</a>
-          <a href="">זכיינות</a>
-        </div>
+        {/* דרושים and זכיינות used to sit here as `href=""`, which reloads the
+            current page, and again in the drawer as links to /jobs and
+            /franchise, which match no route. Neither page exists and PRODUCT.md
+            records that whether they will is undecided, so the cluster is gone
+            rather than pointing at a dead end. */}
       </div>
 
       <div className="logo-wrap full">
@@ -184,7 +175,11 @@ export function AppHeader() {
             <img src={logo} alt="zolstock logo" />
           </NavLink>
 
-          <div className="nav-wrap" aria-hidden={isScrolled}>
+          {/* `aria-hidden={isScrolled}` used to live here, from when the nav
+              collapsed on scroll. It does not collapse any more, so this hid a
+              visible, focusable, eight-item category nav from assistive tech
+              the moment the page moved. */}
+          <div className="nav-wrap">
             <nav>
               {DEPARTMENTS.map(({ slug, labelHe }) => (
                 <HeaderNavDropdown
@@ -250,11 +245,13 @@ export function AppHeader() {
           <WishlistIcon />
           <CartIcon />
 
+          {/* A link, not a button running `navigate()`: the locator is a real
+              destination, so middle-click and open-in-new-tab work. */}
           <div className="locations">
-            <button className="branches-btn" type="button" onClick={onGoToBranches}>
+            <NavLink to="/branches" className="branches-btn">
               <span>סניפים</span>
               <FontAwesomeIcon icon={faLocationDot} />
-            </button>
+            </NavLink>
           </div>
 
           <div className="socials">
@@ -282,7 +279,6 @@ export function AppHeader() {
         onClose={handleCloseMenu}
         categorySubcats={categorySubcats}
         onNavigate={onNavToCategoryOrSubcategory}
-        onGoToBranches={onGoToBranches}
         user={user}
         onLogout={onLogout}
       />

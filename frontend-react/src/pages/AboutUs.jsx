@@ -52,7 +52,7 @@ export function AboutUs() {
           המלאי בסניפים מתחדש באופן שוטף, וייתכנו הבדלים בין סניף לסניף.
           כדאי לבדוק מה קרוב אליכם לפני שיוצאים לדרך.
         </p>
-        <Link className="about-cta-btn" to="/" state={{ scrollTo: 'branches-map' }}>
+        <Link className="about-cta-btn" to="/branches">
           לרשימת הסניפים
         </Link>
       </section>

@@ -1,39 +1,92 @@
+/* The toast only exists in the DOM while it has something to say — see
+   UserMsg.jsx. It used to render permanently at `opacity: 0`, which left its
+   unlabelled dismiss button sitting in the tab order at all times. The entrance
+   is therefore an animation on mount rather than a state class toggled on a
+   permanent element, and it runs at the system duration instead of 600ms. */
+
 .user-msg {
     position: fixed;
-    top: 60px;
-    right: .2em;
+    top: rem(60px);
+    inset-inline-end: rem(12px);
+    z-index: 1000;
 
     display: flex;
     align-items: center;
+    gap: rem(10px);
 
-    padding: .2em;
-    padding-inline-end: 20px;
-    background-color: grey;
+    max-width: min(rem(420px), calc(100vw - rem(24px)));
+    /* The dismiss button leads (inline-start is the right edge here), so the
+       inset is tight beside it and generous past the end of the text. */
+    padding-block: rem(2px);
+    padding-inline: rem(4px) rem(16px);
+    border-radius: $r-md;
 
-    color:white;
-    font-size: .9em;
+    background-color: $clr3;
+    color: $clr4;
+    font-size: rem(15px);
 
-    opacity: 0;
-    translate: 150%;
-    transition: 600ms;
+    box-shadow: $shadow-overlay;
+
+    animation: user-msg-in $dur $ease both;
 }
 
-.user-msg.visible {
-    opacity: 1;
-    translate: 0;
+@keyframes user-msg-in {
+    from {
+        opacity: 0;
+        translate: -10%;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-msg {
+        animation: none;
+    }
+}
+
+.user-msg__txt {
+    min-width: 0;
 }
 
 .user-msg button {
-    background-color: $gray1;
-    padding: 1px 6px;
-    border:0;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 44px of hit area around a small mark, so the target is thumb-sized
+       without the toast growing a large circle inside it. */
+    width: rem(44px);
+    height: rem(44px);
+    padding: 0;
+
+    background-color: transparent;
+    border: 0;
     border-radius: 50%;
-    color: $gray4;
+    color: $clr4;
+    font-size: rem(12px);
+    cursor: pointer;
+
+    transition: background-color $dur $ease;
+
+    &:hover {
+        background-color: rgba($clr4, 0.3);
+    }
+
+    &:focus-visible {
+        outline: rem(2px) solid $clr4;
+        outline-offset: rem(2px);
+    }
 }
 
 .user-msg.success {
-    background-color: rgb(41, 189, 73);
+    background-color: $in-stock-green;
 }
+
 .user-msg.error {
-    background-color: rgb(216, 59, 59);
+    background-color: $out-of-stock-red;
 }

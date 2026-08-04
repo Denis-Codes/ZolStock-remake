@@ -31,6 +31,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { Provider } from 'react-redux'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import { store } from './store/store'
@@ -41,6 +42,23 @@ import "slick-carousel/slick/slick.css"
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 console.log('MODE:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD, 'BASE_URL:', import.meta.env.BASE_URL)
+
+/**
+ * MUI ships Roboto as its default and nothing here ever overrode it, so every
+ * `<Typography>` in the app rendered in a different family from the rest of the
+ * site — and Roboto carries no Hebrew, so those strings fell through to a
+ * system fallback with different metrics again. DESIGN.md's One Family Rule
+ * says Assistant does every job; this is where MUI is told.
+ *
+ * Font family only. Setting `direction: 'rtl'` here as well would need
+ * stylis-plugin-rtl and an emotion cache to be correct, and the components in
+ * use already lay out correctly under the document's own `direction: rtl`.
+ */
+const muiTheme = createTheme({
+  typography: {
+    fontFamily: 'Assistant, -apple-system, BlinkMacSystemFont, sans-serif',
+  },
+})
 
 // Version-based cache management - only clear on updates
 const APP_VERSION = '1.0.1'
@@ -79,9 +97,11 @@ const APP_VERSION = '1.0.1'
 
 root.render(
   <Provider store={store}>
-    <Router basename={import.meta.env.BASE_URL}>
-      <RootCmp />
-    </Router>
+    <ThemeProvider theme={muiTheme}>
+      <Router basename={import.meta.env.BASE_URL}>
+        <RootCmp />
+      </Router>
+    </ThemeProvider>
   </Provider>
 )
 

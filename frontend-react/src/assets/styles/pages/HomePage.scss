@@ -1,87 +1,20 @@
-/* HomePage.scss (Responsive using central breakpoints) */
-
-.welcome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  background-image: linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.32)),
-    url(https://zolstock.co.il/wp-content/uploads/2019/04/welcome.jpg);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-
-  padding-block: clamp(2rem, 4vw, 3.5rem);
-
-  /* `<main>` carries the page gutter at most widths, but drops it below 480
-     so cards can bleed — which left this section's copy sitting 0–1px from
-     the screen edge. An inset of its own, kept smaller than the gutter so it
-     never double-indents where main still applies one. */
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
-
-  margin-top: 1rem;
-
-  /* קצת גובה כדי להרגיש hero */
-  min-height: clamp(20rem, 45vh, 34rem);
-
-  h1 {
-    color: $clr2;
-    text-align: center;
-    margin: 0 0 1rem 0;
-    font-size: clamp(2.1rem, 3.4vw, 3.8rem);
-    line-height: 1.15;
-    letter-spacing: -0.02rem;
-  }
-
-  p {
-    text-align: center;
-    width: min(100%, 50rem);
-    margin: 0;
-    font-size: clamp(1.05rem, 0.6vw + 0.95rem, 1.25rem);
-    line-height: 1.6;
-    color: #fff;
-  }
-
-  h2 {
-    margin-top: 1.5rem;
-  }
-}
-
-/* Touch devices keep the parallax, but through a scaled-up background rather
-   than `background-attachment: fixed` — iOS Safari does not honour `fixed`
-   and Android jitters on it, which is why it was switched off here before.
-   `background-position: center` plus extra coverage keeps the image moving
-   against the copy without the jank. */
-@media (pointer: coarse) {
-  .welcome {
-    background-attachment: scroll;
-    background-size: cover;
-    font-size: smaller;
-  }
-}
-
-/* Honour a reduced-motion preference: parallax is motion the reader did not
-   ask for, so it pins to the section instead. */
-@media (prefers-reduced-motion: reduce) {
-  .welcome {
-    background-attachment: scroll;
-  }
-}
+/* HomePage.scss
+ *
+ * Four blocks, in the order a shopper needs them: the hero states a price, the
+ * deals band shows the deepest markdowns in the catalogue, the tiles open the
+ * eight departments, and the closing band says what is true and offers the one
+ * thing left to do. The branch locator that used to own the bottom half of
+ * this page lives at /branches now — see BranchesPage.scss. */
 
 /* ============================= */
-/* GALLERY (generic wrapper) */
+/* GALLERY (hero wrapper) */
 /* ============================= */
 .gallery {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-width: 0;
-
   padding-block: rem(16px);
 
-  /* Runs edge to edge below the desktop breakpoint — the square campaign art
-     is the content, so it gets the full screen width rather than a gutter. */
+  /* Runs edge to edge below the desktop breakpoint — the hero is the content,
+     so it gets the full screen width rather than a gutter. */
   @include until($bp-lg) {
     padding-block: 0;
     padding-inline: 0;
@@ -117,8 +50,12 @@
     text-align: center;
   }
 
-  /* Full-bleed on a phone, matching the carousel and the map either side. */
-  @include until($bp-lg) {
+  /* Full-bleed on a phone, matching the hero and the tiles either side.
+     This used to key off $bp-lg (1200px) while `<main>` only drops its gutter
+     at $bp-sm (480px), so across the whole 480–1199px band the band was inset
+     AND square-cornered — the exact "rounded corner against the screen edge"
+     artifact the rule exists to prevent, applied at the wrong boundary. */
+  @include until($bp-sm) {
     border-radius: 0;
     margin-block: 0;
     padding-block: rem(14px);
@@ -126,13 +63,89 @@
 }
 
 /* ============================= */
-/* CATEGORY TILES (homepage "shop by category" grid) */
+/* DEALS BAND */
 /* ============================= */
-/* A mosaic rather than five identical tiles: the first category runs at twice
-   the scale of the other four. Every tile stays SQUARE, because the source
-   artwork is 1024×1024 — so the variety comes from size, not from shape, and
-   nothing is cropped. The old 4/5 tiles were already cutting 20% off each
-   image. */
+/* The homepage had no merchandise on it at all — no product, no price, no
+   struck-through original, no discount badge — on a storefront whose whole
+   proposition is the markdown. This is the shop's own card and the shop's own
+   grid; nothing here is bespoke. */
+.home-deals {
+  @include page-container;
+
+  /* Eight deals in four columns is two flush rows. The listing pages use
+     `auto-fit` because their product counts are arbitrary and a ragged last
+     row is honest there; on a curated band of exactly eight it read as broken
+     — 1440px gave six columns and left two cards orphaned in a second row. */
+  @include from($bp-md) {
+    .product-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* `main` drops its gutter below 480 so the cards can bleed. They should not
+     bleed all the way to the glass, so the band re-declares a small inset of
+     its own, routed through the same clamp the gutter uses rather than a
+     hand-written value. Two columns there closes four flush rows. */
+  @include until($bp-sm) {
+    padding-inline: clamp(rem(8px), 3vw, rem(16px));
+  }
+}
+
+.home-block-error {
+  @include page-container;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(12px);
+
+  padding: rem(32px) rem(20px);
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: rem(16px);
+  }
+}
+
+.home-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: rem(44px);
+  padding-inline: rem(20px);
+
+  background-color: $clr1;
+  color: $clr4;
+  border: 0;
+  border-radius: $r-md;
+
+  font-family: inherit;
+  font-size: rem(15px);
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: background-color $dur $ease;
+
+  &:hover {
+    background-color: darken($clr1, 8%);
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(2px);
+  }
+}
+
+/* ============================= */
+/* CATEGORY TILES */
+/* ============================= */
+/* A mosaic rather than eight identical tiles: the first department runs at
+   twice the scale of the rest. Every tile stays SQUARE, because the artwork is
+   1024×1024 — the variety comes from size, not from shape, and nothing is
+   cropped. */
 .category-tiles {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -150,21 +163,7 @@
   overflow: hidden;
   border-radius: 0;
 
-  /* These are product shots on near-white backgrounds, so a light scrim left
-     the white label sitting on pale grey at roughly 1.5:1. Weighted darker
-     and held at full strength through the label's own band. */
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.78) 0%,
-      rgba(0, 0, 0, 0.55) 18%,
-      rgba(0, 0, 0, 0.18) 38%,
-      rgba(0, 0, 0, 0) 58%
-    );
-  }
+  background-color: $surface-sunken;
 
   img {
     width: 100%;
@@ -172,239 +171,194 @@
     object-fit: cover;
     display: block;
   }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr1;
+    outline-offset: rem(-4px);
+  }
 }
 
+/* A filled brand band rather than white text over a gradient scrim.
+ *
+ * The artwork is eight pale studio shots on near-white backgrounds, and a
+ * scrim tuned for one photo is a contrast bug waiting for the next one — the
+ * gradient here had already been re-weighted once for exactly that reason, and
+ * the label had no line clamp, so a longer department name pushed white text
+ * up out of the dark band into the light part of the image.
+ *
+ * The band is the same object as `.section-separator` above it: brand blue,
+ * white text, fixed 8.6:1 whatever the photograph does. It also anchors eight
+ * quiet neutral photographs to the brand, which the scrim never did. */
 .category-tile-label {
   position: absolute;
-  left: rem(18px);
-  right: rem(18px);
-  bottom: rem(18px);
+  inset-inline: 0;
+  bottom: 0;
   z-index: 1;
 
-  color: #fff;
-  font-size: rem(20px);
+  display: flex;
+  align-items: center;
+  min-height: rem(44px);
+  padding: rem(8px) rem(14px);
+
+  background-color: $clr1;
+  color: $clr4;
+  font-size: rem(17px);
   font-weight: 700;
   letter-spacing: -0.01rem;
+
+  transition: background-color $dur $ease;
+}
+
+.category-tile:hover .category-tile-label,
+.category-tile:focus-visible .category-tile-label {
+  background-color: darken($clr1, 8%);
 }
 
 /* The feature tile spans two columns and two rows. Since the small tiles are
-   square and set the row height, the doubled cell is square too. */
+   square and set the row height, the doubled cell is square too.
+   Eight departments = one double plus seven singles. At four columns that is
+   2+2 in the first two rows and 3 in the third, leaving one empty cell; the
+   last tile is stretched across it so the grid closes flush instead of ending
+   on a hole. */
 .category-tile:first-child {
   grid-column: span 2;
   grid-row: span 2;
 }
 
-.category-tile:first-child .category-tile-label {
-  font-size: rem(28px);
-  left: rem(24px);
-  right: rem(24px);
-  bottom: rem(22px);
+/* Eight departments never fill a four-column mosaic on their own: the 2×2
+   feature plus seven singles is eleven cells against twelve, so the last row
+   ended on a hole. The closing tile takes the spare cell as a 2:1 landscape —
+   spanning the columns while keeping `aspect-ratio: 1/1` made it 658×658 and
+   dragged its whole row to double height, leaving a worse gap than the one it
+   was closing. */
+/* The closing tile takes the spare cell at the end of the mosaic. It must not
+   state a height of its own: the row is sized by its two square neighbours, and
+   the tile stretches to match them.
+   `aspect-ratio: 2 / 1` was 4px wrong — a tile spanning two columns is
+   `325 + gap + 325 = 658` wide, so half of that is 329, not 325, and its bottom
+   edge overhung the row by exactly the gap. Dropping the ratio alone was worse:
+   the image's own 1:1 then drove the row to 658. Taking the image out of flow
+   leaves the tile with no intrinsic height, so the squares win. */
+.category-tile:last-child {
+  grid-column: span 2;
+  aspect-ratio: auto;
+
+  img {
+    position: absolute;
+    inset: 0;
+  }
 }
 
-/* מובייל: אריחים רחבים יותר, פחות "רווח מת" */
+.category-tile:first-child .category-tile-label {
+  font-size: rem(24px);
+  padding: rem(12px) rem(20px);
+  min-height: rem(56px);
+}
+
 @include until($bp-sm) {
-  /* `main` drops its gutter below 480 so product cards can bleed edge to
-     edge, which took every other section with it — the tiles sat at exactly
-     0px from both screen edges. Sections that are not a full-bleed grid
-     re-declare their own inset here. */
-  /* Two columns, and the feature tile fills the first square. One double
-     plus four singles tiles two full rows exactly, so no tile is ever
-     stranded beside a hole and none of them needs a landscape crop. */
+  /* Eight equal squares, two across, four flush rows. The mosaic's feature
+     tile is a desktop move: at 375px a double tile is a 375px-tall block that
+     pushes six departments below the fold, and the leftover cell it creates
+     leaves a hole at the end of the grid. Eight equal tiles is also the
+     shelf-scanning density the two-column rule exists for. */
   .category-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: rem(6px);
-    padding-inline: rem(12px);
+    padding-inline: 0;
   }
 
-  .category-tile:first-child .category-tile-label {
-    font-size: rem(22px);
-    left: rem(14px);
-    right: rem(14px);
-    bottom: rem(14px);
+  .category-tile:first-child,
+  .category-tile:last-child {
+    grid-column: span 1;
+    grid-row: span 1;
+    aspect-ratio: 1 / 1;
   }
 
+  .category-tile:first-child .category-tile-label,
   .category-tile-label {
-    font-size: rem(16px);
-    left: rem(12px);
-    right: rem(12px);
-    bottom: rem(12px);
-  }
-}
-
-/* טאבלט: שתי-שלוש בשורה בצורה יציבה */
-@include between($bp-tablet-min, $bp-tablet-max) {
-  .gallery2 img {
-    width: clamp(rem(180px), 28vw, rem(260px));
+    font-size: rem(15px);
+    min-height: rem(44px);
+    padding: rem(8px) rem(12px);
   }
 }
 
 /* ============================= */
-/* ALL PRODUCTS BTN */
+/* CLOSING BAND */
 /* ============================= */
-.all-products-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: clamp(0.75rem, 2vw, 1.5rem);
-}
-
-/* Removed: a global `button:hover { color: $clr2 }` used to live here.
-   Its own comment already flagged the risk ("better not touch all buttons
-   globally") — and it was doing exactly that: because `button:hover`
-   (element+pseudo-class) is more specific than a plain class selector like
-   `.pd-btn`, it silently overrode every unrelated button's hover color
-   sitewide, turning text bright yellow on white backgrounds (e.g.
-   ProductDetails' secondary buttons) — the real source of the "yellow on
-   white, hard to see" contrast bug. Removed rather than rescoped since
-   nothing on the homepage was confirmed to depend on it. */
-
-/* ============================= */
-/* BRANCHES + MAP */
-/* ============================= */
-/* Grid rather than flex: two exactly equal columns, so the list and the map
-   are the same width without anyone tuning flex-basis. */
-.branches-container {
+/* The page used to end on a 62vh map and 74 branch rows — a shopping homepage
+   closing on directions to a car park. It ends on the two facts about this
+   chain that are actually verifiable and on somewhere to go next.
+   The block it replaces also carried a background photo hotlinked from
+   zolstock.co.il, which PRODUCT.md forbids outright. */
+.home-close {
   @include page-container;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-
-  gap: clamp(1.25rem, 3vw, 2rem);
-  padding: rem(24px) 0 rem(8px);
-
-  min-width: 0;
-}
-
-.branches-menu,
-.map-container {
-  min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: rem(16px);
 
-  background: $surface;
-  border: rem(1px) solid $line-soft;
-  border-radius: $r-lg;
-  padding: rem(16px);
-}
+  margin-block: rem(28px) rem(32px);
+  padding: clamp(rem(28px), 5vw, rem(48px)) clamp(rem(20px), 4vw, rem(40px));
 
-/* Side by side, the list matches the map's height and scrolls inside its own
-   column. This is the ONLY place a nested scroll is acceptable — see the
-   mobile block, where it is explicitly undone. */
-@include from($bp-lg) {
-  .branches-menu,
-  .map-container {
-    min-height: rem(420px);
-    overflow: hidden;
-  }
-
-  .branches-menu .MuiAccordionDetails-root {
-    max-height: rem(248px);
-    overflow-y: auto;
-  }
-}
-
-.map {
-  width: 100%;
-  height: 100%;
-  min-height: rem(300px);
+  background-color: $clr1;
   border-radius: $r-md;
-  overflow: hidden;
-}
+  color: $clr4;
+  text-align: center;
 
-/* ============================= */
-/* MOBILE / TABLET: one column    */
-/* ============================= */
-@include until($bp-lg) {
-  /* Full-bleed: the map and the branch list are the content here, so they take
-     the whole screen width. Corners and side borders go with the gutter —
-     a rounded panel flush against the screen edge reads as a mistake. */
-  /* No inset at all: the map meets the separator above it directly. The
-     container's own 24px top padding was the last gap left. */
-  .branches-container {
-    grid-template-columns: 1fr;
-    padding: 0;
-    gap: 0;
+  h2 {
+    margin: 0;
+    font-size: clamp(rem(24px), 3vw, rem(34px));
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: rem(-0.5px);
   }
 
-  /* No panel chrome at all: the map sits directly on top of the region list
-     with nothing between them. Borders and padding are what made two
-     full-width blocks still read as two floating cards. */
-  .branches-menu,
-  .map-container {
-    border: 0;
+  p {
+    margin: 0;
+    /* A comfortable measure — the department sentence is the longest run of
+       copy on the page. */
+    max-width: 46ch;
+    font-size: clamp(rem(15px), 1vw + rem(12px), rem(18px));
+    line-height: 1.6;
+    color: rgba($clr4, 0.88);
+  }
+
+  @include until($bp-sm) {
     border-radius: 0;
-    padding: 0;
-  }
-
-  /* The accordion keeps its horizontal rules — they separate one region from
-     the next — but loses the side borders that boxed it in. */
-  .branches-menu .MuiAccordion-root {
-    border-inline: 0;
-    border-radius: 0;
-  }
-
-  /* Map first: it orients you, then you pick a region from the list below. */
-  .map-container {
-    order: -1;
-  }
-
-  /* The accordion previously carried `maxHeight: 248px; overflow-y: auto`,
-     which turned the branch list into a small nested scroller inside the
-     page — a swipe over it scrolled the inner box instead of the document,
-     and the list could not be read normally. Off the desktop two-column
-     layout there is no height to match, so the details expand naturally and
-     the page scrolls as one surface. */
-  .branches-menu {
-    overflow: visible;
-  }
-
-  .branches-menu .MuiAccordionDetails-root {
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  /* The map is the primary way to find a branch on a phone, so it gets real
-     height instead of a 300px letterbox — capped so the region list below
-     still peeks above the fold and signals there is more to scroll. */
-  .map {
-    border-radius: 0;
-    min-height: min(62vh, rem(560px));
-  }
-
-  .map-container {
-    min-height: 0;
+    margin-block: rem(20px) 0;
   }
 }
 
-#branches-map {
-  scroll-margin-top: rem(120px);
-}
+.home-close__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-/* ============================= */
-/* FULL BLEED (safer) */
-/* ============================= */
-.full-viewport {
-  /* full-bleed בלי “רצועה לבנה” */
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
+  min-height: rem(44px);
+  margin-top: rem(4px);
+  padding-inline: rem(24px);
 
-  overflow-x: clip;
-}
+  background-color: $clr2;
+  color: $clr3;
+  border-radius: $r-md;
 
-/* ============================= */
-/* TEXT */
-/* ============================= */
-strong {
-  color: $clr2;
-}
+  font-size: rem(16px);
+  font-weight: 800;
+  text-decoration: none;
 
-@include until($bp-sm) {
-  .main-container main {
-    // padding-inline: 0; // או rem(16px) אם אתה רוצה קצת מרווח
+  /* Hover inverts to white rather than darkening the yellow. #FFF200 is the
+     real chain's mark and the Fixed Palette Rule says it is never re-shaded,
+     so the state change moves the fill, not the brand value. */
+  transition: background-color $dur $ease, color $dur $ease;
+
+  &:hover {
+    background-color: $clr4;
+    color: $clr1;
+  }
+
+  &:focus-visible {
+    outline: rem(2px) solid $clr4;
+    outline-offset: rem(2px);
   }
 }

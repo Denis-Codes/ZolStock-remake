@@ -9,10 +9,12 @@
   align-items: center;
   /* Each link cluster anchors to its own gutter, mirroring the bar below.
      `space-evenly` floated them at arbitrary positions that matched nothing
-     else on the page. */
+     else on the page. The left cluster (דרושים / זכיינות) is gone — both were
+     `href=""`, which reloads the page — so the remaining cluster sits against
+     the inline-start gutter on its own. */
   justify-content: space-between;
 
-  padding-block: rem(8px);
+  padding-block: rem(2px);
   @include page-gutter;
 
   span {
@@ -41,8 +43,13 @@
 .right-links,
 .left-links {
   a {
-    padding: rem(4px) 1rem;
-    border-radius: rem(8px);
+    /* Was `padding: 4px 1rem`, which rendered a 33.6px-tall target. The row is
+       44px now; the strip absorbs it by dropping its own block padding. */
+    display: inline-flex;
+    align-items: center;
+    min-height: rem(44px);
+    padding-inline: 1rem;
+    border-radius: $r-md;
   }
 }
 
@@ -115,6 +122,12 @@
   align-items: center;
   justify-content: space-between;
   gap: rem(16px);
+
+  /* The bar took its whole height from its tallest child — a 52px nav row in a
+     54px bar, so the yellow hover fill ran edge to edge and the bar read as
+     clamped shut around its own contents. The nav row is a tab inside the bar,
+     not the bar itself. */
+  padding-block: rem(6px);
 
   @include page-gutter;
 
@@ -328,6 +341,11 @@
       display: inline-flex;
       align-items: center;
       gap: rem(6px);
+
+      /* The 52px row is the `.nav-link` wrapper; the link inside it was only
+         as tall as its text — 25.6px — so the actual hit target on all eight
+         department links was half the row it appeared to fill. */
+      align-self: stretch;
 
       color: $clr1;
       text-decoration: none;
@@ -553,8 +571,10 @@
       align-items: center;
       justify-content: center;
 
-      width: rem(36px);
-      height: rem(36px);
+      /* 44px is the system's floor for anything you can press. These were
+         36px — readable, but a miss under a thumb. */
+      width: rem(44px);
+      height: rem(44px);
       border-radius: 50%;
 
       font-size: rem(18px);

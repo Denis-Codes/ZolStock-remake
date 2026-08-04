@@ -1,82 +1,185 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPause, faPlay } from '@fortawesome/free-solid-svg-icons'
 
-// Two sets of real artwork, each shown where it actually fits. The wide
-// banners are 1920×700 and only work on a desktop-width hero; the campaign
-// tiles are 1080×1080 and fill a phone with no cropping at all. Swapping the
-// source beats cropping one asset to serve both.
-//
-// This must be a JS breakpoint rather than CSS because the two sets differ in
-// slide COUNT, and Embla measures real slide widths — hidden slides would
-// break its snapping. Keep 75rem in step with `$bp-lg` in _breakpoints.scss.
-const DESKTOP_MQ = '(min-width: 75rem)'
+import { departmentPath } from '../services/taxonomy.service'
+import {
+  departmentImage,
+  getDeepestDiscountDepartments,
+} from '../services/department-highlights.service'
+import { moneyAriaLabel, moneyParts } from '../services/money.service'
 
-// 1920×700 — desktop only.
-const WIDE_SLIDES = [
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/45-1.jpg', alt: 'מבצעי זול סטוק' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/45.jpg', alt: 'מבצעי זול סטוק' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/21344534534.jpg', alt: 'מבצעי זול סטוק' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/5656.jpg', alt: 'מבצעי זול סטוק' },
-]
+/**
+ * The homepage hero.
+ *
+ * It used to be six bare image tags hotlinked from zolstock.co.il, showing a
+ * חורף 2025 campaign for coats, boots and gloves — categories this shop does
+ * not stock — with no link on any of them. The largest, most animated object
+ * on the page went nowhere, advertised goods that do not exist, and put the
+ * LCP asset on a third party's server, which PRODUCT.md forbids outright.
+ *
+ * The slides are authored now: each one is a department, its real deepest
+ * markdown, its real entry price, and its own artwork from `public/`. That
+ * makes the hero the first place a shopper meets a price — the single thing
+ * this storefront is selling — and every slide is a link to somewhere real.
+ *
+ * Because the slides are markup rather than two sets of fixed-size artwork,
+ * the JS breakpoint that used to swap 1920×700 banners for 1080×1080 tiles is
+ * gone. One set, one slide count, and CSS changes the shape. Embla only needed
+ * the JS because the two sets differed in COUNT and it measures real widths.
+ */
 
-// חורף 2025 campaign set — 1080×1080, mobile and tablet.
-const SQUARE_SLIDES = [
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/456456454565.jpg', alt: 'חורף 2025 — כובעי בוגרים' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/575676567.jpg', alt: 'חורף 2025 — כריכיות ילדים' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/9909090.jpg', alt: 'חורף 2025 — כריכית יחיד פרווה' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/23423424.jpg', alt: 'חורף 2025 — מגפי גומי לבנים' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/23321323123.jpg', alt: 'חורף 2025 — כפכפי פרווה לנשים ולנערות' },
-  { src: 'https://zolstock.co.il/wp-content/uploads/2025/10/788989.jpg', alt: 'חורף 2025 — כפפות פרווה לנשים ולנערות' },
-]
+const AUTOPLAY_DELAY = 6000
 
-// Anyone who asks for reduced motion gets a carousel they advance themselves.
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia?.(DESKTOP_MQ).matches
+const SLIDES = getDeepestDiscountDepartments(4)
+
+function HeroPrice({ amount }) {
+  const { whole, agorot } = moneyParts(amount)
+
+  return (
+    <span className="hero-slide__price" aria-label={`החל מ־${moneyAriaLabel(amount)}`}>
+      <span className="hero-slide__price-lead" aria-hidden="true">
+        החל מ־
+      </span>
+      {/* Reverses once, in CSS. `dir="ltr"` here as well would cancel it out
+          and render 90₪7 — see DESIGN.md, The LTR Price Rule. */}
+      <span className="hero-slide__price-tag" aria-hidden="true">
+        <span className="ils">₪</span>
+        <span className="whole">{whole}</span>
+        {agorot && <span className="frac">{agorot}</span>}
+      </span>
+    </span>
   )
-
-  useEffect(() => {
-    const mql = window.matchMedia(DESKTOP_MQ)
-    const onChange = (ev) => setIsDesktop(ev.matches)
-    mql.addEventListener('change', onChange)
-    setIsDesktop(mql.matches)
-    return () => mql.removeEventListener('change', onChange)
-  }, [])
-
-  return isDesktop
 }
 
 export function EmblaCarousel() {
-  const isDesktop = useIsDesktop()
-  const slides = isDesktop ? WIDE_SLIDES : SQUARE_SLIDES
-
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, direction: 'rtl', align: 'start' },
-    prefersReducedMotion ? [] : [Autoplay({ delay: 5000, stopOnInteraction: false })]
+    // Autoplay stops the moment the shopper touches the carousel. It used to
+    // carry `stopOnInteraction: false`, so a swipe back to the slide you were
+    // reading was overruled 5 seconds later and there was no way to win.
+    prefersReducedMotion
+      ? []
+      : [Autoplay({ delay: AUTOPLAY_DELAY, stopOnInteraction: true, stopOnMouseEnter: true })]
   )
 
-  // Swapping the set changes the slide count and their widths, so Embla has
-  // to measure again or it keeps snapping to the old geometry.
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(!prefersReducedMotion)
+
   useEffect(() => {
-    emblaApi?.reInit()
-  }, [emblaApi, isDesktop])
+    if (!emblaApi) return
+
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap())
+    const autoplay = emblaApi.plugins()?.autoplay
+    const onAutoplayChange = () => setIsPlaying(!!autoplay?.isPlaying())
+
+    onSelect()
+    emblaApi.on('select', onSelect)
+    emblaApi.on('reInit', onSelect)
+    emblaApi.on('autoplay:play', onAutoplayChange)
+    emblaApi.on('autoplay:stop', onAutoplayChange)
+
+    return () => {
+      emblaApi.off('select', onSelect)
+      emblaApi.off('reInit', onSelect)
+      emblaApi.off('autoplay:play', onAutoplayChange)
+      emblaApi.off('autoplay:stop', onAutoplayChange)
+    }
+  }, [emblaApi])
+
+  const scrollTo = useCallback((index) => emblaApi?.scrollTo(index), [emblaApi])
+
+  const toggleAutoplay = useCallback(() => {
+    const autoplay = emblaApi?.plugins()?.autoplay
+    if (!autoplay) return
+
+    if (autoplay.isPlaying()) autoplay.stop()
+    else autoplay.play()
+
+    setIsPlaying(autoplay.isPlaying())
+  }, [emblaApi])
+
+  if (!SLIDES.length) return null
 
   return (
-    <div className={`embla ${isDesktop ? 'embla--wide' : 'embla--square'}`}>
+    <section className="embla" aria-roledescription="carousel" aria-label="מבצעי המחלקות">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {slides.map(({ src, alt }) => (
-            <div className="embla__slide" key={src}>
-              <img className="embla__slide__img" src={src} alt={alt} loading="lazy" />
+          {SLIDES.map(({ slug, labelHe, fromPrice, maxDiscount }, index) => (
+            <div
+              className="embla__slide"
+              key={slug}
+              role="group"
+              aria-roledescription="שקופית"
+              aria-label={`${index + 1} מתוך ${SLIDES.length}`}
+            >
+              <Link className="hero-slide" to={departmentPath(slug)}>
+                <div className="hero-slide__media">
+                  {/* The first slide is the LCP element, so it loads eagerly
+                      and at high priority. It previously carried
+                      `loading="lazy"`, deferring the one image that has to
+                      paint first. */}
+                  <img
+                    src={departmentImage(slug)}
+                    alt=""
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
+                    decoding={index === 0 ? 'sync' : 'async'}
+                  />
+                </div>
+
+                <div className="hero-slide__panel">
+                  <h2 className="hero-slide__title">{labelHe}</h2>
+
+                  {maxDiscount > 0 && (
+                    <p className="hero-slide__markdown">עד {maxDiscount}%- הנחה</p>
+                  )}
+
+                  <HeroPrice amount={fromPrice} />
+
+                  <span className="hero-slide__cta">לכל המחלקה</span>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
       </div>
-    </div>
+
+      <div className="embla__controls">
+        {!prefersReducedMotion && (
+          <button
+            className="embla__play"
+            type="button"
+            onClick={toggleAutoplay}
+            aria-label={isPlaying ? 'עצור מעבר אוטומטי בין המבצעים' : 'הפעל מעבר אוטומטי בין המבצעים'}
+          >
+            <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+          </button>
+        )}
+
+        <div className="embla__dots" role="tablist" aria-label="בחירת מבצע">
+          {SLIDES.map(({ slug, labelHe }, index) => (
+            <button
+              key={slug}
+              className={`embla__dot ${index === selectedIndex ? 'is-selected' : ''}`}
+              type="button"
+              role="tab"
+              aria-selected={index === selectedIndex}
+              aria-label={`מבצעי ${labelHe}`}
+              onClick={() => scrollTo(index)}
+            >
+              <span className="embla__dot-mark" aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
