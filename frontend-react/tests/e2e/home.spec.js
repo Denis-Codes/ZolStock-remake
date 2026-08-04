@@ -18,17 +18,25 @@ test.describe('Homepage - Smoke Tests', () => {
     await expect(homePage.header).toBeVisible();
   });
 
-  test('the branch map is displayed @smoke', async () => {
-    // BUG-002: MapsCmp has no fallback if the Google Maps script is slow
-    // or fails to load — the page can hang indefinitely instead of
-    // degrading gracefully. Bounding this to 60s so a slow/failed load
-    // fails fast and clearly, instead of consuming the whole CI job's
-    // time budget. See bugs/BUG-002-maps-no-load-fallback.md.
-    await expect(homePage.map).toBeVisible({ timeout: 60_000 });
+  test('the deals band renders products @smoke', async () => {
+    await expect(homePage.dealsHeading).toBeVisible();
+    // HomeDeals fetches, so the band starts as skeletons — waiting on the
+    // first real card is what distinguishes "loaded" from "still loading"
+    // or from the error/empty fallbacks that render in the same slot.
+    await expect(homePage.dealCards.first()).toBeVisible();
   });
 
-  test('the branch accordion is displayed @smoke', async () => {
-    await expect(homePage.branchAccordion).toBeVisible();
+  test('the category tiles are displayed @smoke', async () => {
+    await expect(homePage.categoryTiles).toBeVisible();
+    await expect(homePage.categoryTile('כלי בית')).toBeVisible();
+  });
+
+  test('the closing band links through to the branch locator @smoke', async ({ page }) => {
+    // The map and the branch accordion moved off this page to /branches;
+    // what the homepage still owes a shopper is a way to get there. The
+    // locator itself is covered in branches.spec.js.
+    await homePage.openBranches();
+    await expect(page).toHaveURL(/\/branches$/);
   });
 
   test('the scroll-to-top button is not visible on initial load @smoke', async () => {
