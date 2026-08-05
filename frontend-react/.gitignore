@@ -28,12 +28,18 @@ dist-ssr
 # needs without carrying any real values. Negations must come after the rule
 # they exempt, or git never sees them.
 !.env.example
+# Same reasoning for the E2E build config: it holds no secrets, only the two
+# flags that make `vite build --mode e2e` produce the same bundle on every
+# machine and in CI. Ignoring it would leave each developer's local .env
+# deciding what the full-stack suite actually tests.
+!.env.e2e
 
 # Playwright
 /test-results/
 /playwright-report/
-# The API suite writes its own report so the two do not overwrite each other.
+# Each suite writes its own report so they do not overwrite each other.
 /playwright-report-api/
+/playwright-report-fullstack/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/

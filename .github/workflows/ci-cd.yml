@@ -151,6 +151,65 @@ jobs:
           path: frontend-react/playwright-report-api/
           retention-days: 14
 
+  # ── Tier 2: the whole stack ─────────────────────────────────────────────
+  # The real production bundle, served by a real Express server, backed by a
+  # real (throwaway) MongoDB, driven by a real browser. The only job here where
+  # nothing at all is stubbed.
+  #
+  # It catches what lives BETWEEN the pieces: a production build that breaks
+  # something working in dev, a session cookie a browser refuses, a deep link
+  # that 404s on refresh, a frontend and backend disagreeing about a shape.
+  fullstack-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend-react
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend-react/package-lock.json
+
+      - name: Cache the in-memory MongoDB binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: mongodb-binaries-${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      # Chromium only. The default browser suite already covers Firefox and
+      # WebKit for rendering differences; what this job adds is the real
+      # backend, which behaves the same whichever engine asks.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Builds the bundle into backend/public, then runs. The build is a
+      # separate step inside the npm script rather than inside Playwright's
+      # webServer, so a broken build reports as a broken build instead of as
+      # "server failed to start".
+      - name: Build and run full-stack E2E
+        run: npm run test:fullstack
+
+      - name: Upload Playwright report (fullstack)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-fullstack
+          path: frontend-react/playwright-report-fullstack/
+          retention-days: 14
+
   # ── Tier 1: the browser tests ───────────────────────────────────────────
   # Fast tier — the small set of critical happy-path checks. Runs on every
   # single push, so it gives near-instant feedback without slowing down
@@ -295,7 +354,7 @@ jobs:
     # `regression` is deliberately absent: it only runs on pull requests, and
     # a job that never ran counts as "not satisfied", which would block every
     # deploy permanently.
-    needs: [backend-tests, frontend-unit, api-tests, smoke, untagged]
+    needs: [backend-tests, frontend-unit, api-tests, fullstack-tests, smoke, untagged]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     concurrency:

@@ -13,7 +13,24 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests',
+  /* Scoped to tests/e2e, not ./tests.
+   *
+   * This directory is the LOCAL-MODE browser suite: it runs against the Vite
+   * dev server with VITE_LOCAL forcing the catalogue to come from src/data,
+   * and there is no backend anywhere in the picture. That is deliberate — the
+   * GitHub Pages deployment is built with `--mode github`, which hardcodes
+   * local mode, so these tests exercise exactly what ships there.
+   *
+   * Two sibling suites now live under tests/ and need a real server:
+   *
+   *   tests/api/        -> playwright.api.config.js       (:3031, no browser)
+   *   tests/fullstack/  -> playwright.fullstack.config.js (:3031, real bundle)
+   *
+   * With `testDir: './tests'` this config collected those too and ran them
+   * against :5173 in local mode, where the API they need does not exist. The
+   * narrower path is what keeps the three suites from running each other's
+   * tests. */
+  testDir: './tests/e2e',
 
   /* Two test runners share this repo, so they need file conventions that do
      not overlap. Playwright's default testMatch also picks up `*.test.js(x)`,

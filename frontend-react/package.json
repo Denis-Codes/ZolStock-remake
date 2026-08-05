@@ -15,6 +15,7 @@
     "dev:local:mac": "export VITE_LOCAL=true && vite",
     "build": "vite build",
     "build:github": "vite build --mode github",
+    "build:e2e": "vite build --mode e2e",
     "gen:image-fit": "node src/scripts/gen-image-fit.mjs",
     "clean:product-images": "node src/scripts/clean-product-images.mjs",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
@@ -23,7 +24,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:api": "playwright test --config=playwright.api.config.js"
+    "test:api": "playwright test --config=playwright.api.config.js",
+    "test:fullstack": "npm run build:e2e && playwright test --config=playwright.fullstack.config.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
