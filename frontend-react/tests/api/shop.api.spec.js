@@ -233,54 +233,44 @@ test.describe('authorization', () => {
 
     expect(res.status()).toBe(200)
 
-    // Verified by reading it back rather than by trusting the response body —
-    // and in this case that distinction is the whole point. See BUG-004 below:
-    // the response cannot be trusted to identify what it just created, but the
-    // product really is in the catalogue.
+    // Verified by reading it back rather than by trusting the response body.
+    // A 200 says the server accepted the request; only the catalogue says it
+    // kept it.
     const catalogue = await (await request.get('/api/product')).json()
     expect(catalogue.find(p => p.name === name)).toBeTruthy()
   })
 
   /**
-   * 🐛 KNOWN BUG (BUG-004): a creation endpoint that will not tell you what it
-   * created.
+   * A creation endpoint must identify what it created. (Was BUG-004, fixed.)
    *
-   * productService.add() builds a NEW object to insert:
+   * productService.add() used to build a new object inline for insertOne() and
+   * return `product` instead. The MongoDB driver assigns the generated _id by
+   * mutating the object it is handed — the inline copy — so the caller got
+   * back an object with no _id and no way to address the new product.
    *
-   *     await collection.insertOne({ ...product, searchText, createdAt })
-   *     return product
+   * This test carried `test.fail()` while the bug was open. Once the fix
+   * landed, Playwright reported "Expected to fail, but passed" — which is the
+   * whole point of the marker: it fails loudly when it becomes a lie, rather
+   * than quietly hiding a test that now works.
    *
-   * The MongoDB driver assigns the generated _id by mutating the object it was
-   * handed — which is the spread copy, not `product`. So the copy in the
-   * database has an _id and the object returned to the client never does.
-   *
-   * Why it matters: an admin UI that creates a product cannot then open it,
-   * edit it or link to it, because updateProduct is keyed on _id and the
-   * client was never told one. The workaround is to re-fetch the whole
-   * catalogue and search for it by name — which is what the test above has to
-   * do, and which breaks outright the moment two products share a name.
-   *
-   * The fix is one line: return the object that was inserted.
-   *
-   * `test.fail()` is Playwright's expected-failure marker. The test runs, it
-   * fails, and that is reported as a pass — so the gap is visible in the suite
-   * rather than hidden behind a skip. When the bug is fixed this test starts
-   * passing and Playwright reports "expected to fail but passed", which is the
-   * signal to delete this line.
-   *
-   * (Vitest spells the same idea `it.fails()`. Two runners in one repo, two
-   * dialects — this is the second time that has cost time here.)
+   * The marker is gone and this is an ordinary regression test now. It stays
+   * because the mistake it guards against is a subtle one — the mutation is
+   * real, it just happens to a different object than the one returned.
    */
-  test('🐛 BUG-004: returns the id of the product it created @regression', async ({ request }) => {
-    test.fail(true, 'BUG-004: productService.add returns the pre-insert object, which has no _id')
-
+  test('returns the id of the product it created @regression', async ({ request }) => {
     await request.post('/api/auth/login', { data: ADMIN })
 
     const res = await request.post('/api/product', {
       data: { ...NEW_PRODUCT, name: `Admin Product ${Date.now()}`, price: 99 },
     })
 
-    expect((await res.json())._id).toBeTruthy()
+    const created = await res.json()
+
+    expect(created._id).toBeTruthy()
+    // The id must actually address the product, not merely be present.
+    const fetched = await request.get(`/api/product/${created._id}`)
+    expect(fetched.status()).toBe(200)
+    expect((await fetched.json()).name).toBe(created.name)
   })
 })
 

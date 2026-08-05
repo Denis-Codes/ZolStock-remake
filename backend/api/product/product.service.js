@@ -81,12 +81,24 @@ async function remove(productId) {
 async function add(product) {
   try {
     const collection = await dbService.getCollection('products')
-    await collection.insertOne({
+
+    /**
+     * The document is built once and both inserted AND returned. (BUG-004)
+     *
+     * Previously the spread was written inline in the insertOne() call and
+     * `product` was returned instead. The MongoDB driver assigns the generated
+     * _id by mutating the object it is handed — which was the inline copy — so
+     * the caller got back an object with no _id, and no way to address the
+     * product it had just created.
+     */
+    const doc = {
       ...product,
       searchText: _buildSearchText(product),
       createdAt: new Date(),
-    })
-    return product
+    }
+
+    await collection.insertOne(doc)
+    return doc
   } catch (err) {
     logger.error('cannot insert product', err)
     throw err

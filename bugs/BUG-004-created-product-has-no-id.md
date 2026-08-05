@@ -1,9 +1,10 @@
 # BUG-004 — `POST /api/product` returns a product with no `_id`
 
-**Status:** Open, not fixed
+**Status:** FIXED
 **Severity:** Medium
 **Found by:** Playwright API spec, while writing the authorization matrix
-**Pinned by:** `frontend-react/tests/api/shop.api.spec.js` → `🐛 BUG-004: returns the id of the product it created` (marked `test.fail()`)
+**Fixed in:** `backend/api/product/product.service.js` — `add()` now returns the inserted document
+**Regression test:** `frontend-react/tests/api/shop.api.spec.js` → `returns the id of the product it created`
 
 ---
 
@@ -112,9 +113,30 @@ forced to rely on the response, and so it is the one that notices the response
 is wrong. Neither layer is redundant, and the gap between them is exactly where
 this bug was living.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it with a failing test, write
-it down, do not fix. When the fix lands, the `test.fail()` line in the spec
-should be removed — Playwright will report "expected to fail but passed" until
-it is, which is the intended reminder.
+`add()` now builds the document once and both inserts and returns it:
+
+```js
+const doc = { ...product, searchText: _buildSearchText(product), createdAt: new Date() }
+await collection.insertOne(doc)
+return doc
+```
+
+The pinned test carried `test.fail()` while this was open. After the fix
+Playwright reported:
+
+```
+Expected to fail, but passed.
+```
+
+That is the marker doing its job — it fails loudly the moment it becomes a
+lie, instead of silently hiding a test that now works. The marker was then
+removed and the test extended: it no longer just checks that an `_id` is
+present, it fetches the product by that id and confirms it addresses the right
+document.
+
+Side effect worth noting: the response body now also carries `searchText` and
+`createdAt`, because it is the stored document rather than the submitted one.
+That matches what `GET /api/product` already returns, so the API is more
+consistent than it was, not less.
