@@ -2,3 +2,9 @@ node_modules
 logs
 .env
 .env.local
+
+# Build output — produced by `npm run build` in frontend-react, which writes
+# the compiled SPA here for this server to serve. It is regenerated from
+# source on every build, so committing it would create a second source of
+# truth that silently drifts from frontend-react/src.
+public/

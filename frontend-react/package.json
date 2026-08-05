@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.15.0 <21",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
     "dev:remote": "npm run dev",
@@ -26,12 +30,13 @@
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
-    "@react-google-maps/api": "^2.20.8",
     "axios": "^1.5.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "react-redux": "^9.2.0",
     "react-router": "^6.16.0",
     "react-router-dom": "^6.16.0",

@@ -1,15 +1,101 @@
 import React from 'react'
-import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api'
+import L from 'leaflet'
+import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
+
+import 'leaflet/dist/leaflet.css'
 import pinPng from '../assets/styles/img/pin.png'
 
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-const israelCenter = { lat: 31.0461, lng: 34.8516 }
+/**
+ * The branch map.
+ *
+ * Runs on Leaflet + OpenStreetMap rather than Google Maps. Google's JS API
+ * requires a billing account with a card on file, and its key would have to
+ * ship inside the bundle as VITE_GOOGLE_MAPS_API_KEY — where any visitor can
+ * read it and spend against it. OSM tiles need no key, no account and no card,
+ * so the whole class of problem disappears along with the secret.
+ *
+ * The props, the class names and the interaction contract are unchanged from
+ * the Google implementation, so BranchesPage and BranchesPage.scss did not have
+ * to move.
+ */
 
-const loaderOptions = {
-  id: 'google-map-script',
-  googleMapsApiKey: apiKey,
-  language: 'he',
-  region: 'IL',
+const israelCenter = { lat: 31.0461, lng: 34.8516 }
+const ISRAEL_ZOOM = 7
+
+/* OpenStreetMap's tile usage policy REQUIRES this attribution to be displayed.
+   It is a condition of using the public tile servers, not a courtesy. */
+const TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+/* Leaflet sizes marker icons in pixels rather than accepting a scaled size, so
+   the two states are two icons. Anchor is the tip of the pin: half the width
+   across, full height down, so the point sits on the coordinate rather than
+   the image's centre. */
+const pinIcon = L.icon({
+  iconUrl: pinPng,
+  iconSize: [44, 54],
+  iconAnchor: [22, 54],
+})
+
+const pinIconActive = L.icon({
+  iconUrl: pinPng,
+  iconSize: [60, 74],
+  iconAnchor: [30, 74],
+  className: 'branch-pin--active',
+})
+
+/**
+ * Imperative camera moves.
+ *
+ * react-leaflet exposes the map instance only through `useMap()`, which has to
+ * be called from a component *inside* MapContainer — hence this child rather
+ * than a ref on the parent.
+ */
+function MapCamera({ regions, selectedRegionId, selectedBranchId, markers }) {
+  const map = useMap()
+
+  React.useEffect(() => {
+    const region = regions.find(r => r.id === selectedRegionId)
+    if (!region) return
+
+    map.flyTo(region.center ?? israelCenter, region.zoom ?? 10, { duration: 0.6 })
+  }, [map, regions, selectedRegionId])
+
+  React.useEffect(() => {
+    if (!selectedBranchId) return
+
+    const found = markers.find(b => b._uid === selectedBranchId)
+    if (!found) return
+
+    map.flyTo({ lat: found.lat, lng: found.lng }, Math.max(found._regionZoom ?? 10, 13), {
+      duration: 0.6,
+    })
+  }, [map, selectedBranchId, markers])
+
+  /* Leaflet measures its container once, on mount. The branch locator is a
+     flex column that settles after first paint, and on the desktop two-column
+     layout it is measured before the accordion beside it has sized — leaving
+     the map rendering into stale dimensions with grey gaps where tiles should
+     be. Re-measuring on the next frame, and on resize, keeps it correct. */
+  React.useEffect(() => {
+    const raf = requestAnimationFrame(() => map.invalidateSize())
+    const onResize = () => map.invalidateSize()
+
+    window.addEventListener('resize', onResize)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [map])
+
+  return null
+}
+
+/** Clicking bare map (not a pin) clears the selected branch. */
+function MapBackgroundClick({ onBackgroundClick }) {
+  useMapEvents({ click: onBackgroundClick })
+  return null
 }
 
 export function MyComponent({
@@ -18,22 +104,14 @@ export function MyComponent({
   selectedBranchId,
   onSelectFromMap, // ({ regionId, branchId }) => void
 }) {
-  const { isLoaded, loadError } = useJsApiLoader(loaderOptions)
+  /* Tiles are fetched from a third party, so they can still fail where the
+     library itself cannot. Falling back only once several tiles have errored
+     *and* none have succeeded avoids swapping out a working map because one
+     tile at the edge of the viewport timed out. */
+  const [tileErrors, setTileErrors] = React.useState(0)
+  const [hasTile, setHasTile] = React.useState(false)
 
-  const mapRef = React.useRef(null)
-  const [isMapReady, setIsMapReady] = React.useState(false)
-
-  const onLoad = React.useCallback((map) => {
-    mapRef.current = map
-    setIsMapReady(true)
-  }, [])
-
-  const onUnmount = React.useCallback(() => {
-    mapRef.current = null
-    setIsMapReady(false)
-  }, [])
-
-  const allMarkers = React.useMemo(() => {
+  const markers = React.useMemo(() => {
     const out = []
     for (const region of regions) {
       for (const b of region.branches ?? []) {
@@ -54,55 +132,20 @@ export function MyComponent({
     return out
   }, [regions])
 
-  React.useEffect(() => {
-    if (!isMapReady) return
-    const map = mapRef.current
-    if (!map) return
-
-    const region = regions.find((r) => r.id === selectedRegionId)
-    if (!region) return
-
-    const target = region.center ?? israelCenter
-    map.panTo(target)
-    map.setZoom(region.zoom ?? 10)
-  }, [isMapReady, regions, selectedRegionId])
-
-  React.useEffect(() => {
-    if (!isMapReady || !selectedBranchId) return
-    const map = mapRef.current
-    if (!map) return
-
-    const found = allMarkers.find((b) => b._uid === selectedBranchId)
-    if (!found) return
-
-    map.panTo({ lat: found.lat, lng: found.lng })
-    map.setZoom(Math.max(found._regionZoom ?? 10, 13))
-  }, [isMapReady, selectedBranchId, allMarkers])
-
-  const pinIcon = React.useMemo(() => {
-    if (!isLoaded || !window.google) return null
-    return {
-      url: pinPng,
-      scaledSize: new window.google.maps.Size(44, 54),
-      anchor: new window.google.maps.Point(22, 54),
-    }
-  }, [isLoaded])
-
-  const pinIconActive = React.useMemo(() => {
-    if (!isLoaded || !window.google) return null
-    return {
-      url: pinPng,
-      scaledSize: new window.google.maps.Size(60, 74),
-      anchor: new window.google.maps.Point(30, 74),
-    }
-  }, [isLoaded])
+  const tileHandlers = React.useMemo(
+    () => ({
+      tileload: () => setHasTile(true),
+      tileerror: () => setTileErrors(n => n + 1),
+    }),
+    []
+  )
 
   /* The map used to return `null` whenever it could not load — no key, no
      network, no quota — which left a silent blank rectangle the height of the
      map under the "הסניפים שלנו" heading. Nothing told anyone it had failed.
      Both states are authored now, and the failure keeps the shopper moving:
-     the branch list beside it still works, and Google Maps is one tap away. */
-  if (!apiKey || loadError) {
+     the branch list beside it still works, and a map is one tap away. */
+  if (tileErrors > 3 && !hasTile) {
     return (
       <div className="map-fallback" role="status">
         <p className="map-fallback__title">המפה לא נטענה</p>
@@ -111,56 +154,67 @@ export function MyComponent({
         </p>
         <a
           className="map-fallback__link"
-          href="https://www.google.com/maps/search/%D7%96%D7%95%D7%9C+%D7%A1%D7%98%D7%95%D7%A7"
+          href="https://www.openstreetmap.org/search?query=%D7%96%D7%95%D7%9C%20%D7%A1%D7%98%D7%95%D7%A7"
           target="_blank"
           rel="noopener noreferrer"
         >
-          פתיחת הסניפים ב-Google Maps
+          פתיחת הסניפים במפה
         </a>
       </div>
     )
   }
 
-  return isLoaded ? (
+  return (
     <div dir="ltr" style={{ width: '100%', height: '100%' }}>
-      <GoogleMap
-        mapContainerStyle={{ width: '100%', height: '100%' }}
+      <MapContainer
         center={israelCenter}
-        zoom={7}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-        options={{ mapTypeControl: false }}
-        onClick={() => onSelectFromMap?.({ regionId: selectedRegionId, branchId: null })}
+        zoom={ISRAEL_ZOOM}
+        scrollWheelZoom={false}
+        style={{ width: '100%', height: '100%' }}
       >
-        {pinIcon &&
-          allMarkers.map((branch) => {
-            // `_uid` is assigned in HomePage; `_placeId` is not unique in the
-            // source data and cannot identify a branch on its own.
-            const branchId = branch._uid
-            const isActive = selectedBranchId && branch._uid === selectedBranchId
+        <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} eventHandlers={tileHandlers} />
 
-            return (
-              <MarkerF
-                key={branchId}
-                position={{ lat: branch.lat, lng: branch.lng }}
-                icon={isActive ? pinIconActive : pinIcon}
-                zIndex={isActive ? 999 : 1}
-                title={branch.title}
-                onClick={() =>
+        <MapCamera
+          regions={regions}
+          selectedRegionId={selectedRegionId}
+          selectedBranchId={selectedBranchId}
+          markers={markers}
+        />
+
+        <MapBackgroundClick
+          onBackgroundClick={() =>
+            onSelectFromMap?.({ regionId: selectedRegionId, branchId: null })
+          }
+        />
+
+        {markers.map(branch => {
+          // `_uid` is assigned in BranchesPage; `_placeId` is not unique in the
+          // source data and cannot identify a branch on its own.
+          const isActive = selectedBranchId && branch._uid === selectedBranchId
+
+          return (
+            <Marker
+              key={branch._uid}
+              position={{ lat: branch.lat, lng: branch.lng }}
+              icon={isActive ? pinIconActive : pinIcon}
+              zIndexOffset={isActive ? 1000 : 0}
+              title={branch.title}
+              alt={branch.title}
+              eventHandlers={{
+                click: ev => {
+                  // Without this the click also reaches the map beneath, whose
+                  // handler immediately clears the branch that was just picked.
+                  L.DomEvent.stopPropagation(ev)
                   onSelectFromMap?.({
                     regionId: branch._regionId,
                     branchId: branch._uid ?? null,
                   })
-                }
-              />
-            )
-          })}
-      </GoogleMap>
-    </div>
-  ) : (
-    <div className="map-loading" role="status" aria-live="polite">
-      <span className="map-loading__spinner" aria-hidden="true" />
-      <span>טוענים את המפה…</span>
+                },
+              }}
+            />
+          )
+        })}
+      </MapContainer>
     </div>
   )
 }

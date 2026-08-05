@@ -24,6 +24,10 @@ dist-ssr
 *.sw?
 .env
 .env.*
+# ...but the example must be committed: it documents which variables the app
+# needs without carrying any real values. Negations must come after the rule
+# they exempt, or git never sees them.
+!.env.example
 
 # Playwright
 /test-results/

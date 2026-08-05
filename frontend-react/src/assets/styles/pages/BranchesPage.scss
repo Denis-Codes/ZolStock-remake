@@ -84,6 +84,60 @@
   min-height: rem(300px);
   border-radius: $r-md;
   overflow: hidden;
+
+  /* Creates a stacking context, which is what keeps Leaflet inside its own
+     box. Leaflet gives its control layer `z-index: 1000` — the same value the
+     sticky AppHeader uses — and the map sits later in the DOM, so without a
+     context of its own the zoom buttons paint over the header on scroll.
+     Containing it here is more durable than out-bidding Leaflet's z-indexes
+     one by one, which would break again on any upgrade. */
+  position: relative;
+  z-index: 0;
+}
+
+/* ============================= */
+/* LEAFLET                        */
+/* ============================= */
+
+/* leaflet.css is imported by MapsCmp and ships opinionated defaults. These
+   rules only reconcile it with the site's own type and surfaces — nothing
+   here changes map behaviour. */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+
+  /* Leaflet hardcodes a Helvetica/Arial stack on the container, which every
+     tooltip and control then inherits. */
+  font-family: $font-main;
+
+  /* Shown in the gaps while tiles stream in, and behind the map at the edges
+     of the world. Matching the app's sunken surface reads as intentional
+     rather than as a rendering gap. */
+  background-color: $surface-sunken;
+}
+
+/* OpenStreetMap's usage policy requires the attribution to stay visible, so
+   this is toned down — never hidden. */
+.leaflet-control-attribution {
+  font-size: rem(10px);
+  background-color: rgba(255, 255, 255, 0.8);
+
+  a {
+    color: $text-muted;
+  }
+}
+
+/* The page is RTL; the map wrapper forces LTR so Leaflet's own maths stays
+   correct, which leaves controls in their default corners. */
+.leaflet-control-zoom {
+  border-radius: $r-sm;
+  overflow: hidden;
+}
+
+/* Lifts the selected pin off the cluster around it. The size change is on the
+   icon itself — this only adds the depth cue. */
+.branch-pin--active {
+  filter: drop-shadow(0 rem(3px) rem(6px) rgba(0, 0, 0, 0.35));
 }
 
 /* ============================= */
