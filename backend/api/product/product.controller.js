@@ -9,7 +9,7 @@ import { asyncHandler, ForbiddenError } from '../../middlewares/error.middleware
  * pageIdx and expects every match back, and defaulting it to 0 previously
  * truncated every response to the first 20 products.
  */
-function buildFilter(query = {}) {
+export function buildFilter(query = {}) {
   return {
     txt: query.txt || '',
     category: query.category || '',

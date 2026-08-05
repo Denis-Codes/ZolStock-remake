@@ -1373,3 +1373,483 @@ Server verified booting independently after the refactor.
 
 *Next: Stage 3 — the first real tests. Pricing boundaries, validation schemas,
 and regex safety, using the factories built here.*
+
+---
+
+# Stage 3 — Backend unit tests
+
+**263 tests. Under 300ms. No database, no network, no clock.**
+
+Stage 2 built the machine. This stage puts the first real product code under
+test, and it is deliberately the *cheapest* layer: pure functions, called
+directly, with no I/O of any kind.
+
+## 3.1 — Why the cheap layer goes first
+
+There's a temptation to start at the top: write an end-to-end test that adds
+something to a cart and checks out, because that's what a user does. It feels
+like the most honest test. It's also the worst place to start, for a reason that
+has nothing to do with purity.
+
+**A test is only as useful as the size of the haystack it leaves you.**
+
+An e2e checkout test that goes red tells you "checkout is broken." Between the
+click and the failure sit a browser, a bundle, a router, Redux, axios, Express,
+five middlewares, three services and MongoDB. You've learned that something in
+there is wrong.
+
+A unit test that goes red tells you `calcShipping(300)` returned 29. You've
+learned which line.
+
+Both are worth having, and stage 6 writes the e2e one. But when the same bug can
+be caught at two levels, catching it lower is strictly better: faster, more
+precise, and it can't be flaky, because there's nothing in it to be flaky.
+
+The practical version of this is the **testing pyramid** — many cheap tests, few
+expensive ones. The reason it's shaped that way isn't ideology. It's that the
+expensive tests are the ones you eventually stop running.
+
+> **Know this cold.** Push every assertion to the lowest level that can hold it.
+> The value of a failing test is the precision of what it tells you, and
+> precision is highest where the code under test is smallest.
+
+## 3.2 — What got tested, and why those things
+
+Five files. Choosing *what* to test is most of the skill, so here's the reasoning.
+
+| File | Tests | Why this code |
+|---|---|---|
+| `schemas.test.js` | 113 | The allowlist deciding what reaches the app at all |
+| `query.util.test.js` | 66 | Turns untrusted text into a database query |
+| `product-query.test.js` | 49 | Search/filter/sort translation, three stages |
+| `cart-pricing.test.js` | 19 | Decides what a shopper is charged |
+| `validate.middleware.test.js` | 16 | The thing that *applies* the schemas |
+
+The common thread: **every one sits on a boundary where something untrusted
+becomes trusted, or where a number becomes money.** That's where to spend your
+test budget. A util that formats a date does not need 66 tests. A util that
+builds a Mongo query out of a URL does.
+
+Notice what's absent: nothing tests `getByUserId`, `addItem` or `checkout`. Those
+need a database, so they're stage 4. Drawing that line firmly is what keeps this
+stage under 300ms.
+
+## 3.3 — Boundary value analysis
+
+The single most transferable technique here.
+
+The free-delivery rule is `subtotal >= 300`. The obvious test is a ₪500 cart
+getting free delivery. That test passes against `>= 300`, `> 299`, `>= 250` and a
+dozen other wrong implementations. It proves almost nothing.
+
+Bugs don't live in the middle of a range. They live at its edge, because the edge
+is where a human made a decision — `>` or `>=`, inclusive or exclusive — and
+where an off-by-one is invisible on reading.
+
+So the test is three values: the boundary, and the smallest step either side.
+
+```js
+it.each([
+  ['just below the threshold',  299.99, SHIPPING_FLAT_FEE],
+  ['exactly at the threshold',  300,    0],
+  ['just above the threshold',  300.01, 0],
+])('%s: ₪%s subtotal → ₪%s delivery', ...)
+```
+
+The middle case is the one that matters. `>` instead of `>=` charges ₪29 on a
+cart of exactly ₪300 — and that's the *most likely cart in the shop*, because
+shoppers add items until the "free over ₪300" nudge disappears. The bug would
+land squarely on the customers paying closest attention.
+
+Same technique everywhere a limit exists: username 2/3 and 40/41, password 7/8
+and 200/201, quantity 0/1 and 99/100, merge list 100/101, notes 500/501, phone
+8/9 and 20/21.
+
+> **Know this cold.** For any rule with a limit, test the limit and one step each
+> side. Values in the middle of a valid range carry almost no information.
+
+## 3.4 — Equivalence partitioning
+
+The companion technique. You can't test every input, so you split the input space
+into classes whose members should all behave the same, test one member of each,
+and add the boundaries between them.
+
+Phone numbers, for instance. Infinitely many strings, but only a handful of
+*classes*:
+
+```
+accepted: 050-1234567, +972 50 123 4567, (050) 1234567, 0501234567
+rejected: 050-CALL-ME, <script>alert(1)</script>, too short, too long, empty
+```
+
+Four accepted shapes because Israeli shoppers genuinely type all four, and a
+regex rejecting any of them is a lost order. The script tag is in the rejected
+list not because anyone expects XSS through a phone field, but because
+"characters a courier can't dial" is the actual rule and it's worth stating.
+
+The one place I deliberately *didn't* partition is `escapeRegex`. There are only
+fourteen regex metacharacters, and each is a separate way to be wrong — so all
+fourteen are tested individually. **When a class is small enough to enumerate,
+enumerate it.**
+
+## 3.5 — Two real bugs this codebase already had, both the same shape
+
+The highest-value paragraph in the stage, because you will write this bug.
+
+```js
+if (filterBy.minPrice) { ... }   // wrong
+if (filterBy.inStock)  { ... }   // wrong
+```
+
+In JavaScript `0` is falsy and `false` is falsy. So:
+
+- A price slider dragged to its left end sends `minPrice=0` → read as "no filter"
+  → the price filter silently vanishes.
+- The in-stock toggle switched off sends `inStock=false` → read as "no filter" →
+  the toggle does nothing.
+
+Both had actually happened here. The current code guards properly:
+
+```js
+if (filterBy.minPrice !== null && filterBy.minPrice !== undefined) { ... }
+```
+
+...and it's verbose enough that someone will eventually "clean it up." So there
+are now tests whose whole job is to make that cleanup go red:
+
+```js
+expect(_buildCriteria({ minPrice: 0 })).toEqual({ price: { $gte: 0 } })
+expect(_buildCriteria({ inStock: false })).toEqual({ inStock: false })
+```
+
+This is also why `toNumber('')` returns `null` rather than `0`, and why
+`toBoolean` has **three** return states rather than two:
+
+| Return | Means |
+|---|---|
+| `true` | show only in-stock |
+| `false` | include out-of-stock |
+| `null` | don't filter on stock at all |
+
+`false` and `null` are different instructions. Collapse them and the feature
+breaks in a way that reads as "the toggle is broken" rather than "someone used a
+falsy check."
+
+> **Know this cold.** `0`, `''` and `false` are values, not absences. Any check
+> that can't tell them from "missing" is a bug waiting for the right input.
+
+## 3.6 — Testing behaviour, not implementation
+
+`escapeRegex('(')` returns `'\\('`. The lazy assertion:
+
+```js
+expect(escapeRegex('(')).toBe('\\(')   // brittle
+```
+
+That breaks if someone switches to `[(]` — equally correct, now "failing." It
+tests *how* rather than *what*.
+
+What's actually asserted:
+
+```js
+expect(new RegExp(escapeRegex('(')).test('(')).toBe(true)
+```
+
+The contract is "the output matches the input literally." That's what every
+caller depends on, and it survives any reimplementation keeping the promise.
+
+Rule of thumb: **write the assertion a caller would care about.** Nobody
+downstream cares that a backslash appeared. They care that the search doesn't
+crash and finds the right products.
+
+## 3.7 — Testing that something is *absent*
+
+Most tests assert a thing happened. The security-relevant ones assert a thing
+*didn't*.
+
+Signup used to spread `req.body` into the new user document. So
+`POST /api/auth/signup` with `{"isAdmin": true}` created an administrator. No
+exploit, no tooling — one extra JSON field.
+
+The fix was the schema, and the tests assert the strip rather than a rejection —
+the request still succeeds, it just can't carry the field:
+
+```js
+const { success, data } = signupSchema.safeParse({ ...VALID, isAdmin: true })
+expect(success).toBe(true)
+expect(data).not.toHaveProperty('isAdmin')
+```
+
+Then a stronger version, which is the one worth copying:
+
+```js
+expect(Object.keys(data).sort()).toEqual(['fullname', 'password', 'username'])
+```
+
+The first form tests the fields *you thought of*. The second tests the whole
+allowlist — it catches fields nobody thought to name, including ones added to the
+schema next year. **When you can assert the complete set instead of a few
+members, assert the set.**
+
+The same idea one layer down is why `_buildSort` has an allowlist:
+
+```js
+const SORTABLE_FIELDS = new Set(['price', 'salePrice', /* ... */, 'name'])
+```
+
+A denylist blocks what you anticipated. An allowlist blocks everything else, by
+default, forever. And why it matters is subtler than it looks: **sort order leaks
+information about values you can't read.** Sorting a public product list by an
+internal field tells you which documents have it and roughly how they compare —
+without that field ever appearing in a response.
+
+## 3.8 — Knowing which half of a rule your test covers
+
+`updateUserSchema` accepts `score`. It has to — an admin adjusting a balance
+posts it through this endpoint. But an ordinary shopper must not set their own.
+
+A schema cannot make that call. **It sees the body, not who sent it.** The
+authorisation check lives in the controller.
+
+So the unit test asserts exactly its half, and says so in the name:
+
+```js
+it('declares score, which the controller gates on admin', () => {
+  const { data } = updateUserSchema.safeParse({ score: 5000 })
+  expect(data.score).toBe(5000)
+})
+```
+
+This matters more than it sounds. A test named "score is validated" would leave
+you believing the rule is covered when only half of it is — and half-covered is
+worse than uncovered, because uncovered gets revisited.
+
+The other half gets an API test in stage 4, where there's a logged-in user to
+have a role.
+
+> **Know this cold.** Name what a test covers precisely enough that the gap next
+> to it stays visible. False confidence is the most expensive thing a suite can
+> produce.
+
+## 3.9 — Tests as a record of known gaps
+
+Three tests here assert behaviour that is arguably wrong:
+
+```js
+expect(toNumber(' ')).toBe(0)                      // whitespace reads as zero
+expect(calcShipping(0)).toBe(SHIPPING_FLAT_FEE)    // ₪29 on an empty cart
+expect(accepts(updateStatusSchema)({ status: 'pending' })).toBe(true)
+                                                   // delivered → pending allowed
+```
+
+None are fixed. Each is pinned with a comment explaining why it's tolerable today
+and what would make it not.
+
+The third is clearest: status transitions aren't validated at all, so a delivered
+order can be moved back to pending. That's stage 11's state machine. Writing the
+test *now* puts the gap in the suite, where it runs every day, instead of only in
+a plan document nobody opens.
+
+`calcShipping(0)` is the interesting one. It's currently unreachable —
+`resolveLines` short-circuits an empty cart before calling it. So why test it?
+Because **"unreachable" is a property of the caller, not of this function.** If
+someone removes that short-circuit, this test is the only thing between them and
+a ₪29 delivery charge on an empty basket.
+
+## 3.10 — Making the cheap tests stay cheap
+
+`cart.service.js` imports `dbService`. So importing it for a pricing test loads
+the database module — and stage 2's cleanup hook then opened a connection for
+every test file, needed or not.
+
+Two changes:
+
+```js
+// db.service.js — loading is not connecting
+function isConnected() { return dbConnPromise !== null }
+
+// tests/setup.js — skip cleanup for files that never touched Mongo
+afterEach(async () => {
+  if (!dbService.isConnected()) return
+  ...
+})
+```
+
+And then — the part worth stealing — **a test that guards the cost**:
+
+```js
+it('never opens a database connection', () => {
+  expect(dbService.isConnected()).toBe(false)
+})
+```
+
+The natural next test someone adds to that file is "adding an item merges with
+the existing line," which needs a real cart in Mongo. That would silently turn
+the cheapest file in the suite into one of the slowest. This test fails at that
+moment and says where the new test belongs.
+
+Suites don't get slow in one commit. They get slow one reasonable-looking
+addition at a time, and nobody notices until the feedback loop is gone.
+
+## 3.11 — Tests must not read your `.env`
+
+`config/env.js` called `dotenv.config()` unconditionally, so the suite was partly
+configured by a file that isn't in git.
+
+```js
+if (process.env.NODE_ENV !== 'test') dotenv.config({ quiet: true })
+```
+
+`tests/setup.js` already sets every variable the app needs. Layering a local
+`.env` on top means a test could depend on a value that exists on one machine and
+nowhere else — **pass locally, fail in CI, with nothing in the diff to point at.**
+Same principle as stage 0's build-output rule, wearing different clothes:
+
+> Git holds inputs. CI produces outputs. They must never be the same thing.
+
+A test environment that differs between two machines isn't a test environment.
+It's two.
+
+## 3.12 — The two tests I got wrong
+
+Both worth recording, because both are the process working rather than failing.
+
+**`escapeRegex(null)`** — I asserted `''`, reasoning that the default parameter
+`str = ''` handles missing input. It returned `'null'`.
+
+A default parameter fires **only for `undefined`**. `null` is a value; it sails
+past the default into `String(null)` and comes back as the four-letter word
+"null". Harmless here — the controller sends `query.txt || ''`, and a search for
+"null" matches nothing — but "the default handles missing input" is a belief a
+lot of JavaScript is written on, and it's only half true.
+
+The test now pins real behaviour with the reasoning attached. **A wrong
+assumption caught by a test you wrote five minutes ago is the cheapest possible
+place to be wrong.**
+
+**`it.fail` vs `it.fails`** — Playwright spells it `test.fail()`. Vitest spells it
+`it.fails()`. This repo runs both, so both dialects are live at once. Second time
+in three stages that two runners in one repo has cost something — the first was
+`testMatch` in stage 2.
+
+## 3.13 — BUG-003, and how it was found
+
+Not by running anything. By reading `addItem` and asking a question:
+
+```js
+const product = await products.findOne(byIdOrSku(productId))  // resolves BOTH forms
+const variantKey = _variantKey(productId, variant)            // keys off the RAW input
+```
+
+`byIdOrSku` exists because two names for one product are live simultaneously: new
+URLs carry the ObjectId, and carts saved in localStorage before the migration
+carry the sku. Both find the same document.
+
+`_variantKey` then treats those two names as two different things. So the same
+product, arriving by its two valid names, lands on two separate cart rows. The
+resolved product — the thing that would give one correct answer — is already in
+hand, one line earlier.
+
+The question that found it: **"this function accepts two forms of the same thing —
+does everything downstream know that?"**
+
+Filed as `bugs/BUG-003`, covered by an `it.fails()` test, not fixed — per the
+policy, a bug found by a test gets the test plus the report, and the fix is a
+separate decision with its own diff.
+
+Severity is honestly stated as Low–Medium: it needs a pre-migration cart to
+trigger, and checkout's conditional decrement still refuses to oversell, so the
+worst outcome is a confusing duplicate row and a checkout-time conflict rather
+than lost stock. **Calling a low-severity bug high-severity costs you credibility
+on the one that matters.**
+
+The report also notes something that is *not* a bug: the frontend computes its
+own guest-cart key with a different formula (`${id}-${size}-${color}`, yielding
+`p1-M-undefined` where the server yields `p1-M`). The two never have to agree
+today. It's recorded because two independent implementations of one rule is how
+this bug gets written a second time.
+
+---
+
+# Stage 3 — summary
+
+| Added | Tests |
+|---|---|
+| `backend/tests/unit/schemas.test.js` | 113 |
+| `backend/tests/unit/query.util.test.js` | 66 |
+| `backend/tests/unit/product-query.test.js` | 49 |
+| `backend/tests/unit/cart-pricing.test.js` | 19 |
+| `backend/tests/unit/validate.middleware.test.js` | 16 |
+| `bugs/BUG-003-cart-line-key-not-normalized.md` | — |
+
+**Modified — production code, all additive:**
+
+| File | Change | Risk |
+|---|---|---|
+| `cart.service.js` | `export` on `calcShipping`, `_variantKey` | none — no call site changed |
+| `product.service.js` | `export` on `_buildCriteria`, `_buildSort`, `_buildSearchText` | none |
+| `product.controller.js` | `export` on `buildFilter` | none |
+| `db.service.js` | added `isConnected()` | none — new function |
+| `config/env.js` | skip `dotenv` under `NODE_ENV=test`, `quiet: true` | dev/prod path unchanged, verified |
+| `tests/setup.js` | skip DB cleanup when never connected | test-only |
+
+The exports are the one thing worth a second look. Testing a private function
+means either exporting it or reaching through the public API — and the third
+option here (extracting pricing into its own module) is a real refactor with real
+risk for no behavioural gain. Adding `export` changes nothing at any call site
+and leaves the underscore prefix as the "internal" signal. Flagged because it's a
+judgement call, not an obvious one.
+
+### Results
+
+```
+ ✓ tests/unit/cart-pricing.test.js         (19 tests)  29ms
+ ✓ tests/unit/query.util.test.js           (66 tests)  70ms
+ ✓ tests/unit/product-query.test.js        (49 tests)  29ms
+ ✓ tests/unit/validate.middleware.test.js  (16 tests)  34ms
+ ✓ tests/unit/schemas.test.js             (113 tests) 131ms
+ ✓ tests/helpers.test.js                   (15 tests) 665ms
+
+ Test Files  6 passed (6)
+      Tests  278 passed (278)
+```
+
+Server verified booting after the `config/env.js` change, and `config.dbURL`
+confirmed still resolving from `.env` outside test mode.
+
+### What to verify on your end
+
+1. `cd backend && npm test` → 278 passing
+2. `cd backend && npm run dev` → still starts, still connects to Atlas
+3. `cd backend && npm run seed` → still reads `.env` (unchanged outside test mode)
+4. `npm run test:watch` → sub-second on save; the loop for stages 4–6
+
+### Flagged, not changed
+
+- `auth.service.js:63` and `socket.service.js:102,106` use `console.log` directly
+  instead of the logger, bypassing log levels — they won't be structured in stage
+  9's observability work.
+- `addItemSchema` rejects `quantity: "2"` (string) rather than coercing. Correct,
+  but React inputs return strings, so any component forwarding an input value
+  straight to the API gets a 400. Pinned in a test so the failure is recognisable.
+- Node 20.15 still pinned; Vite now warns `Using NodeJS below 20.19.0` on every
+  run. Stage 8 is the right place to move to a current LTS.
+
+### The five sentences worth keeping from Stage 3
+
+1. Push every assertion to the lowest level that can hold it — the value of a red
+   test is the precision of what it tells you.
+2. Bugs live at boundaries; test the limit and one step each side, and skip the
+   middle of the range.
+3. `0`, `''` and `false` are values, not absences — any check that can't tell them
+   from "missing" is a bug waiting for the right input.
+4. Assert the whole allowlist, not the few fields you thought an attacker would
+   try.
+5. Name what a test covers precisely enough that the gap beside it stays visible —
+   false confidence costs more than no coverage.
+
+---
+
+*Next: Stage 4 — API integration tests. Real HTTP through supertest, real
+MongoDB, the authorization matrix, and the concurrency test that proves two
+shoppers can't buy the same last unit.*

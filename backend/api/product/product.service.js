@@ -193,7 +193,7 @@ async function removeProductMsg(productId, msgId) {
 }
 
 /** Mirrors the seed script's haystack so added/edited products stay searchable. */
-function _buildSearchText(product = {}) {
+export function _buildSearchText(product = {}) {
   return [
     product.name,
     product.displayNameHe,
@@ -208,7 +208,10 @@ function _buildSearchText(product = {}) {
     .toLowerCase()
 }
 
-function _buildCriteria(filterBy = {}) {
+// _buildCriteria / _buildSort are exported for tests. Both translate untrusted
+// query-string input into a Mongo query, which makes them security surface as
+// much as behaviour — worth asserting directly rather than through the DB.
+export function _buildCriteria(filterBy = {}) {
   const criteria = {}
 
   // Substring match against the denormalised haystack, which covers Hebrew
@@ -259,7 +262,7 @@ const SORTABLE_FIELDS = new Set([
   'name',
 ])
 
-function _buildSort(filterBy = {}) {
+export function _buildSort(filterBy = {}) {
   if (!filterBy.sortField || !SORTABLE_FIELDS.has(filterBy.sortField)) return {}
   const dir = +filterBy.sortDir === -1 ? -1 : 1
   return { [filterBy.sortField]: dir }

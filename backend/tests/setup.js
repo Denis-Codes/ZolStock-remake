@@ -45,15 +45,21 @@ process.env.CORS_ORIGINS = 'http://localhost:5173'
  * test could insert a duplicate username and pass, while production would
  * reject it. Deleting documents keeps the schema and clears the state.
  */
+// Both hooks bail out when the test file never opened a connection. Pure unit
+// test files (query.util, schemas, pricing) import nothing that touches Mongo,
+// and without this guard the cleanup would open a client for them anyway —
+// turning a 2ms test file into a connection round-trip per test.
 afterEach(async () => {
   const { dbService } = await import('../services/db.service.js')
-  const db = await dbService.getDb()
+  if (!dbService.isConnected()) return
 
+  const db = await dbService.getDb()
   const collections = await db.collections()
   await Promise.all(collections.map(c => c.deleteMany({})))
 })
 
 afterAll(async () => {
   const { dbService } = await import('../services/db.service.js')
+  if (!dbService.isConnected()) return
   await dbService.close()
 })

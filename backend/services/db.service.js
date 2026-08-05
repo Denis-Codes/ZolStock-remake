@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb'
 import { config } from '../config/index.js'
 import { logger } from './logger.service.js'
 
-export const dbService = { getCollection, getDb, getClient, ping, close }
+export const dbService = { getCollection, getDb, getClient, ping, close, isConnected }
 
 // The in-flight *promise* is cached, not the resolved connection. Caching only
 // the resolved value leaves a window in which several concurrent first
@@ -41,6 +41,17 @@ async function getDb() {
 async function getClient() {
   await _connect()
   return client
+}
+
+/**
+ * Whether a connection has been opened (or attempted) in this process.
+ *
+ * Lets the test setup skip its between-test cleanup entirely for files that
+ * never touch the database — a pure unit test should not pay for a connection
+ * it did not ask for.
+ */
+function isConnected() {
+  return dbConnPromise !== null
 }
 
 async function _connect() {

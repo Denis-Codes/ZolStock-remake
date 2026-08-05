@@ -28,7 +28,9 @@ export const cartService = {
 export const FREE_SHIPPING_THRESHOLD = 300
 export const SHIPPING_FLAT_FEE = 29
 
-function calcShipping(subtotal) {
+// Exported for tests. Pricing rules are the kind of logic that deserves to be
+// pinned directly rather than inferred from a cart total three layers up.
+export function calcShipping(subtotal) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_FEE
 }
 
@@ -160,7 +162,7 @@ async function getByUserId(userId) {
  * Identifies a line. Two entries of the same product in different variants
  * are separate lines; the same product in the same variant merges.
  */
-function _variantKey(productId, variant) {
+export function _variantKey(productId, variant) {
   if (!variant) return String(productId)
   const parts = [variant.size, variant.color].filter(Boolean).join('-')
   return parts ? `${productId}-${parts}` : String(productId)
