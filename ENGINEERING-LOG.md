@@ -1850,6 +1850,433 @@ confirmed still resolving from `.env` outside test mode.
 
 ---
 
-*Next: Stage 4 — API integration tests. Real HTTP through supertest, real
-MongoDB, the authorization matrix, and the concurrency test that proves two
-shoppers can't buy the same last unit.*
+# Stage 4 — API integration tests
+
+92 new tests across six files, taking the backend suite from 278 to 370. Every
+one drives a real HTTP request through the real Express app against a real
+MongoDB. Nothing is mocked.
+
+## 4.1 — What an integration test is actually for
+
+A unit test asks "does this function return the right value". An integration
+test asks a different question: **"if a stranger sends this request, what
+happens to my data?"**
+
+That difference matters because most of the things that hurt a shop are not
+wrong return values. They are a request that should have been refused and
+wasn't, a price the client got to choose, a row that changed owner. None of
+those live inside a single function — they live in the seam between the router,
+the middleware, the controller and the database. Only a test that goes in
+through the front door can see them.
+
+The tool is `supertest`. It hands a request straight to the Express app object
+in memory, so there is no port to open, no server to start, no race between
+"is it listening yet" and "send the request". The app cannot tell the
+difference:
+
+```js
+const app = createApp({ enableRateLimit: false })
+
+const res = await request(app).post('/api/cart/item').send({ productId, quantity: 2 })
+```
+
+Every test in this stage follows the same three beats, and it is worth naming
+them because interviewers ask:
+
+- **Arrange** — put the world in a known state (seed a product, seed a user)
+- **Act** — one request, the thing under test
+- **Assert** — check the response *and*, where it matters, check the database
+
+## 4.2 — Seeding the database directly instead of through the API
+
+The cart tests need a product to exist. They create it by inserting it into
+Mongo, not by calling `POST /api/product`.
+
+That looks like a shortcut and it is the opposite. If the setup went through
+the API, then every cart test would silently also be a test of product
+creation — and the day product creation breaks, forty cart tests turn red and
+none of them are about the cart. A failing test is only useful if its name
+tells you where to look, and setup-by-API destroys that property.
+
+Rule of thumb: **arrange by the shortest path that isn't the thing you're
+testing.**
+
+## 4.3 — The authorization matrix
+
+The single most transferable pattern in this stage. Take one endpoint and send
+the *same request* as three different callers:
+
+| Caller | Expected |
+|---|---|
+| Signed out | 401 |
+| Signed-in normal user | 403 |
+| Admin | 200 |
+
+401 and 403 are not interchangeable, and the distinction is worth memorising:
+**401 means "I don't know who you are." 403 means "I know exactly who you are,
+and no."** An endpoint returning 401 to a signed-in user is telling them to log
+in again, which they cannot fix.
+
+The reason all three rows have to exist: a completely broken endpoint — one
+that returns 500 to everybody, or has been commented out — passes both negative
+tests. Refusals alone prove nothing. Only the positive row proves the endpoint
+still does its job, and only the negatives prove it does it for the right
+people.
+
+```js
+const NEW_PRODUCT = { name: 'Sneaky Product', price: 1 }
+// signed out  → 401, and countDocuments('products') === 0
+// normal user → 403, and countDocuments('products') === 0
+// admin       → 200, and the saved doc's owner is the admin
+```
+
+## 4.4 — Assert on the state, not only on the status code
+
+Notice the `countDocuments` in every row above. That is deliberate, and it is
+the habit that separates a test suite from a smoke alarm.
+
+A status code is what the server *said*. The database is what the server
+*did*. They can disagree: an endpoint that returns 403 and writes the row
+anyway is a real bug, it is exactly the kind that survives for years, and a
+test that stops at `expect(res.status).toBe(403)` will never see it.
+
+So every refusal in this stage also asks the database whether anything changed.
+It costs one line.
+
+Same idea, other direction: signup asserts `isAdmin` is false **on the stored
+document**, not on the response body. A response that hides the field while the
+row has it is the worst possible outcome — invisible and permanent.
+
+## 4.5 — Attacks the tests actually perform
+
+These are not hypotheticals; each one is a real request in the suite.
+
+**Mass assignment / privilege escalation.** `POST /api/auth/signup` with an
+extra `isAdmin: true` field. This codebase used to spread the request body into
+the new user document, so that one extra key created an administrator. No
+tooling, no exploit. Two independent defences stop it now — the Zod schema
+doesn't declare `isAdmin` so it is stripped, and the service hardcodes `false`
+rather than reading the caller's value. The test doesn't care which one caught
+it; it asserts the outcome.
+
+**NoSQL injection.** `{"username": {"$ne": null}}` as a login body. If that
+reached the query unchanged it would mean "any user whose username is not
+null", matching the first account in the collection and signing the attacker in
+as them without knowing a single username. Zod requires a string, so it returns
+400 — malformed, not merely wrong.
+
+**User enumeration.** Wrong-password and no-such-user must be
+indistinguishable, or an attacker can feed in a list of email addresses and
+learn which ones have accounts here. The assertion is that the two responses
+equal *each other* — which is the actual requirement — rather than that each
+matches some fixed string:
+
+```js
+expect(wrongPassword.body).toEqual(noSuchUser.body)
+```
+
+**IDOR — insecure direct object reference.** Bob sends `PUT` to Alice's cart
+line id. A real, existing id; the wrong owner. Expect 404, and then verify
+Alice's quantity is unchanged. This is the flaw behind a large share of real
+data breaches, and it is trivially cheap to test.
+
+**Client-supplied price.** The cart tests post a product with `price: 0.01`
+attached. The server must ignore it and read the catalogue. Asserted on both
+the response and the stored document.
+
+## 4.6 — Carts and orders are opposites, and the tests say so
+
+A cart **re-prices from the catalogue on every read**. An order is a **frozen
+snapshot** of what was charged.
+
+Both behaviours are tested by changing the catalogue price *after* the fact:
+
+- put an item in a cart, then apply a sale → the cart shows the new price
+- check out, then change the price → the order still says ₪120
+
+Get this backwards and you either charge people yesterday's price forever, or
+you rewrite financial history every time marketing runs a promotion.
+
+## 4.7 — The headline test: two shoppers, one last unit
+
+One unit in stock. Two shoppers check out at the same instant.
+
+```js
+const [first, second] = await Promise.all([checkout(alice), checkout(bob)])
+
+expect([first.status, second.status].sort()).toEqual([201, 409])
+
+const after = await findProduct({ _id: product._id })
+expect(after.stockQty).toBe(0)
+expect(after.inStock).toBe(false)
+expect(await findOrders()).toHaveLength(1)
+```
+
+Two details in there are the whole lesson.
+
+**It asserts that exactly one won, not which one.** Who wins a race is timing;
+asserting it would make the test flaky. "Exactly one succeeded" is the real
+requirement, so that is what it says.
+
+**409 Conflict, not 400.** 400 means "your request was malformed" — it wasn't;
+it was perfectly well formed and would have worked a millisecond earlier. 409
+means "the state of the world changed under you", which is exactly true, and it
+tells the frontend to re-fetch and retry rather than to show a validation error.
+
+## 4.8 — Proving the concurrency test has teeth
+
+**A test that has never failed has not been shown to test anything.** A test
+asserting `[201, 409]` against a broken server would just... also pass, if the
+server happened to be slow enough. So it has to be seen failing.
+
+The intended method — temporarily replace the atomic stock decrement with a
+naive read-then-write and watch the test go red — was blocked by the sandbox.
+Rather than work around it, the same thing was proved with a throwaway file
+that implemented both algorithms against the same in-memory Mongo:
+
+```
+NAIVE  -> results: [ true, true  ]  final stockQty: -1   ← sold one item twice
+ATOMIC -> results: [ true, false ]  final stockQty:  0
+```
+
+That `-1` is the bug in its natural habitat. Read-then-write: both requests
+read `stockQty: 1`, both pass the check, both decrement. Two customers promised
+the same item, nothing errors, nobody finds out until the warehouse does.
+
+The fix is to put the check *inside* the update's filter, so check-and-write
+become one indivisible operation that MongoDB, not JavaScript, guarantees:
+
+```js
+updateOne(
+  { _id, stockQty: { $gte: qty }, inStock: true },
+  { $inc: { stockQty: -qty } }
+)
+```
+
+Throwaway deleted. The honest limitation is written into the test file as a
+comment: **a concurrency test cannot prove correctness, it can only fail to
+disprove it.** It ran, the race was real, the guard held. That is the most any
+such test offers.
+
+A heavier variant follows it — 5 shoppers, 3 units, expecting 3×201 and 2×409,
+with `stockQty` landing at exactly 0 and never below.
+
+## 4.9 — Compensating rollback
+
+Checkout with a two-line cart where line 1 is available and line 2 is not. The
+first decrement has already happened by the time the second fails.
+
+The test asserts line 1's stock is back to 10 and that zero orders exist. This
+is what "compensating rollback" means: without a transaction, you undo by hand
+what you already did. Stage 10 was to replace this with a real MongoDB
+transaction — which is why the test environment boots a single-node **replica
+set** rather than a standalone mongod, since transactions require one.
+
+## 4.10 — The mistake worth more than the tests
+
+The rate-limit test file opened with a long comment explaining that the limiter
+counts failures in module-scope memory, so tripping it on purpose exhausts the
+budget for everything after it. Then a second test went in the same file. It
+failed:
+
+```
+expected 429 to be 200
+```
+
+The warning was written first and violated one function later, which is a fair
+illustration of how easily shared mutable state defeats good intentions.
+
+The tempting fix is to reorder the tests so the harmless one runs first. **That
+is the worse fix.** It makes the suite pass in exactly one order, which is how
+a test becomes flaky the moment anything is parallelised, filtered or retried —
+and order-dependent suites fail at 2am in CI, never on your machine.
+
+The real fix is isolation. Vitest gives each test file a fresh module registry,
+so a separate file gets a separate counter. Hence two files:
+`auth-ratelimit.api.test.js` (trips it) and
+`auth-ratelimit-success.api.test.js` (proves successful logins are *not*
+counted — `skipSuccessfulRequests`, which matters because everyone behind one
+office IP or one carrier NAT shares a budget).
+
+Both halves are needed. **A limiter that blocks attackers is only half a
+working limiter; the forgotten half is that it must not block real people.**
+
+# Stage 4 — summary
+
+| Added | Tests |
+|---|---|
+| `backend/tests/api/product.api.test.js` | 18 |
+| `backend/tests/api/cart.api.test.js` | 35 |
+| `backend/tests/api/order.api.test.js` | 24 |
+| `backend/tests/api/auth.api.test.js` | 13 |
+| `backend/tests/api/auth-ratelimit.api.test.js` | 1 |
+| `backend/tests/api/auth-ratelimit-success.api.test.js` | 1 |
+
+No production code was modified in this stage.
+
+### Results
+
+```
+ Test Files  12 passed (12)
+      Tests  370 passed (370)
+   Duration  ~30s
+```
+
+### Not covered
+
+`user`, `review` and `wishlist` routes have no API tests. They are lower-stakes
+than money and permissions, and the patterns above transfer directly — good
+candidates to write by hand.
+
+### The five sentences worth keeping from Stage 4
+
+1. An integration test asks what happens to your *data* when a stranger sends a
+   request, not what a function returns.
+2. Arrange by the shortest path that isn't the thing you're testing, or a
+   failure elsewhere turns forty unrelated tests red.
+3. Assert on the database, not only the status code — what the server said and
+   what the server did can disagree.
+4. Send the same request as three callers; refusals alone prove nothing,
+   because a completely broken endpoint refuses everybody.
+5. Fixing a flaky test by reordering it is not a fix — it trades a visible
+   failure for an invisible dependency on run order.
+
+---
+
+# Stage 7 — Continuous integration
+
+One file changed: `.github/workflows/ci-cd.yml`.
+
+## 7.1 — What was already there, and what was wrong with it
+
+The repo already had a working pipeline: three Playwright jobs (`smoke`,
+`regression`, `untagged`), then `build`, then `deploy` to GitHub Pages.
+
+It had one hole, and it was a big one. **All 370 backend tests never ran.** The
+workflow only ever entered `frontend-react/`. Worse, `build` and `deploy` were
+gated on the browser tests alone — so a change that broke checkout, or removed
+the oversell guard, would deploy cleanly as long as the storefront still
+rendered.
+
+A test suite that isn't wired into CI is a suite that runs when someone
+remembers to run it. That is not a safety net; it is a hobby.
+
+## 7.2 — What was added
+
+Two jobs, at the top of the file because they are the cheap tier:
+
+- **`backend-tests`** — `npm ci && npm test` inside `backend/`. 370 tests.
+- **`frontend-unit`** — `npm ci && npm test` inside `frontend-react/`. 10
+  tests, Vitest in jsdom. Grows in stage 5.
+
+And one line that matters more than either:
+
+```yaml
+needs: [backend-tests, frontend-unit, smoke, untagged]
+```
+
+`needs` is the gate. Every job listed must go green before `build` starts, and
+if any one fails the build is skipped. A broken backend can no longer reach
+production because the browser tests happened to pass.
+
+`regression` is deliberately absent from that list. It only runs on pull
+requests, and in GitHub Actions a job that never ran does **not** satisfy a
+`needs` — listing it would block every deploy permanently. This is a genuinely
+easy trap: the dependency looks harmless and the symptom is "deploys just stop
+happening" with no error anywhere.
+
+## 7.3 — Why the mongod binary is cached
+
+The backend tests boot a real MongoDB in memory, which means
+`mongodb-memory-server` fetches a ~70MB `mongod` binary on first use. Left
+alone, that is a minute added to every run and a pipeline that fails whenever
+the download host has a bad day — a CI job depending on a third-party download
+is a CI job that goes red for reasons that have nothing to do with the code.
+
+```yaml
+- uses: actions/cache@v4
+  with:
+    path: ~/.cache/mongodb-binaries
+    key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+    restore-keys: mongodb-binaries-${{ runner.os }}-
+```
+
+The key is derived from the lockfile, so bumping the library changes the key
+and a stale binary can never be silently reused. `restore-keys` is the partial
+fallback: if the exact key misses, take the most recent older cache rather than
+starting from nothing.
+
+## 7.4 — `npm ci`, not `npm install`
+
+`npm ci` installs exactly what the lockfile says and errors if `package.json`
+and the lockfile disagree. `npm install` will quietly resolve newer versions to
+satisfy the ranges — which is how CI ends up testing a dependency tree that
+exists on no developer's machine, and how "works locally, fails in CI" becomes
+a permanent condition. Every install step in this workflow uses `ci`.
+
+Each job also declares `cache-dependency-path` pointing at *its own* lockfile.
+`backend/` and `frontend-react/` are separate projects with separate trees;
+sharing one cache key between them would serve the wrong `node_modules`.
+
+## 7.5 — No secrets, and why that's a design property
+
+`backend-tests` needs no `.env`, no database URL and no `SECRET`. That is not
+luck — `tests/setup.js` sets `MONGO_URL`, `DB_NAME`, `SECRET` and
+`CORS_ORIGINS` itself, and `config/env.js` skips loading `.env` when
+`NODE_ENV=test` (which Vitest sets automatically).
+
+The consequence: **CI runs the exact same code path a developer runs locally.**
+There is no CI-only branch that can rot, and no secret to leak into a log. A
+suite that needs credentials to run is a suite that will eventually only run in
+one place.
+
+# Stage 7 — summary
+
+| Changed | What |
+|---|---|
+| `.github/workflows/ci-cd.yml` | added `backend-tests` and `frontend-unit`; gated `build` on both |
+
+### What to verify on your end
+
+1. Push to any branch → 5 jobs appear in the Actions tab; `backend-tests` shows
+   370 passing.
+2. Break a backend test on purpose, push → `backend-tests` red, `build`
+   **skipped**, nothing deploys. Then revert.
+3. Second push → `backend-tests` runs noticeably faster; the cache step reports
+   a hit.
+
+### Flagged, not changed
+
+- The three Playwright jobs each run `npm ci` and
+  `npx playwright install --with-deps` separately — roughly two minutes of
+  duplicated setup per job. They run in parallel so wall-clock is barely
+  affected, and consolidating them means restructuring a pipeline that
+  currently works. Left alone deliberately.
+- No workflow-level `concurrency` group, so pushing three times in a row runs
+  three full pipelines. The obvious fix (`cancel-in-progress`) is risky here
+  because `deploy` must never be cancelled mid-flight; a correct version would
+  need `cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}`.
+- `node-version: 20` resolves to the latest 20.x, while `.nvmrc` pins 20.15.0 —
+  two sources of truth. Switching CI to `node-version-file: .nvmrc` would unify
+  them but pins CI to a version Vite already warns about. Worth doing alongside
+  a Node upgrade, not before.
+- Coverage is collected but no threshold is enforced. Setting one before the
+  suite is mature just blocks work.
+
+### The five sentences worth keeping from Stage 7
+
+1. A test suite not wired into CI is a suite that runs when someone remembers
+   to run it.
+2. `needs` is the gate — without it, tests are decoration and the deploy
+   happens regardless.
+3. A job that never ran does not satisfy a `needs`; depending on a conditional
+   job silently freezes deploys forever.
+4. `npm ci` pins CI to the lockfile; `npm install` lets CI test a dependency
+   tree nobody has.
+5. If a test suite needs secrets to run, it will eventually only run in one
+   place — design the setup to supply its own.
+
+---
+
+*Next: Stage 5 — frontend component tests, and Stage 6 — E2E against the real
+built bundle with a real server and a real database.*
