@@ -866,5 +866,510 @@ cheapest moment to retire it.
 
 ---
 
-*Next: Stage 2 — test infrastructure. Vitest on both sides, an in-memory Mongo
-replica set, and fixture factories.*
+---
+
+# Stage 2 — Test infrastructure
+
+**Goal:** make writing a test cheap. No product coverage yet — this stage builds
+the machine that stages 3–6 feed.
+
+**Why this order:** if writing a test is annoying, tests don't get written. Every
+decision here is about removing friction from the *next* thousand tests.
+
+---
+
+## 2.1 — The blocker: a server that could not be tested
+
+`server.js` did two jobs in one file:
+
+```js
+const app = express()          // build a request handler
+// ... 80 lines of configuration ...
+server.listen(port, ...)       // AND bind a TCP port
+```
+
+Those are joined by `import`. Any test that wants the app **also starts a real
+server on :3030** — as a side effect of importing. Consequences:
+
+- Two test files running in parallel fight over the port and one dies
+- The port is left open after the run
+- Socket.io starts, and shutdown handlers register, for a test about pricing
+
+So the first thing this stage did was split them:
+
+| File | Responsibility |
+|---|---|
+| `app.js` — `createApp()` | builds and returns the Express app. **No side effects.** |
+| `server.js` | the *process*: listens, wires sockets, handles SIGTERM |
+
+Now supertest drives `createApp()` directly, in-process, no port at all.
+
+### The transferable lesson
+
+**Separate constructing a thing from starting it.**
+
+This is one of the highest-value patterns in backend work, and its payoff goes
+well beyond tests:
+
+- **Testability** — build the app without running it
+- **Multiple instances** — each test file gets its own, configured differently
+- **Graceful shutdown** — the process layer owns signals; the app doesn't care
+- **Serverless / different hosts** — the same app can be wrapped by a Lambda
+  handler or a different server without touching it
+
+The general shape: **a module's import should not do anything.** Importing should
+define capability, never take action. When `import './server.js'` opens a socket,
+you've made an action out of a declaration, and everything downstream inherits it.
+
+> Watch for this smell: `if (require.main === module)` in Python, or top-level
+> `app.listen()` in Node. Both are the same problem — the fix is to export a
+> factory and let a thin entry point call it.
+
+I also added a parameter for it:
+
+```js
+createApp({ enableRateLimit: false })
+```
+
+The rate limiter keeps its counters in module scope. Left on, test file #1's
+requests count against test file #2's budget, and tests start failing at
+whatever point the suite crosses 300 requests — **failures that depend on how
+many other tests ran**, which is the worst kind to debug. Off by default;
+the limiter's own tests turn it back on deliberately.
+
+---
+
+## 2.2 — Why a real database, not a mock
+
+The single most consequential choice in this stage.
+
+```js
+// order.service.js — the oversell guard
+updateOne(
+  { _id, stockQty: { $gte: qty } },   // the check…
+  { $inc: { stockQty: -qty } }        // …and the write, one atomic operation
+)
+```
+
+The correctness of this code is **not in the JavaScript**. It's in MongoDB's
+guarantee that a single `updateOne` applies atomically. A mocked collection
+returns whatever you programmed it to return — so a test against a mock proves
+your mock works.
+
+> **Mock what you don't own AND don't depend on the behaviour of.** Mock a
+> payment gateway (you don't want real charges). Do not mock your database when
+> the thing under test *is* a database guarantee.
+
+### Why a replica set specifically
+
+`MongoMemoryReplSet`, not `MongoMemoryServer`. **MongoDB only supports
+multi-document transactions on a replica set** — a standalone `mongod` rejects
+`session.withTransaction()` outright.
+
+Stage 10 replaces checkout's compensating rollback with a real transaction, and
+Atlas (the deploy target) is a replica set. Starting on one now means:
+
+1. Tests written between here and stage 10 keep working
+2. The test environment matches production
+3. If it were ever going to fail, it fails now, not in stage 10
+
+Costs about a second more to boot. I asserted the capability directly rather than
+trusting it:
+
+```
+✓ supports transactions, which requires a replica set
+✓ rolls a transaction back on throw
+```
+
+That second one matters — a transaction that commits but doesn't *roll back* is
+worse than none, and it would silently invalidate every conclusion stage 10 draws.
+
+### Know this cold — environment parity
+
+**Your test environment should differ from production in as few dimensions as
+possible.** Every difference is somewhere a bug can hide:
+
+| Dimension | Test | Production | Same? |
+|---|---|---|---|
+| Database engine | real mongod | real mongod | ✅ |
+| Replica set | yes (1 node) | yes (Atlas) | ✅ |
+| Transactions | supported | supported | ✅ |
+| Data | ephemeral | persistent | ❌ *deliberate* |
+| Network latency | ~0 | real | ❌ *accepted* |
+
+The last two are conscious trade-offs, not oversights. That's the difference
+between a considered environment and a convenient one.
+
+---
+
+## 2.3 — Isolation: the decision that keeps a suite honest
+
+Vitest runs test files in **parallel workers**. So "clear the database between
+tests" is not as simple as it sounds — two files clearing the same database
+delete each other's data mid-test.
+
+Three options, and the reasoning:
+
+| Strategy | Isolation | Cost | Verdict |
+|---|---|---|---|
+| One mongod per file | perfect | ~2s **per file** | too slow at scale |
+| One mongod, **one database per file** | perfect | one boot, ~0 per file | ✅ **chosen** |
+| One mongod, one shared database | broken under parallelism | fastest | unsafe |
+
+Mongo creates databases lazily, so a database name costs nothing until written
+to. Each test file generates one:
+
+```js
+const dbName = `test_${randomUUID().replace(/-/g, '')}`
+```
+
+Then within a file, `afterEach` clears documents.
+
+### The subtle bit — why delete documents instead of dropping the database
+
+```js
+// setup.js
+const collections = await db.collections()
+await Promise.all(collections.map(c => c.deleteMany({})))
+```
+
+Dropping the database would also drop **indexes** — including the unique index on
+`user.username` that `user.service.js` creates on first insert. A later test
+could then insert a duplicate username and pass, while production (where the
+index exists) rejects it.
+
+**That's a test suite that lies.** Deleting documents keeps the schema and clears
+the state, so the constraints tests run against are the constraints production
+has.
+
+> **The principle:** reset *data*, preserve *structure*. Whenever you write
+> cleanup code, ask what else it destroys.
+
+### The ordering trap this depends on
+
+`config/dev.js` reads `process.env.MONGO_URL` **when the module is first
+imported**, not when it's used. So the environment has to be right before
+anything imports config. That's why:
+
+- `setup.js` sets the env vars (setup files run **before** the test module loads)
+- `vitest.config.js` sets `isolate: true` (fresh module registry per file — else
+  only the *first* file's database name would ever apply)
+
+I didn't trust this reasoning; I asserted it:
+
+```js
+expect(db.databaseName).toMatch(/^test_[0-9a-f]{32}$/)
+expect(process.env.MONGO_URL).not.toContain('27017')
+```
+
+Worth knowing *why* that second line matters: `config/env.js` calls
+`dotenv.config()`, which loads the real `backend/.env` — containing your actual
+`MONGO_URL`. dotenv does **not** override variables already in `process.env`, so
+the test values win. But that's a property of dotenv's defaults, not something
+obvious, and one `override: true` would silently point the whole suite at your
+real database. The assertion makes that catastrophe a failing test.
+
+---
+
+## 2.4 — Factories, not fixture files
+
+```js
+makeProduct({ stockQty: 1 })   // this test is about the last unit
+```
+
+Everything else — sku, price, category, images — is filled with a valid default.
+
+**Why not a shared `products.json` every test reads?** Two failure modes:
+
+1. **Coupling.** Tests start depending on incidental details — "the third product
+   is out of stock." Changing the file to suit one test breaks three others, and
+   nobody can safely edit it.
+2. **Unreadability.** To know what a test is testing you must open a different
+   file and count rows. The premise of the test is invisible at the test.
+
+A factory inverts both: the test states *only* what matters to it, and nothing
+another test does can affect it.
+
+### The rules that make factories work
+
+- **Defaults must always be valid.** A test wanting an invalid object asks
+  explicitly — which makes the invalidity visible at the call site.
+- **Overrides merge last**, so any field can be replaced without a new factory.
+- **Unique values by default** (sequence counter), so 50 products don't collide
+  on a unique index.
+- **Mirror real shapes.** `makeCartItem` has no price field, because
+  `cart.service.js` never stores one. A factory that invented a convenient shape
+  would let tests pass against data the app never produces.
+
+### The bug this stage caught in its own fixtures
+
+I hardcoded a bcrypt hash for the test password — hashing in a factory costs
+~100ms per user, which across a suite is minutes. Then I verified it:
+
+```
+claimed hash verifies: false
+```
+
+**The hash I'd written did not match the password.** Every login test would have
+failed, with nothing pointing at the fixture — you'd be debugging auth code that
+was fine.
+
+So it's now pinned by a test:
+
+```js
+it('TEST_PASSWORD_HASH really is the hash of TEST_PASSWORD', async () => {
+  expect(await bcrypt.compare(TEST_PASSWORD, TEST_PASSWORD_HASH)).toBe(true)
+})
+```
+
+> **The lesson:** test infrastructure is production code for your tests. If other
+> tests depend on it, it gets tested. A broken harness produces false results
+> across the entire suite — passing while the app is broken, or failing while
+> it's fine. Both are worse than no tests.
+
+---
+
+## 2.5 — Auth without logging in
+
+```js
+await request(app).get('/api/order').set('Cookie', cookieFor(user))
+```
+
+`cookieFor` mints a session cookie directly. Two reasons.
+
+**Blast radius.** If every authenticated test logged in first, breaking login
+turns 400 tests red. You want **one** red test — the login test — pointing
+straight at the fault. A test's *arrange* step should not exercise features it
+isn't testing, or one bug produces a wall of failures that hides its own cause.
+
+**Cost.** Login runs `bcrypt.compare`, deliberately slow (~100ms). Paying that in
+the arrange step of every test is minutes of wall clock.
+
+### The important detail
+
+`cookieFor` calls the app's **own** `authService.getLoginToken()` rather than
+hand-rolling the token format. If tests built the token themselves:
+
+- Changing how sessions are encoded breaks every test instead of one module
+- Worse — the tests could keep passing against a format the app no longer issues
+
+Going through the real function means tests follow the implementation
+automatically. Stage 1 adds an expiry to that payload, and **nothing in the test
+helpers changes.**
+
+I also built the adversarial variants, because they're what stages 3–4 need:
+
+```js
+invalidCookie()             // garbage token → must 401, not crash
+cookieWithWrongSecret(user) // valid shape, wrong key, isAdmin: true
+```
+
+That last one is the real test of whether the secret is doing any work — an
+attacker who knows the payload shape but not the key. It's the exact attack
+stage 1's fail-fast `SECRET` check exists to prevent.
+
+---
+
+## 2.6 — Frontend: why MSW instead of mocking axios
+
+```js
+// ❌ mocking the client — tests the implementation
+vi.mock('axios')
+expect(axios.get).toHaveBeenCalledWith('/api/product', ...)
+
+// ✅ mocking the network — tests the behaviour
+http.get('*/api/product', () => HttpResponse.json(products))
+```
+
+Mocking axios asserts *how* the code fetches. Swap axios for `fetch` — a change
+that alters nothing a user experiences — and every test breaks. That's the
+implementation-vs-contract lesson from stage 0.5, in a new costume.
+
+MSW intercepts at the **network layer**. The app makes a real request through its
+real client; MSW answers it. The test says *"when the server returns this, the UI
+shows that"* — the actual contract, and it survives changing HTTP libraries.
+
+It also makes the interesting cases one-liners:
+
+```js
+server.use(http.get('*/api/product', () => HttpResponse.error()))          // network down
+server.use(http.get('*/api/product', () => HttpResponse.json([], { status: 500 })))
+```
+
+Error and empty states are where bugs live and coverage is thinnest — anything
+that makes them *easy* to test is worth a lot.
+
+### Two settings worth understanding
+
+**`onUnhandledRequest: 'error'`** — a request with no handler fails the test.
+Without this, an unmocked call silently hits the real network: slow, flaky, and
+dependent on a server being up. Better to fail loudly and add a handler.
+
+**Handlers mirror real API shapes.** Every field in `handlers.js` is one the
+Express API actually returns. A handler returning a convenient made-up shape is
+the most common way component tests give false confidence — the component works
+perfectly against data the server never sends.
+
+### The jsdom stubs, and being honest about them
+
+jsdom has no layout engine, so `ResizeObserver`, `IntersectionObserver` and
+`matchMedia` don't exist. Without stubs, any component using them throws "not a
+function" — a failure that names the missing global instead of the actual bug.
+
+But be clear about what this costs: **stubbed `IntersectionObserver` means jsdom
+cannot tell you whether something is actually visible.** Anything genuinely about
+layout, visibility or paint belongs in Playwright, where a real browser engine
+answers it. Knowing which questions your fast tests *cannot* answer is as
+important as knowing which they can.
+
+---
+
+## 2.7 — Three real problems hit while building this
+
+Worth recording because they're the texture of the job, not exceptions to it.
+
+### Vitest 4 wouldn't install
+
+```
+Error: Cannot find native binding
+Cannot find module '@rolldown/binding-wasm32-wasi'
+```
+
+Vitest 4 ships **Rolldown**, a Rust-based bundler with platform-specific native
+binaries, and hit a known npm optional-dependency bug on Windows.
+
+**Fixed by pinning to Vitest 3** — mature, esbuild-based, no native binding.
+
+> **The lesson:** newest is not a feature. A test runner's job is to be boring
+> and reliable. Bleeding-edge tooling costs you debugging time on *your tools*
+> instead of your product — and native binaries are the most fragile thing you
+> can put in a dependency tree, because they're the one part that can't be
+> "just JavaScript" everywhere.
+
+### The coverage provider fought the runner
+
+```
+peer vitest@"4.1.10" from @vitest/coverage-v8@4.1.10
+Found: vitest@3.2.7
+```
+
+`@vitest/coverage-v8` floated to v4 while the runner was pinned to v3.
+
+> **The lesson:** **companion packages must be version-locked together.** Plugins
+> that reach into a tool's internals (`@vitest/*`, `@babel/*`, ESLint plugins,
+> Playwright's browsers) are not independent — a matching major is usually a hard
+> requirement. When you pin one, pin the family.
+
+### jsdom broke on your Node version
+
+```
+Error: require() of ES Module @exodus/bytes/encoding-lite.js
+```
+
+jsdom 30 depends on a package that `require()`s ESM — supported only from **Node
+20.19**. You're on **20.15**, which Vitest had already warned about:
+`Using NodeJS below 20.19.0`.
+
+Fixed by pinning `jsdom@^26`.
+
+> ⚠️ **Worth acting on:** Node 20.15 is aging within the 20.x line, and the
+> ecosystem is increasingly assuming `require(esm)`. This will keep happening.
+> Recommendation: move `.nvmrc` to the latest Node 20 LTS, or to 22 LTS, when
+> stage 8 containerizes — Docker makes the version an explicit, tested choice
+> rather than whatever is installed. I left the pin at 20.15.0 for now so your
+> local environment keeps working.
+
+**This is version pinning showing both faces in one stage:** it protects you from
+drift, and it locks you to a floor that the ecosystem eventually climbs past.
+Pinning is not "set and forget" — it's a commitment to periodic, deliberate
+upgrades.
+
+---
+
+## 2.8 — Two test runners, one repo
+
+Adding Vitest immediately broke Playwright:
+
+```
+at getWorkerState (vitest/dist/chunks/utils.js:9:9)
+```
+
+Playwright's default `testMatch` includes `**/*.test.js(x)` — **Vitest's
+convention**. So Playwright collected `tests/unit/harness.test.jsx`, imported it,
+and died on Vitest internals.
+
+Fixed with an explicit convention:
+
+```js
+testMatch: '**/*.spec.js'
+```
+
+| Pattern | Runner | Environment | Location |
+|---|---|---|---|
+| `*.spec.js` | Playwright | real browser | `tests/e2e/` |
+| `*.test.js(x)` | Vitest | node / jsdom | `tests/unit/`, `backend/tests/` |
+
+### The transferable lesson
+
+**When two tools share a workspace, make their boundaries explicit rather than
+relying on defaults.** Defaults are chosen assuming the tool is alone. The moment
+two overlap, silent collection of the wrong files produces errors that point at
+one tool's internals while the actual cause is the other tool's config — which is
+why this took longer to diagnose than to fix.
+
+Same shape of problem as the dead workflow in stage 0.2: **a file being picked up
+from the wrong place**, failing in a way that doesn't mention location at all.
+
+---
+
+# Stage 2 — summary
+
+| Added | Purpose |
+|---|---|
+| `backend/app.js` — `createApp()` | app buildable without binding a port |
+| `backend/tests/global-setup.js` | one in-memory replica set for the run |
+| `backend/tests/setup.js` | per-file database, env ordering, data reset |
+| `backend/tests/helpers/factories.js` | valid-by-default fixtures with overrides |
+| `backend/tests/helpers/db.js` | seed/read helpers that bypass the API |
+| `backend/tests/helpers/auth.js` | session cookies, incl. adversarial ones |
+| `frontend-react/tests/unit/setup.js` | RTL cleanup, MSW lifecycle, jsdom stubs |
+| `frontend-react/tests/unit/msw/*` | network mocking at the right layer |
+| `vitest.config.js` ×2, `test` scripts ×2 | the runners |
+
+**Modified:** `server.js` (now just the process), `db.service.js` (+`getDb`,
+`getClient`), `logger.service.js` (inert under test), `playwright.config.js`
+(`testMatch`).
+
+### Results
+
+| Suite | Tests | Time |
+|---|---|---|
+| Backend harness | **15 passed** | 645ms (+~5s mongod boot) |
+| Frontend harness | **10 passed** | 239ms |
+| Playwright e2e (chromium) | **18 passed** | 18.6s |
+
+Server verified booting independently after the refactor.
+
+### What to verify on your end
+
+1. `cd backend && npm test` → 15 passing
+2. `cd frontend-react && npm test` → 10 passing
+3. `cd backend && npm run dev` → still starts and serves normally
+4. `npm run test:watch` in either — this is the loop stages 3–6 live in
+
+### The five sentences worth keeping from Stage 2
+
+1. Importing a module should define capability, never take action — separate
+   building from starting.
+2. Never mock the thing whose guarantee you're testing; a mocked database tests
+   your mock.
+3. Reset data, preserve structure — cleanup that drops indexes makes the suite
+   lie about constraints.
+4. Test infrastructure is production code: if tests depend on it, test it.
+5. Companion packages version-lock together, and pinning is a commitment to
+   upgrade deliberately, not to never upgrade.
+
+---
+
+*Next: Stage 3 — the first real tests. Pricing boundaries, validation schemas,
+and regex safety, using the factories built here.*

@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb'
 import { config } from '../config/index.js'
 import { logger } from './logger.service.js'
 
-export const dbService = { getCollection, ping, close }
+export const dbService = { getCollection, getDb, getClient, ping, close }
 
 // The in-flight *promise* is cached, not the resolved connection. Caching only
 // the resolved value leaves a window in which several concurrent first
@@ -19,6 +19,28 @@ async function getCollection(collectionName) {
     logger.error('Failed to get Mongo collection', err)
     throw err
   }
+}
+
+/**
+ * The database handle itself.
+ *
+ * Needed for work that is not scoped to a single collection — listing
+ * collections to clear them between tests, and the transactions stage 10 will
+ * add, which need a session spanning several collections.
+ */
+async function getDb() {
+  return _connect()
+}
+
+/**
+ * The underlying MongoClient, which is what owns sessions.
+ *
+ * Exposed for `client.startSession()`. Returns null before the first
+ * connection, so callers should reach the DB at least once first.
+ */
+async function getClient() {
+  await _connect()
+  return client
 }
 
 async function _connect() {

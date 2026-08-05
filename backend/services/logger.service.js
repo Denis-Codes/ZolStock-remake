@@ -10,9 +10,18 @@ export const logger = {
 
 const logsDir = './logs'
 
-if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
+// Under test the logger is inert. Two reasons, both practical rather than
+// cosmetic: the suite deliberately exercises failure paths, so every expected
+// 404 and rejected login would print a stack trace and bury the actual test
+// results; and appending to logs/backend.log from parallel test workers writes
+// junk into a real file that is meant to reflect the running server.
+const isTest = process.env.NODE_ENV === 'test'
+
+if (!isTest && !fs.existsSync(logsDir)) fs.mkdirSync(logsDir)
 
 function doLog(level, ...args) {
+	if (isTest) return
+
 	const store = asyncLocalStorage.getStore()
 	const userId = store?.loggedinUser?._id
 

@@ -14,6 +14,20 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+
+  /* Two test runners share this repo, so they need file conventions that do
+     not overlap. Playwright's default testMatch also picks up `*.test.js(x)`,
+     which is Vitest's convention — so without this it collects
+     tests/unit/*.test.jsx and those files fail on import with an opaque Vitest
+     internal error rather than anything meaningful.
+
+       *.spec.js   -> Playwright (browser, tests/e2e)
+       *.test.js   -> Vitest     (node/jsdom, tests/unit)
+
+     tests/pages and tests/utils hold page objects and helpers rather than
+     tests, so neither runner should collect them — the naming rule covers
+     that too. */
+  testMatch: '**/*.spec.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
