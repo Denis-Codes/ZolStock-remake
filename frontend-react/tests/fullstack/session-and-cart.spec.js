@@ -90,12 +90,11 @@ test.describe('a signed-in shopper', () => {
      * local cart, and would prove nothing about the feature it claims to
      * cover.
      *
-     * sessionStorage is deliberately left alone, and that distinction is not
-     * cosmetic: it holds the app's record of who is signed in (see the test
-     * below). Clearing it would make the app believe it was a guest and read
-     * the local cart, so the test would fail for a reason unrelated to where
-     * the cart lives — measuring the wrong thing and reporting it as the
-     * feature being broken.
+     * Only localStorage is cleared, because only localStorage holds a cart.
+     * sessionStorage caches who is signed in for the first paint, and since
+     * the BUG-005 fix that cache is no longer load-bearing — the app asks the
+     * server on start regardless, so clearing it here would change nothing.
+     * The test below is the one that proves that.
      */
     await page.evaluate(() => localStorage.clear())
     await page.reload()
@@ -104,36 +103,33 @@ test.describe('a signed-in shopper', () => {
   })
 
   /**
-   * 🐛 KNOWN BUG (BUG-005): the session does not follow you into a new tab.
+   * The session follows you into a new tab. Regression test for BUG-005.
    *
-   * The server-side session is an httpOnly cookie, and cookies are shared
-   * across every tab of a browser profile. But the CLIENT's record of who is
-   * signed in lives in sessionStorage:
+   * The server-side session is an httpOnly cookie, shared across every tab of
+   * a browser profile. The CLIENT's record of who is signed in used to live in
+   * sessionStorage, which is scoped PER TAB — so "open link in new tab" (middle
+   * click, ctrl+click, a link from WhatsApp) produced a tab where the server
+   * still knew exactly who you were and the app had decided you were a guest.
    *
-   *     function getLoggedinUser() {
-   *       return JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
-   *     }
-   *
-   * sessionStorage is scoped per tab. So "open link in new tab" — middle
-   * click, ctrl+click, a link from WhatsApp — produces a tab where the server
-   * still knows exactly who you are and the app has decided you are a guest.
-   *
-   * The visible symptom is the cart: cart.actions.js checks isLoggedIn() to
+   * The visible symptom was the cart: cart.actions.js checks isLoggedIn() to
    * pick between the server cart and the localStorage one, so the new tab
-   * shows an empty guest cart while the real cart sits on the server. The
-   * shopper sees their cart vanish, and it comes back if they return to the
-   * original tab.
+   * showed an empty guest cart while the real cart sat on the server. The
+   * shopper watched their cart vanish, and it came back if they returned to
+   * the original tab.
    *
-   * The test asserts the CORRECT behaviour — the cart should be there — and is
-   * marked expected-to-fail. When the client derives its login state from the
-   * server instead of from sessionStorage, this passes and Playwright reports
-   * "expected to fail but passed", which is the signal to delete the marker.
+   * The fix makes the server the source of truth: `restoreSession()` asks
+   * `GET /api/auth/me` at app start and is awaited before the cart and
+   * wishlist load, since both branch on who is signed in. sessionStorage is
+   * kept only as a first-paint cache.
+   *
+   * This test is the guard on that. It fails again the moment login state is
+   * read from per-tab storage without asking the server first — which is why
+   * it deliberately does NOT clear sessionStorage: a new tab starting empty is
+   * precisely the condition being tested.
    */
-  test('🐛 BUG-005: keeps the shopper signed in when a link opens in a new tab @regression', async ({
+  test('keeps the shopper signed in when a link opens in a new tab @regression', async ({
     page,
   }) => {
-    test.fail(true, 'BUG-005: login state lives in per-tab sessionStorage, not the shared cookie')
-
     const auth = new AuthPage(page)
     const pdp = new ProductDetailsPage(page)
 

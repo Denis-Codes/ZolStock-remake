@@ -8,6 +8,39 @@ import { showErrorMsg } from '../../services/event-bus.service'
 import { LOADING_DONE, LOADING_START } from '../reducers/system.reducer'
 import { REMOVE_USER, SET_USER, SET_USERS, SET_WATCHED_USER } from '../reducers/user.reducer'
 
+/**
+ * Resolves who the shopper is from the SERVER, at app start. Was BUG-005.
+ *
+ * The store used to seed itself from `sessionStorage` (see user.reducer.js),
+ * which is per-tab. Open a link in a new tab and the app decided you were a
+ * guest, showed an empty cart, and the session cookie was valid the whole
+ * time. Switching back to the first tab brought everything back, which made it
+ * read like data loss.
+ *
+ * This runs before loadCart/loadWishlist in RootCmp for a reason: both branch
+ * on `isLoggedIn()`, and if they run first they read the empty per-tab value
+ * and fetch the guest cart from localStorage instead of the real one from the
+ * server.
+ *
+ * Returns the user (or null) rather than only dispatching, so the caller can
+ * await it and sequence the loads.
+ *
+ * Never throws. A guest gets a 401 from `auth/me`, which is the ordinary
+ * answer and not a failure — the app must keep starting either way.
+ */
+export async function restoreSession() {
+    try {
+        const user = await userService.fetchLoggedinUser()
+        store.dispatch({ type: SET_USER, user: user || null })
+        if (user) socketService.login(user._id)
+        return user
+    } catch (err) {
+        console.log('Cannot restore session', err)
+        store.dispatch({ type: SET_USER, user: null })
+        return null
+    }
+}
+
 export async function loadUsers() {
     try {
         store.dispatch({ type: LOADING_START })

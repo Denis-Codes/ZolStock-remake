@@ -82,66 +82,86 @@ describe('every failure is JSON — the cases that already hold', () => {
   })
 })
 
-describe('🐛 BUG-008: authentication failures answer plain text', () => {
+describe('authentication and authorization failures — BUG-008, now fixed', () => {
   /**
-   * requireAuth is the one place that breaks the rule:
+   * requireAuth used to be the one place that broke the rule:
    *
    *     if (!loggedinUser) return res.status(401).send('Not Authenticated')
    *     if (!loggedinUser.isAdmin) res.status(403).end('Not Authorized')
    *
-   * `res.send(string)` sets Content-Type: text/html. So the single most
-   * COMMON error in the entire API — a session that expired — is the one shape
-   * the client cannot parse.
+   * `res.send(string)` sets Content-Type: text/html, and `res.end(string)`
+   * negotiates no content type at all — so the single most COMMON error in the
+   * entire API, a session that expired, was the one shape the client could not
+   * parse. It now answers `{ err }` like everything else.
    *
-   * These tests assert the CURRENT behaviour rather than the desired one, so
-   * the suite stays green and the gap is a written fact. They are named for
-   * the bug and will go red the moment it is fixed, which is the intended
-   * signal.
-   *
-   * The fix is two lines and is in bugs/BUG-008. It is not applied here
-   * because this stage adds tests; it does not change behaviour.
+   * These tests were written against the old behaviour and are kept rather
+   * than deleted: the route table is the valuable part, and it is what stops a
+   * future route quietly reintroducing a plain-text refusal. The assertions
+   * were inverted when the fix landed.
    */
   it.each(PROTECTED_ROUTES)(
-    '%s %s answers 401 as text/html, not JSON',
+    '%s %s answers 401 as JSON the client can read',
     async (method, path) => {
       const res = await request(app)[method](path)
 
       expect(res.status).toBe(401)
-      // The bug, stated as an assertion.
-      expect(res.headers['content-type']).not.toMatch(/application\/json/)
-      expect(res.text).toBe('Not Authenticated')
-      // And the field every other error in the API provides is absent.
-      expect(res.body.err).toBeUndefined()
+      expect(res.headers['content-type']).toMatch(/application\/json/)
+      // `err` is the field the frontend renders. A JSON body of some other
+      // shape would satisfy the content type and still tell the user nothing.
+      expect(res.body.err).toBe('Not authenticated')
     }
   )
 
-  it('403 answers with an empty body, so the client cannot say why', async () => {
+  it('403 says why, instead of answering with an empty body', async () => {
     /**
-     * Worse than the 401 in one specific way: `res.status(403).end('Not
-     * Authorized')` — `end()` rather than `send()` — so there is not even a
-     * string to fall back on in some clients.
-     *
-     * A user who is signed in and lacks permission gets a blank refusal, and
-     * the UI has nothing to distinguish it from a network failure.
+     * The worse half of the old behaviour: `res.status(403).end('Not
+     * Authorized')` sent nothing a client could act on, so a signed-in user
+     * without permission got a refusal indistinguishable from a network
+     * failure. "You don't have access" and "the server is down" should not
+     * look the same.
      */
     const [user] = await seedUsers(makeUser())
 
     const res = await request(app).get('/api/user').set('Cookie', cookieFor(user))
 
     expect(res.status).toBe(403)
-    expect(res.body.err).toBeUndefined()
+    expect(res.headers['content-type']).toMatch(/application\/json/)
+    expect(res.body.err).toBe('Not authorized')
+  })
+
+  it('stops at 403 rather than falling through to the handler', async () => {
+    /**
+     * A latent problem alongside the content type, and the reason the fix was
+     * not purely cosmetic: the old code called `res.status(403).end()` and then
+     * `return`ed on the next line, but nothing enforced that — the refusal and
+     * the decision to stop were two separate statements. `return res.json(...)`
+     * makes them one.
+     *
+     * Asserted through the observable consequence: a second body would trip
+     * Express's "Cannot set headers after they are sent", so a clean single
+     * JSON response is the evidence the chain ended here.
+     */
+    const [user] = await seedUsers(makeUser())
+
+    const res = await request(app).get('/api/user').set('Cookie', cookieFor(user))
+
+    expect(res.status).toBe(403)
+    expect(Object.keys(res.body)).toEqual(['err'])
   })
 
   /**
    * The consequence, made concrete.
    *
-   * This is what the frontend's http.service actually does with the response,
-   * and it is the failure a developer would see in the console: not "not
-   * authenticated" but a JSON parse error naming the letter N.
+   * This is what the frontend's http.service actually does with the response.
+   * Before the fix it produced `SyntaxError: Unexpected token 'N', "Not
+   * Authenticated" is not valid JSON` — a developer debugging a failed request
+   * was shown a parse error naming a letter rather than "your session
+   * expired".
    */
-  it('cannot be parsed as JSON by a client that expects it', () => {
-    const body = 'Not Authenticated'
+  it('parses as JSON in a client that expects it', async () => {
+    const res = await request(app).get('/api/cart')
 
-    expect(() => JSON.parse(body)).toThrow(SyntaxError)
+    expect(() => JSON.parse(res.text)).not.toThrow()
+    expect(JSON.parse(res.text)).toEqual({ err: 'Not authenticated' })
   })
 })

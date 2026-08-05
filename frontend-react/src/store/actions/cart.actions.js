@@ -186,13 +186,22 @@ export function mergeGuestCart() {
 export const FREE_SHIPPING_THRESHOLD = 300
 export const SHIPPING_FLAT_FEE = 29
 
+/**
+ * Every figure is settled to agorot before it leaves this function, the same
+ * way cart.service.js settles the server's. Money in binary floating point does
+ * not add up exactly — 24.90 − 14.90 is 9.999999999999998 — and an unrounded
+ * value leaks past the price formatter into everything else that reads these:
+ * `savings > 0` decides whether the savings row renders at all, and a residue
+ * of 1e-15 from lines that are not on sale is enough to make it true.
+ */
+const toAgorot = value => Math.round(value * 100) / 100
+
 // Get cart totals (can be used in selectors)
 export function getCartTotals(cart) {
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const savings = cart.reduce(
-    (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
-    0
+  const subtotal = toAgorot(cart.reduce((sum, item) => sum + item.price * item.quantity, 0))
+  const savings = toAgorot(
+    cart.reduce((sum, item) => sum + (item.originalPrice - item.price) * item.quantity, 0)
   )
 
   // An empty cart owes nothing, including delivery — otherwise the empty
@@ -206,7 +215,9 @@ export function getCartTotals(cart) {
     savings,
     shipping,
     // Zero for an empty cart: there is nothing to "add more to".
-    amountToFreeShipping: itemCount === 0 ? 0 : Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal),
-    total: subtotal + shipping,
+    amountToFreeShipping: itemCount === 0
+      ? 0
+      : toAgorot(Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal)),
+    total: toAgorot(subtotal + shipping),
   }
 }

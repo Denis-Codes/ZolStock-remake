@@ -10,17 +10,29 @@
 
 export const CURRENCY_SIGN = '₪'
 
-/** Splits an amount into the parts the price tag renders separately. */
+/**
+ * Splits an amount into the parts the price tag renders separately.
+ *
+ * Rounded to agorot BEFORE the split, and both halves are then read off that
+ * one integer. The previous version split first — `Math.floor` for the shekels,
+ * `Math.round` for the remainder — which reads the two halves off two different
+ * numbers, and they disagree whenever the remainder rounds up to a full shekel.
+ *
+ * That is not a corner case here. 24.90 − 14.90 is 9.999999999999998 in binary
+ * floating point, so the cart's savings line floored to 9, rounded the
+ * remainder to 100 agorot, and printed "₪9.100": a carry with nowhere to go.
+ * Every catalogue price ends in .90, so a subtraction of two of them is the
+ * ordinary case, not the unlucky one.
+ */
 export function moneyParts(amount) {
   const value = Number(amount) || 0
-  const whole = Math.floor(Math.abs(value))
-  const agorot = Math.round((Math.abs(value) - whole) * 100)
+  const totalAgorot = Math.round(Math.abs(value) * 100)
 
   return {
     sign: value < 0 ? '−' : '',
-    whole: String(whole),
+    whole: String(Math.floor(totalAgorot / 100)),
     // Omitted entirely when they are 00, per DESIGN.md's price-tag rule.
-    agorot: agorot === 0 ? null : String(agorot).padStart(2, '0'),
+    agorot: totalAgorot % 100 === 0 ? null : String(totalAgorot % 100).padStart(2, '0'),
   }
 }
 

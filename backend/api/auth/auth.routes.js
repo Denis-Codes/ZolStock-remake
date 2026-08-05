@@ -1,9 +1,10 @@
 import express from 'express'
 
-import { login, signup, logout } from './auth.controller.js'
+import { login, signup, logout, getLoggedinUser } from './auth.controller.js'
 import { loginSchema, signupSchema } from './auth.schema.js'
 import { validate } from '../../middlewares/validate.middleware.js'
 import { authLimiter } from '../../middlewares/rateLimit.middleware.js'
+import { requireAuth } from '../../middlewares/requireAuth.middleware.js'
 
 const router = express.Router()
 
@@ -14,5 +15,11 @@ const router = express.Router()
 router.post('/login', authLimiter, validate(loginSchema), login)
 router.post('/signup', authLimiter, validate(signupSchema), signup)
 router.post('/logout', logout)
+
+// Deliberately NOT behind authLimiter: the client calls this on every app
+// start, and it is a cookie read rather than a credential guess. Rate-limiting
+// it would throttle ordinary navigation while blocking no attack — there is
+// nothing here to brute-force.
+router.get('/me', requireAuth, getLoggedinUser)
 
 export const authRoutes = router

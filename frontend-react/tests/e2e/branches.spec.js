@@ -20,12 +20,16 @@ test.describe('Branches Page - Smoke Tests', () => {
   });
 
   test('the branch map is displayed @smoke', async () => {
-    // BUG-002: MapsCmp has no fallback if the Google Maps script is slow
-    // or fails to load — the page can hang indefinitely instead of
-    // degrading gracefully. Bounding this to 60s so a slow/failed load
-    // fails fast and clearly, instead of consuming the whole CI job's
-    // time budget. See bugs/BUG-002-maps-no-load-fallback.md.
-    await expect(branchesPage.map).toBeVisible({ timeout: 60_000 });
+    // Default timeout, deliberately. This carried `{ timeout: 60_000 }` while
+    // BUG-002 was open: the map was Google Maps, fetched at runtime, and a
+    // slow or blocked script could hang the page forever — so the generous
+    // ceiling stopped one stuck page from eating the whole CI job.
+    //
+    // Leaflet is bundled with the app, so the map renders on first paint and
+    // there is no external script to wait on. A map that takes 60 seconds now
+    // is a regression, not a slow network, and should fail fast and say so.
+    // See bugs/BUG-002-maps-no-load-fallback.md.
+    await expect(branchesPage.map).toBeVisible();
   });
 
   test('the branch accordion is displayed @smoke', async () => {

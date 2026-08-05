@@ -1,9 +1,10 @@
 # BUG-007 — Posting or deleting a review returns 400 after the write has already succeeded
 
-**Status:** Open, not fixed
+**Status:** FIXED
 **Severity:** Medium — latent. Masked in production today; when it fires, retrying duplicates the write
 **Found by:** Backend API tests, while adding coverage for the review routes
-**Pinned by:** `backend/tests/api/review.api.test.js` → `🐛 BUG-007: answers 400 when only the broadcast fails, after the write succeeded`
+**Fixed in:** `backend/api/review/review.controller.js` (the boundary) and `backend/services/socket.service.js` (the class of failure)
+**Regression tests:** `backend/tests/api/review.api.test.js` → `answers 200 when only the broadcast fails, because the write succeeded`, plus `backend/tests/unit/socket-service.test.js`
 
 ---
 
@@ -160,10 +161,64 @@ Those two now have positive tests instead. The lesson is the same one this bug
 teaches from the other direction: conclusions drawn from one layer are
 provisional until something runs.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it with a test, write it down,
-do not fix. The pinned test asserts today's contradictory behaviour — 400 with
-the review created — and is named for the bug, so it cannot be mistaken for
-approval. When the fix lands it should be rewritten to assert 200/201 and a
-created review, not deleted.
+Fixed in two places, because the defect had two sizes.
+
+**The boundary, in `review.controller.js`.** Both handlers now respond first
+and treat everything after the response as delivery:
+
+```js
+res.send(review)
+} catch (err) { ... return res.status(400)... }
+
+await notify('review-added', async () => {
+  await socketService.broadcast({ ... })
+  ...
+})
+```
+
+`notify()` is a two-line helper shared by both handlers — it awaits the work
+and logs a failure. Awaiting matters: `broadcast` and `emitToUser` are async,
+and an unawaited rejection escapes the surrounding try/catch entirely and
+becomes an unhandled rejection, which is the failure mode that made the
+original test suite exit 1 while every test passed.
+
+`deleteReview` got the same treatment, and both catch blocks gained a `return`
+so the notification cannot run after a failed write.
+
+**The class of failure, in `socket.service.js`.** `emitTo`, `emitToUser` and
+`broadcast` now check `gIo` and no-op with a log line naming the skipped event.
+A missing socket layer is not an error condition — nobody is connected, so
+there is nobody to notify. The guard runs before `userId.toString()`, or a
+caller passing a null userId would simply trade one TypeError for another.
+
+This half is the more valuable one: it fixes every current and future caller,
+not just the two routes that were noticed. `backend/tests/unit/socket-service.test.js`
+covers all five emit paths, because a guard added to two of three functions
+looks fixed and fails on the third.
+
+### Tests
+
+The pinned test was rewritten rather than deleted, as planned — the induced
+failure is the valuable part, since a broadcast can still fail for reasons
+nobody controls and the contract is that the response does not change when it
+does. Two rows were added beside it:
+
+- the same boundary on `DELETE`, so fixing one handler is not assumed to fix
+  the other;
+- **`still answers 400 when the write itself fails`** — the assertion that
+  keeps the fix honest. A handler that answered 200 unconditionally would pass
+  everything else in the file and be worse than the bug it replaced.
+
+### Not done, and still worth deciding
+
+**`201 Created` instead of `200`.** Left alone deliberately: the existing tests
+and the frontend both expect 200, and changing a status code is a separate,
+API-visible decision that does not belong in a bug fix. `checkout` still
+returns 201 for the same kind of operation, so the API still contradicts
+itself — the same note is open on BUG-004.
+
+The ⚠️ items in the test file — score farming, self-review — are untouched.
+They are not this defect, and they are recorded there as the specification for
+hardening this route group.

@@ -174,7 +174,17 @@ async function addItem(userId, { productId, quantity = 1, variant = null }) {
     const product = await products.findOne(byIdOrSku(productId))
     if (!product) throw new NotFoundError(`Product ${productId} not found`)
 
-    const variantKey = _variantKey(productId, variant)
+    /**
+     * Key off the RESOLVED document, not the client's request (was BUG-003).
+     *
+     * `byIdOrSku` deliberately accepts two names for one product — the
+     * ObjectId hex string and the legacy sku — so `507f…011` and `p1001` find
+     * the same document. Keying off the raw input made those two names two
+     * different lines, and the same product appeared twice in the cart.
+     *
+     * `product._id` is one product, one name, always.
+     */
+    const variantKey = _variantKey(product._id, variant)
     const collection = await _collection()
     const cart = await _getRaw(userId)
 
@@ -200,7 +210,11 @@ async function addItem(userId, { productId, quantity = 1, variant = null }) {
           $push: {
             items: {
               itemId: makeId(8),
-              productId: String(productId),
+              // Stored resolved too, so the line and its key agree. Reads go
+              // through byIdOrSku either way, so both forms have always
+              // resolved — but a line whose productId disagrees with its
+              // variantKey is a trap for the next person.
+              productId: String(product._id),
               quantity,
               variant,
               variantKey,

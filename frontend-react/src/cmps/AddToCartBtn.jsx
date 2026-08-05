@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addToCart } from '../store/actions/cart.actions'
 
-export function AddToCartBtn({ product, selectedVariant = null, size = 'medium', showText = true }) {
+/**
+ * `quantity` defaults to 1 so the call sites that have no quantity control —
+ * ProductPreview in the listing and the homepage deals band — keep working
+ * unchanged. Only the product details page, which owns a quantity stepper,
+ * passes anything else.
+ */
+export function AddToCartBtn({ product, selectedVariant = null, quantity = 1, size = 'medium', showText = true }) {
   const dispatch = useDispatch()
   const [isAdding, setIsAdding] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -17,7 +23,7 @@ export function AddToCartBtn({ product, selectedVariant = null, size = 'medium',
     if (isOutOfStock || variantOutOfStock || isAdding) return
 
     setIsAdding(true)
-    dispatch(addToCart(product, 1, selectedVariant))
+    dispatch(addToCart(product, quantity, selectedVariant))
 
     // Show success feedback
     setTimeout(() => {

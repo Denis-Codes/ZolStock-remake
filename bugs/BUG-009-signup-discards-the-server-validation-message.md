@@ -1,9 +1,10 @@
 # BUG-009 — Signup discards the server's validation message and advises a retry that cannot work
 
-**Status:** Open, not fixed
+**Status:** FIXED
 **Severity:** Medium — every failed signup, on the app's first conversion step
 **Found by:** Using the app. A real signup attempt with a short password, spotted in the browser console
-**Pinned by:** `frontend-react/tests/unit/signup-form.test.jsx` → `🐛 BUG-009: the server explains the problem and the form discards it`
+**Fixed in:** `frontend-react/src/pages/Signup.jsx` — rules mirrored client-side, and the server's response actually read
+**Regression tests:** `frontend-react/tests/unit/signup-form.test.jsx` → `the client-side guards` (8 tests) and `BUG-009: what the server says reaches the shopper` (5 tests)
 
 ---
 
@@ -163,26 +164,79 @@ the fix has a red/green signal. But exploratory use found it first. A suite is
 a ratchet that stops known behaviour regressing; it is not a substitute for
 someone using the thing.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it with a test, write it down,
-do not fix.
+All three of the decisions above were taken, and one was reversed on evidence.
 
-The pinned tests assert today's behaviour and are named for the bug. Applying
-the fix above turns exactly three of them red — verified by applying it,
-running the suite, and reverting:
+**The rules are mirrored client-side.** `FIELD_RULES` in `Signup.jsx` lists
+every rule `auth.schema.js` has — 2 / 3 / 8 and the matching upper bounds —
+with presence first in each list, so an empty field is told it is empty rather
+than told it is too short. Password length is checked untrimmed, matching the
+schema: a space is a character in a password, and trimming would reject one the
+server would have accepted.
 
-```
-✓ no full name / no username / no password — still green (presence guards untouched)
-× shows generic retry text instead of the rule the server stated
-× is the same message for a short username, so the cause is unknowable
-× advises a retry that reproduces the failure exactly
-✓ sends a password it could have rejected without asking   ← still red-flagging the second half
-✓ a 500 has no details to show, so the retry advice is accurate   ← fallback survived
-```
+The numbers are duplicated on purpose and both sides are pinned to the same
+figures, the way the free-delivery threshold already is. The boundary is tested
+from the passing side too (`accepts exactly 2 / 3 / 8 characters`) — a `>`
+where `>=` was meant would satisfy every failure test and reject a password the
+server accepts, which is the most annoying possible outcome because the shopper
+is told a rule they are obeying.
 
-That split is the useful part. The message tests flip, the *client-side rule*
-test stays green because that half is genuinely still unfixed, and the 500 test
-confirms the fallback was not thrown out with the bathwater. When the fix
-lands, those three should be rewritten to assert the field message rather than
-deleted.
+**The response is read.** `catch (err)` now has a binding, and `_serverProblems`
+handles the three shapes that arrive:
+
+| response | shown |
+|---|---|
+| `{ err, details: [...] }` | one line per detail |
+| `{ err: 'Username already taken' }` | Hebrew — the one failure with no `details` and a clear action |
+| anything else (500, dropped connection) | the generic retry text, which is accurate here |
+
+**All of them, not `details[0]`.** `problems` is an array and the alert renders
+one `<p>` per entry, so a response naming two fields does not send the shopper
+round the loop twice.
+
+### The decision that changed
+
+The plan was to map `field` → a Hebrew message on the client and use the
+server's text only as a fallback. That mapping was written and then removed,
+because it turned out to be unreachable code: it can only fire when a client
+rule fails for the value the server rejected — and if a client rule fails, the
+request was never sent. Mirroring the rules is what makes the wording Hebrew;
+a translation layer on top of it had nothing left to translate.
+
+So `detail.message` is shown verbatim. That is English, and it is rare by
+construction — the client mirrors every rule the schema currently has, so a
+detail reaching the screen means the schema gained a rule this form has not
+caught up with. English and precise beats Hebrew and wrong, and it is a visible
+signal that the two have drifted.
+
+### Against the field, sort of
+
+`aria-invalid` is set on each field named in a problem, which is what the
+existing `input[aria-invalid='true']` border style and a screen reader both
+read. The messages themselves stay in the single `.auth-error` block above the
+button, matching `Login.jsx` — splitting them into per-field slots would have
+meant a new layout for one of the two auth forms and not the other.
+
+Editing a field clears **that field's** complaint only. `Login.jsx` clears
+everything on the first keystroke, which is right when there is only ever one
+message and wrong here: it would hide problems the shopper has not dealt with.
+
+The one styling change is three lines in `LoginSignup.scss` — `.auth-error p
+{ margin: 0 }` and a `+ p` gap, because signup renders a `<div>` of paragraphs
+where login renders one `<p>`. Login's rendering is untouched and unaffected.
+
+## Confirmed and closed elsewhere
+
+The `http.service.js` hypothesis at the top of the "Related" section above was
+**confirmed** and is already fixed — `auth/login` and `auth/me` are exempt from
+the 401 redirect. See the comment block in `http.service.js`.
+
+## Still open, deliberately
+
+`Login.jsx` has the same bare `catch`. Its schema has no per-field rules to
+lose, but a wrong password (401 `Invalid username or password`) still renders
+"ההתחברות נכשלה. נסו שוב בעוד רגע" — transient advice for a deterministic
+failure, which is this same bug in miniature. Not fixed here because it is a
+different form with a different failure set, and it deserves its own report
+rather than being folded into this one.

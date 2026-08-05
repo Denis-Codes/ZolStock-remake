@@ -22,6 +22,10 @@ import { server } from './msw/server.js'
  * form showed "ההרשמה נכשלה. נסו שוב בעוד רגע" — "registration failed, try
  * again in a moment" — and the account was never created.
  *
+ * Both halves are now fixed and this file covers both: the form mirrors the
+ * server's rules so the common failures never leave the page, and what the
+ * server does send is read rather than stepped over. See bugs/BUG-009.
+ *
  * ── Why MSW rather than mocking the signup action ─────────────────────────
  * Mocking `signup()` to reject would test the catch block in isolation and
  * prove nothing about whether the real error survives the trip. Answering the
@@ -42,9 +46,9 @@ import { server } from './msw/server.js'
 
 const GENERIC_ERROR = 'ההרשמה נכשלה. נסו שוב בעוד רגע.'
 
-/* The exact wording the server sends. If someone rewords auth.schema.js, the
-   assertions below still pass — they are about the message being DISCARDED,
-   not about its text. It appears here so the diff shows what was thrown away. */
+/* The exact wording the server sends, kept because the tests below are about
+   WHICH message wins rather than about its text: the client's Hebrew when it
+   knows the rule, the server's English when it does not. */
 const SERVER_PASSWORD_MESSAGE = 'Password must be at least 8 characters'
 const SERVER_USERNAME_MESSAGE = 'Username must be at least 3 characters'
 
@@ -92,12 +96,10 @@ beforeEach(() => {
   vi.spyOn(console, 'dir').mockImplementation(() => {})
 })
 
-describe('the client-side guards that already work', () => {
+describe('the client-side guards', () => {
   /**
-   * These pass today. They are here because the bug below is easy to
-   * misread as "the form has no validation at all" — it does, and it names
-   * the missing field precisely. The gap is narrower and more interesting
-   * than that: it validates PRESENCE and delegates every RULE.
+   * Presence. These passed before the fix and still do — the gap was never
+   * "this form has no validation", it was that presence was all it checked.
    */
   it.each([
     ['no full name', { username: 'shopper1', password: 'Passw0rd!' }, 'יש להזין שם מלא'],
@@ -114,70 +116,147 @@ describe('the client-side guards that already work', () => {
     // AND still posts has not actually prevented anything.
     expect(signupRequests).toHaveLength(0)
   })
+
+  /**
+   * Length. The rules the form now mirrors from `auth.schema.js`, pinned to
+   * the same figures the server uses — 2 / 3 / 8.
+   *
+   * A duplicated rule that drifts is worse than no duplicate, so these numbers
+   * are the point of the test, not incidental to it.
+   * `backend/tests/unit/schemas.test.js` pins the other side.
+   */
+  it.each([
+    ['full name of 1 character', { fullname: 'A', username: 'shopper1', password: 'Passw0rd!' }, 'שם מלא חייב להכיל 2 תווים לפחות'],
+    ['username of 2 characters', { fullname: 'Test Shopper', username: 'ab', password: 'Passw0rd!' }, 'שם המשתמש חייב להכיל 3 תווים לפחות'],
+    ['password of 7 characters', { fullname: 'Test Shopper', username: 'shopper1', password: 'short12' }, 'הסיסמה חייבת להכיל 8 תווים לפחות'],
+  ])('%s — states the rule without asking the server', async (_label, fields, expected) => {
+    const { user } = renderSignup()
+    answerSignupWith(400, validationFailure('password', SERVER_PASSWORD_MESSAGE))
+
+    await fillAndSubmit(user, fields)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(expected)
+    expect(signupRequests).toHaveLength(0)
+  })
+
+  it.each([
+    ['exactly 2 / 3 / 8 characters', { fullname: 'Jo', username: 'abc', password: '12345678' }],
+    ['comfortably above every limit', { fullname: 'Test Shopper', username: 'shopper1', password: 'Passw0rd!' }],
+  ])('accepts %s', async (_label, fields) => {
+    /**
+     * The boundary from the passing side, which is the half that catches an
+     * off-by-one. A form using `>` instead of `>=` would satisfy every test
+     * above and reject a password the server accepts — the most annoying
+     * possible outcome, because the shopper is told a rule they are obeying.
+     */
+    const { user } = renderSignup()
+    answerSignupWith(200, { _id: 'u1', fullname: fields.fullname })
+
+    await fillAndSubmit(user, fields)
+
+    await waitFor(() => expect(signupRequests).toHaveLength(1))
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('reports every problem at once, not one per round trip', async () => {
+    /**
+     * Three empty-ish fields used to mean three submissions to discover three
+     * rules, because the old form returned on the first failure. The shopper's
+     * time is the thing being spent here.
+     */
+    const { user } = renderSignup()
+
+    await fillAndSubmit(user, { fullname: 'A', username: 'ab', password: 'short12' })
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('שם מלא חייב להכיל 2 תווים לפחות')
+    expect(alert).toHaveTextContent('שם המשתמש חייב להכיל 3 תווים לפחות')
+    expect(alert).toHaveTextContent('הסיסמה חייבת להכיל 8 תווים לפחות')
+  })
+
+  it('marks the offending input, so the message has something to point at', async () => {
+    // `aria-invalid` is what a screen reader announces and what the field
+    // border reads from, and it is the difference between "something is wrong"
+    // and "this box is wrong".
+    const { user } = renderSignup()
+
+    await fillAndSubmit(user, { fullname: 'Test Shopper', username: 'shopper1', password: 'short12' })
+
+    await screen.findByRole('alert')
+    expect(screen.getByLabelText('סיסמה')).toHaveAttribute('aria-invalid', 'true')
+    expect(screen.getByLabelText('שם משתמש')).toHaveAttribute('aria-invalid', 'false')
+  })
+
+  it('takes the complaint back when the shopper fixes that field', async () => {
+    /**
+     * And only that field. Clearing everything on the first keystroke — which
+     * is what the login form does, with one error to clear — would hide
+     * problems the shopper has not dealt with yet.
+     */
+    const { user } = renderSignup()
+
+    await fillAndSubmit(user, { fullname: 'A', username: 'ab', password: 'Passw0rd!' })
+    await screen.findByRole('alert')
+
+    await user.type(screen.getByLabelText('שם מלא'), 'nother Shopper')
+
+    const alert = screen.getByRole('alert')
+    expect(alert).not.toHaveTextContent('שם מלא')
+    expect(alert).toHaveTextContent('שם המשתמש חייב להכיל 3 תווים לפחות')
+  })
 })
 
-describe('🐛 BUG-009: the server explains the problem and the form discards it', () => {
+describe('BUG-009: what the server says reaches the shopper', () => {
   /**
-   * `Signup.jsx`:
+   * `Signup.jsx` used to end in:
    *
    *     } catch {
    *         setError('ההרשמה נכשלה. נסו שוב בעוד רגע.')
    *     }
    *
-   * A bare `catch` with no binding — there is no `err` in scope, so this cannot
-   * read `details` even in principle. The information is not lost in transit;
-   * it arrives intact and is stepped over.
+   * A bare `catch` with no binding — no `err` in scope, so `details` could not
+   * be read even in principle. The information was never lost in transit; it
+   * arrived intact and was stepped over, and four different rules collapsed
+   * into one sentence advising a retry that could not work.
    *
-   * These tests assert the CURRENT behaviour so the suite stays green and the
-   * gap is a written fact. They are named for the bug and will go red the
-   * moment it is fixed, which is the intended signal.
+   * The form now mirrors the length rules, so those particular failures are
+   * caught before the request — which is why the tests below use rules the
+   * CLIENT DOES NOT KNOW. That is the honest test of this half of the fix: the
+   * mirroring must not be what makes it look fixed, because the server will
+   * always know rules the client does not.
    */
 
-  it('shows generic retry text instead of the rule the server stated', async () => {
+  /* A rule this form does not mirror, and could not have pre-empted. It can
+     only reach the screen by being read out of the response, which is the
+     whole point. */
+  const UNMIRRORED_RULE = 'Password must not repeat a previous password'
+
+  it('states the rule the server named, not a generic retry', async () => {
     const { user } = renderSignup()
-    answerSignupWith(400, validationFailure('password', SERVER_PASSWORD_MESSAGE))
+    answerSignupWith(400, validationFailure('password', UNMIRRORED_RULE))
 
     await fillAndSubmit(user, {
       fullname: 'Test Shopper',
       username: 'shopper1',
-      password: 'short12', // 7 characters — one below the limit
-    })
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(GENERIC_ERROR)
-    // The bug, stated as an assertion: what the server said is nowhere on screen.
-    expect(screen.queryByText(/8/)).toBeNull()
-    expect(screen.queryByText(new RegExp(SERVER_PASSWORD_MESSAGE, 'i'))).toBeNull()
-  })
-
-  it('is the same message for a short username, so the cause is unknowable', async () => {
-    /**
-     * This is what makes it more than a wording problem. Two different rules,
-     * two different fields, two precise server messages — and one identical
-     * sentence on screen. The shopper cannot tell which input to change, and
-     * neither can support reading a screenshot.
-     */
-    const { user } = renderSignup()
-    answerSignupWith(400, validationFailure('username', SERVER_USERNAME_MESSAGE))
-
-    await fillAndSubmit(user, {
-      fullname: 'Test Shopper',
-      username: 'ab', // 2 characters — one below the limit
       password: 'Passw0rd!',
     })
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(GENERIC_ERROR)
-    expect(screen.queryByText(/username/i)).toBeNull()
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(UNMIRRORED_RULE)
+    expect(alert).not.toHaveTextContent(GENERIC_ERROR)
   })
 
-  it('sends a password it could have rejected without asking', async () => {
+  it('shows the server\'s English only for rules it does not know', async () => {
     /**
-     * The other half of the same defect. The form knows how to check a field
-     * — it does it three times for presence — but the length rule lives only
-     * on the server, so a shopper waits for a round trip to be told something
-     * the page could have said as they typed.
+     * The server's messages are English and this UI is Hebrew, so the test
+     * above is showing a last resort rather than the plan. FIELD_RULES mirrors
+     * every rule `signupSchema` currently has, so the shopper's realistic
+     * mistakes are all answered in Hebrew, before the request.
      *
-     * `noValidate` is on the <form> and there is no minLength on the input, so
-     * the browser will not step in either.
+     * This asserts the boundary between the two: the password message that
+     * DOES have a Hebrew equivalent never reaches the network, so its English
+     * form cannot appear on screen even when the handler is standing by to
+     * send it.
      */
     const { user } = renderSignup()
     answerSignupWith(400, validationFailure('password', SERVER_PASSWORD_MESSAGE))
@@ -188,38 +267,82 @@ describe('🐛 BUG-009: the server explains the problem and the form discards it
       password: 'short12',
     })
 
-    await screen.findByRole('alert')
-    expect(signupRequests).toHaveLength(1)
-    expect(signupRequests[0].password).toBe('short12')
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('הסיסמה חייבת להכיל 8 תווים לפחות')
+    expect(alert).not.toHaveTextContent(SERVER_PASSWORD_MESSAGE)
+    expect(signupRequests).toHaveLength(0)
   })
 
-  it('advises a retry that reproduces the failure exactly', async () => {
-    /**
-     * The most damaging part, and the reason this is Medium rather than Low.
-     *
-     * "נסו שוב בעוד רגע" — try again in a moment — describes a TRANSIENT
-     * fault. This one is deterministic: the same input fails identically
-     * forever. The form is telling the shopper to do the one thing guaranteed
-     * not to work, and giving them no way to discover what would.
-     *
-     * Two submissions, two requests, byte-identical outcome.
-     */
+  it('names each field when the server rejects more than one', async () => {
+    // `details` is an array precisely so this can happen. Rendering only
+    // `details[0]` would send the shopper round the loop once per mistake.
     const { user } = renderSignup()
-    answerSignupWith(400, validationFailure('password', SERVER_PASSWORD_MESSAGE))
+    answerSignupWith(400, {
+      err: 'Validation failed',
+      details: [
+        { field: 'username', message: SERVER_USERNAME_MESSAGE },
+        { field: 'imgUrl', message: 'Image URL must be a valid URL' },
+      ],
+    })
 
     await fillAndSubmit(user, {
       fullname: 'Test Shopper',
       username: 'shopper1',
-      password: 'short12',
+      password: 'Passw0rd!',
     })
-    expect(await screen.findByRole('alert')).toHaveTextContent(GENERIC_ERROR)
 
-    // Exactly what a shopper does when told to try again: press it again.
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(SERVER_USERNAME_MESSAGE)
+    expect(alert).toHaveTextContent('Image URL must be a valid URL')
+  })
+
+  it('explains a taken username, which carries no details at all', async () => {
+    /**
+     * Not a schema failure — `authService.signup` rejects with the string
+     * 'Username already taken', so it arrives as `{ err }` with no `details`
+     * to read. It was indistinguishable from a server outage, and it is the
+     * one failure here a shopper can actually act on.
+     */
+    const { user } = renderSignup()
+    answerSignupWith(400, { err: 'Username already taken' })
+
+    await fillAndSubmit(user, {
+      fullname: 'Test Shopper',
+      username: 'shopper1',
+      password: 'Passw0rd!',
+    })
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('שם המשתמש כבר תפוס. בחרו שם אחר.')
+    expect(alert).not.toHaveTextContent(GENERIC_ERROR)
+  })
+
+  it('does not advise a retry for a failure that would repeat', async () => {
+    /**
+     * The most damaging part of the original bug, and the reason it was Medium
+     * rather than Low. "נסו שוב בעוד רגע" — try again in a moment — describes
+     * a TRANSIENT fault. A validation failure is deterministic: the same input
+     * fails identically forever, so the form was telling the shopper to do the
+     * one thing guaranteed not to work.
+     *
+     * The second submission is the assertion. A shopper who is told what to
+     * change and changes nothing must not be told something different.
+     */
+    const { user } = renderSignup()
+    answerSignupWith(400, validationFailure('password', UNMIRRORED_RULE))
+
+    await fillAndSubmit(user, {
+      fullname: 'Test Shopper',
+      username: 'shopper1',
+      password: 'Passw0rd!',
+    })
+    expect(await screen.findByRole('alert')).not.toHaveTextContent(GENERIC_ERROR)
+
     await user.click(screen.getByRole('button', { name: 'הרשמה' }))
 
     await waitFor(() => expect(signupRequests).toHaveLength(2))
     expect(signupRequests[0]).toEqual(signupRequests[1])
-    expect(screen.getByRole('alert')).toHaveTextContent(GENERIC_ERROR)
+    expect(screen.getByRole('alert')).toHaveTextContent(UNMIRRORED_RULE)
   })
 })
 

@@ -12,6 +12,7 @@ export const userService = {
 	update,
     getLoggedinUser,
     saveLoggedinUser,
+    fetchLoggedinUser,
 }
 
 function getUsers() {
@@ -55,8 +56,42 @@ async function logout() {
 	return await httpService.post('auth/logout')
 }
 
+/**
+ * The CACHED answer. Synchronous, so it can be read during render.
+ *
+ * This is not the source of truth — the session cookie is (see
+ * `fetchLoggedinUser`). It exists so the first paint after a reload does not
+ * flash signed-out UI while the server is being asked.
+ */
 function getLoggedinUser() {
     return JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN_USER))
+}
+
+/**
+ * The REAL answer — was BUG-005.
+ *
+ * `sessionStorage` is scoped per tab. A link opened in a new tab starts with
+ * an empty one, so the app decided it was dealing with a guest while the
+ * session cookie sat there, valid, and the server would happily have said so.
+ * The visible symptom was the shopper's cart emptying and then reappearing
+ * when they switched back.
+ *
+ * The cookie belongs to the browser profile, so every tab already sends it.
+ * Asking the server is the only way to get an answer that is true in all of
+ * them — and it also fixes a new window and a browser restart, which
+ * localStorage would have papered over without addressing the design.
+ *
+ * A 401 here is the ordinary answer for a guest, not a failure. It resolves to
+ * null and clears the stale cache.
+ */
+async function fetchLoggedinUser() {
+    try {
+        const user = await httpService.get('auth/me')
+        return saveLoggedinUser(user)
+    } catch (err) {
+        sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN_USER)
+        return null
+    }
 }
 
 function saveLoggedinUser(user) {

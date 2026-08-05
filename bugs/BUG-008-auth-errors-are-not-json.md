@@ -1,9 +1,10 @@
 # BUG-008 — Authentication and authorization failures answer plain text, not JSON
 
-**Status:** Open, not fixed
+**Status:** FIXED
 **Severity:** Medium — breaks error handling for the single most common failure in the API
 **Found by:** Backend API tests (error contract), while closing out the stage 1 backlog
-**Pinned by:** `backend/tests/api/error-contract.api.test.js` → `🐛 BUG-008: authentication failures answer plain text`
+**Fixed in:** `backend/middlewares/requireAuth.middleware.js` — both refusals now answer `{ err }`
+**Regression test:** `backend/tests/api/error-contract.api.test.js` → `authentication and authorization failures — BUG-008, now fixed`
 
 ---
 
@@ -112,11 +113,39 @@ here so they are not lost:
 The token issues are the more serious of the three. None are covered by tests
 yet, because a test for "the token expires" needs the expiry to exist first.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it, write it down, do not fix.
+Both refusals now answer JSON, and the messages are named constants so the two
+call sites of the 401 cannot drift apart:
 
-The pinned tests assert the *current* plain-text behaviour across five
-protected routes, so they go red the moment this is fixed — which is the
-intended signal. They should then be rewritten to assert `{ err }` JSON rather
-than deleted; the route table is the valuable part.
+```js
+if (!loggedinUser) return res.status(401).json({ err: NOT_AUTHENTICATED })
+...
+if (!loggedinUser.isAdmin) return res.status(403).json({ err: NOT_AUTHORIZED })
+```
+
+The 403 also gained its `return`, which was the latent half of this. The old
+code called `res.status(403).end(...)` and returned on the *next* line — the
+refusal and the decision to stop were two separate statements, and only
+convention kept them together. `return res.json(...)` makes them one.
+
+Two things verified rather than assumed before shipping:
+
+- **Nothing read the plain-text body.** `http.service.js` detects a lost
+  session by status code (`err.response.status === 401`), and the Playwright
+  API specs assert status codes only. A grep for `Not Authenticated` across the
+  repo found it in the middleware, its own tests, and this file — nowhere else.
+- **The 401 message text changed case** ("Not Authenticated" → "Not
+  authenticated"), which is safe precisely because of the above. It now matches
+  the sentence case the rest of the error handling uses.
+
+The pinned tests were rewritten rather than deleted, as planned — the
+five-route table is the part worth keeping, and it is what would catch a new
+route reintroducing a plain-text refusal. A third test was added for the
+missing-`return` case, asserting the observable consequence: a single clean
+JSON body, since a second write would trip "Cannot set headers after they are
+sent".
+
+The three token/secret items above remain **not done** — they are behaviour
+changes to authentication rather than an error-shape fix, and each needs its
+own decision about session invalidation and expiry windows.

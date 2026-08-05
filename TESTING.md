@@ -40,7 +40,7 @@ real. Two bugs in this repo were found precisely there:
   that endpoint *passed*, because it asserted the product was saved by reading
   the database directly. The Playwright API test had no database access, so it
   was forced to trust the response — and noticed the response was wrong.
-- **BUG-005** — opening a link in a new tab empties the cart. Unit tests mock
+- **BUG-005** — opening a link in a new tab emptied the cart. Unit tests mock
   storage; API tests have no concept of a tab. It takes a real browser and two
   real tabs.
 
@@ -134,17 +134,18 @@ mutations were run past it to check the assertions have teeth. `getCartTotals`:
 
 ## Known bugs
 
-Eight documented in [`bugs/`](bugs/). The policy while building was **reproduce
-it, pin it with a test, write it down, do not fix** — so a bug doc is always
-backed by a test that will notice when it changes.
+Nine documented in [`bugs/`](bugs/). The policy while building was **reproduce
+it, pin it with a test, write it down, then fix** — so a bug doc is always
+backed by a test that will notice when it changes, and every fix landed against
+a test that was already red.
 
 | | Severity | Status |
 |---|---|---|
-| BUG-001 — PDP quantity never applied | Medium | Open |
-| BUG-002 — Maps has no load fallback | Low | Open |
-| BUG-003 — cart line key not normalised | Low | Open |
+| BUG-001 — PDP quantity never applied | Medium | **Fixed** |
+| BUG-002 — Maps has no load fallback | Low | **Fixed** |
+| BUG-003 — cart line key not normalised | Low | **Fixed** |
 | BUG-004 — created product has no `_id` | Medium | **Fixed** |
-| BUG-005 — session lost in a new tab | High | Open |
+| BUG-005 — session lost in a new tab | High | **Fixed** |
 | BUG-006 — variant selector resolves an impossible combination | High | Open |
 | BUG-007 — review write succeeds, returns 400 | Medium (latent) | Open |
 | BUG-008 — auth errors are not JSON | Medium | Open |
@@ -153,7 +154,8 @@ backed by a test that will notice when it changes.
 Expected-failure markers (`it.fails()` in Vitest, `test.fail()` in Playwright)
 keep open bugs visible instead of hiding them behind a skip. When the fix lands,
 the runner reports **"expected to fail but passed"** — which is exactly what
-happened with BUG-004, and is the signal to remove the marker.
+happened with BUG-004 and BUG-005, and is the signal to remove the marker and
+let the test stand as a regression guard.
 
 ---
 

@@ -255,6 +255,7 @@ export function ProductDetails() {
               <AddToCartBtn
                 product={product}
                 selectedVariant={selectedVariant}
+                quantity={quantity}
                 size="large"
                 showText={true}
               />

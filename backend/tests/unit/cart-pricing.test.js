@@ -153,27 +153,52 @@ describe('_variantKey — which picks count as the same cart line', () => {
   })
 
   /**
-   * BUG-003 — see bugs/BUG-003-cart-line-key-not-normalized.md
+   * Was BUG-003, and this test taught a lesson about WHERE to pin one.
    *
-   * Expected to fail. Per the agreed policy, a bug found by a test gets the
-   * test plus a written report; the fix is a separate decision.
+   * ── The original test, and why it was wrong ───────────────────────────────
+   * It was written as `it.fails(...)` asserting:
    *
-   * Note the spelling: Vitest marks this with `it.fails`, Playwright with
-   * `test.fail`. Same idea, different name in each runner — and since this
-   * repo runs both, it is worth knowing which file speaks which dialect.
+   *     _variantKey('507f1f77bcf86cd799439011', null) === _variantKey('p1001', null)
+   *
+   * — that the same product arriving under either of its two valid names
+   * should produce one key. The intent was right and the bug was real. The
+   * assertion was pinned to a function that can never satisfy it.
+   *
+   * `_variantKey` is pure. It has no database, so it cannot know that
+   * `507f…011` and `p1001` are one product; only a lookup can. The two ids are
+   * different strings and a faithful function returns different keys.
+   *
+   * So after the fix landed, this test still failed — correctly, permanently,
+   * and for a reason that had nothing to do with the bug. An `it.fails` that
+   * can never flip is not a pinned bug; it is a test that will be deleted by
+   * whoever gets tired of it.
+   *
+   * ── What the fix actually was ─────────────────────────────────────────────
+   * `addItem()` now calls `_variantKey(product._id, variant)` — the resolved
+   * document rather than the raw request. The normalising belongs to the
+   * caller, which is the layer that has the lookup.
+   *
+   * The real assertion therefore lives in
+   * `tests/api/cart.api.test.js` → 'merges a product added by sku and by
+   * ObjectId into one line', which has a database and can prove it.
+   *
+   * ── Worth recording as a method ───────────────────────────────────────────
+   * **Pin a bug at the layer that can actually fix it.** A test at the wrong
+   * layer looks like coverage, passes review, and quietly asserts an
+   * impossibility. The question to ask is "could the code under test satisfy
+   * this if it wanted to?" — here, `_variantKey` could not.
+   *
+   * What stays here is the property that IS this function's job: the encoding
+   * is literal, and two different ids are two different lines. That is what
+   * makes it safe to normalise upstream.
    */
-  it.fails('BUG-003: gives one product one line regardless of which id form was used', () => {
-    // byIdOrSku exists because both id forms are live: new URLs carry the
-    // ObjectId, while carts saved in localStorage before the migration carry
-    // the sku. Both resolve to the SAME product document.
-    //
-    // But the line key is built from the raw id the client sent, before that
-    // resolution — so the same product arriving by its two valid names lands
-    // on two separate cart rows.
+  it('is a literal function of its input — normalising is the caller\'s job', () => {
     const byObjectId = _variantKey('507f1f77bcf86cd799439011', null)
     const bySku = _variantKey('p1001', null)
 
-    expect(byObjectId).toBe(bySku)
+    expect(byObjectId).not.toBe(bySku)
+    expect(byObjectId).toBe('507f1f77bcf86cd799439011')
+    expect(bySku).toBe('p1001')
   })
 })
 

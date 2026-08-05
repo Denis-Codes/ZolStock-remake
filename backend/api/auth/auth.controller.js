@@ -64,6 +64,27 @@ export const signup = asyncHandler(async (req, res) => {
   res.json(user)
 })
 
+/**
+ * Who is this request from?
+ *
+ * Added for BUG-005. The client used to answer this from `sessionStorage`,
+ * which is scoped per tab — so a link opened in a new tab looked signed out
+ * while the session cookie was sitting right there, valid.
+ *
+ * The cookie is the session. This endpoint is how the client asks about it
+ * instead of keeping a second, worse copy of the answer.
+ *
+ * Behind `requireAuth`, so a guest gets a 401 rather than a 200 with null —
+ * "not signed in" is a status, not a payload. The client treats that 401 as
+ * the ordinary answer for a guest, not an error.
+ *
+ * `req.loggedinUser` is set by requireAuth from the token the cookie carries,
+ * so nothing here trusts a request body.
+ */
+export const getLoggedinUser = asyncHandler(async (req, res) => {
+  res.json(req.loggedinUser)
+})
+
 export const logout = asyncHandler(async (req, res) => {
   // clearCookie only matches when the attributes match those it was set with;
   // otherwise the browser keeps the cookie and the user stays logged in.

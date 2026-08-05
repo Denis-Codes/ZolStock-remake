@@ -199,6 +199,39 @@ describe('getCartTotals — savings', () => {
 
     expect(getCartTotals(cart).savings).toBe(0)
   })
+
+  /**
+   * Real catalogue prices, which is where this went wrong on the actual site.
+   *
+   * 24.90 − 14.90 is 9.999999999999998 in binary floating point, and the cart
+   * page rendered it as "−₪9.100". The formatter carried the blame and is
+   * fixed (see money-format.test.js), but the figure should never have left
+   * here unsettled either: `savings > 0` is what decides whether the row is
+   * shown at all, and it is read by more than the price tag.
+   *
+   * `toBe(10)` and not `toBeCloseTo(10)` on purpose. Close enough is what the
+   * bug was.
+   */
+  it('settles a saving computed from .90 prices to the agora', () => {
+    const cart = [makeLine({ price: 14.9, originalPrice: 24.9 })]
+
+    expect(getCartTotals(cart).savings).toBe(10)
+  })
+
+  /**
+   * The same rule for the money the shopper actually owes. Three ₪14.90 items
+   * is ₪44.70, not ₪44.699999999999996 — and the total carries the delivery
+   * fee on top, so any residue survives into the figure under לתשלום.
+   */
+  it('settles the subtotal and total to the agora', () => {
+    const cart = [makeLine({ price: 14.9, quantity: 3 })]
+
+    const totals = getCartTotals(cart)
+
+    expect(totals.subtotal).toBe(44.7)
+    expect(totals.total).toBe(44.7 + SHIPPING_FLAT_FEE)
+    expect(totals.amountToFreeShipping).toBe(255.3)
+  })
 })
 
 describe('getCartTotals — the free delivery threshold', () => {

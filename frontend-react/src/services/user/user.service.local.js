@@ -12,6 +12,19 @@ export const userService = {
     update,
     getLoggedinUser,
     saveLoggedinUser,
+    fetchLoggedinUser,
+}
+
+/**
+ * Mirrors the remote service's signature so callers do not have to know which
+ * one they are talking to (added alongside the BUG-005 fix).
+ *
+ * There is no server in local mode and therefore no cookie to consult, so the
+ * stored value IS the source of truth here. This is genuinely the whole
+ * implementation, not a stub — and the GitHub Pages build runs on this path.
+ */
+async function fetchLoggedinUser() {
+    return getLoggedinUser()
 }
 
 async function getUsers() {

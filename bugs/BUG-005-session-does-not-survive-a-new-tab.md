@@ -1,9 +1,12 @@
 # BUG-005 — Opening a link in a new tab signs the shopper out (and empties their cart)
 
-**Status:** Open, not fixed
-**Severity:** High — user-facing, silent, and hits a completely ordinary action
+**Status:** FIXED
+**Severity:** High (was) — user-facing, silent, and hits a completely ordinary action
 **Found by:** Full-stack Playwright E2E, stage 6
-**Pinned by:** `frontend-react/tests/fullstack/session-and-cart.spec.js` → `🐛 BUG-005: keeps the shopper signed in when a link opens in a new tab` (marked `test.fail()`)
+**Fixed in:** `GET /api/auth/me` + `restoreSession()`, awaited at app start — the server, not `sessionStorage`, now answers "who is this?"
+**Regression test:** `frontend-react/tests/fullstack/session-and-cart.spec.js` → `keeps the shopper signed in when a link opens in a new tab`
+
+> The report below is kept as written. The fix is recorded at the end.
 
 ---
 
@@ -104,9 +107,48 @@ Neither the unit suite nor the API suite can see this bug. The unit tests mock
 storage; the API tests have no browser and therefore no concept of a tab. It
 needs a real browser, a real session, and two real tabs.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it with a failing test, write
-it down, do not fix. The pinned test asserts the *correct* behaviour and is
-marked `test.fail()`. When the fix lands it will start passing, and Playwright
-will report "expected to fail but passed" until the marker is removed.
+The "cleaner version" above is what landed. The client no longer keeps its own
+answer to "who is signed in?" — it asks the thing that actually knows.
+
+**Server** — `GET /api/auth/me`, behind `requireAuth`, returns `req.loggedinUser`.
+A guest gets a 401, because "not signed in" is a status rather than a payload.
+It is deliberately *not* behind `authLimiter`: the client calls it on every app
+start, it reads a cookie rather than guessing a credential, and there is nothing
+there to brute-force.
+
+**Client** — `fetchLoggedinUser()` calls it and caches the result;
+`getLoggedinUser()` still reads that cache synchronously so the first paint does
+not flash signed-out UI. The cache is no longer the answer, only a head start.
+`user.service.local.js` gets the same method — with no server there is no cookie
+to consult, so the stored value genuinely *is* the source of truth on the GitHub
+Pages build, and callers do not have to know which service they hold.
+
+**Ordering** — `restoreSession()` is `await`ed in `RootCmp` *before*
+`loadCart()` and `loadWishlist()`. Both branch on `isLoggedIn()`, so firing
+them in parallel reintroduced the exact bug in a new costume: the loads won the
+race, read "guest", and pulled the empty localStorage cart.
+
+One thing this turned up that the report did not predict: the `http.service`
+interceptor force-signs-out and redirects on *any* 401, which made a guest hitting
+the new endpoint bounce off whatever page they had opened. `auth/me` and
+`auth/login` are now exempt — for both, a 401 is an answer, not an expired
+session. (`auth/login` was a real pre-existing bug of its own: a wrong password
+rendered "incorrect username or password" onto a page that was already
+unloading, dropping the shopper on the homepage with no explanation.)
+
+As predicted in the report, this also fixes a new window and a browser restart,
+which a `localStorage` swap would have papered over without addressing the
+design.
+
+The pinned test carried `test.fail()` while this was open. After the fix
+Playwright reported:
+
+```
+Expected to fail, but passed.
+```
+
+The marker is removed and the test now guards the fix. It still deliberately
+does not clear `sessionStorage`: a new tab starting with an empty one is
+precisely the condition under test.

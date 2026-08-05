@@ -46,12 +46,34 @@ export function setupSocketAPI(http) {
     })
 }
 
+/**
+ * `gIo` is assigned by setupSocketAPI(), which server.js calls and createApp()
+ * does not — so any process that builds the app without starting the full
+ * server has no socket layer at all. Every function below then failed with
+ * `Cannot read properties of null (reading 'fetchSockets')`, and because the
+ * callers do not always await, that surfaced as an unhandled rejection rather
+ * than something a caller could handle.
+ *
+ * A missing socket layer is not an error condition. Nobody is connected, so
+ * there is nobody to notify, and the correct behaviour is to do nothing and
+ * say so. Guarding here fixes the whole class of failure at once instead of
+ * one route at a time — see bugs/BUG-007 for the route it was found through.
+ */
+function _hasSocketLayer(type) {
+    if (gIo) return true
+    logger.info(`No socket layer attached; skipping event: ${type}`)
+    return false
+}
+
 function emitTo({ type, data, label }) {
+    if (!_hasSocketLayer(type)) return
+
     if (label) gIo.to('watching:' + label.toString()).emit(type, data)
     else gIo.emit(type, data)
 }
 
 async function emitToUser({ type, data, userId }) {
+    if (!_hasSocketLayer(type)) return
     userId = userId.toString()
     const socket = await _getUserSocket(userId)
 
@@ -67,8 +89,9 @@ async function emitToUser({ type, data, userId }) {
 // If possible, send to all sockets BUT not the current socket 
 // Optionally, broadcast to a room / to all
 async function broadcast({ type, data, room = null, userId }) {
+    if (!_hasSocketLayer(type)) return
     userId = userId.toString()
-    
+
     logger.info(`Broadcasting event: ${type}`)
     const excludedSocket = await _getUserSocket(userId)
     if (room && excludedSocket) {

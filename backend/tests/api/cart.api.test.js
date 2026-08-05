@@ -208,6 +208,49 @@ describe('POST /api/cart/item', () => {
     expect(res.body.items[0].quantity).toBe(5)
   })
 
+  it('merges a product added by sku and by ObjectId into one line', async () => {
+    /**
+     * Was BUG-003. This is the test the unit suite could not write.
+     *
+     * `byIdOrSku` deliberately accepts two names for one product: the ObjectId
+     * hex string that new URLs carry, and the legacy `sku` that guest carts
+     * saved before the migration carry — folded in by POST /api/cart/merge at
+     * sign-in. Both find the same document.
+     *
+     * The line key used to be built from the raw id the client sent, BEFORE
+     * that resolution, so one product arriving under its two valid names
+     * landed on two rows. `addItem` now keys off `product._id`.
+     *
+     * ── Why this could only be proved here ────────────────────────────────
+     * The original pin lived in tests/unit/cart-pricing.test.js and asserted
+     * that `_variantKey` returns the same key for both ids. It cannot — it is
+     * a pure function with no database, so it has no way to know the two
+     * strings name one product. Only a layer with the lookup can. That test
+     * failed permanently for a reason unrelated to the bug; this one flips.
+     *
+     * The assertion is `toHaveLength(1)` AND the merged quantity. A single
+     * line holding 2 is the fix; a single line holding 5 would mean the second
+     * add replaced the first rather than merging.
+     */
+    const [user] = await seedUsers(makeUser())
+    const [product] = await seedProducts(makeProduct({ sku: 'p1001', stockQty: 10 }))
+
+    const add = id =>
+      as(user, request(app).post('/api/cart/item').send({ productId: id, quantity: 1 }))
+
+    await add('p1001')
+    const res = await add(String(product._id))
+
+    expect(res.status).toBe(200)
+    expect(res.body.items).toHaveLength(1)
+    expect(res.body.items[0].quantity).toBe(2)
+
+    // The stored line is normalised too, so the row and its key agree.
+    const stored = await findCart(user._id)
+    expect(stored.items[0].productId).toBe(String(product._id))
+    expect(stored.items[0].variantKey).toBe(String(product._id))
+  })
+
   it('keeps different variants of one product on separate lines', async () => {
     // Buying a towel in two colours is two lines, not one line of quantity 2.
     const [user] = await seedUsers(makeUser())

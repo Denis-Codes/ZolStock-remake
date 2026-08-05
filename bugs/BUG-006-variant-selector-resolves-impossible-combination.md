@@ -1,9 +1,10 @@
 # BUG-006 — VariantSelector silently swaps the colour when a size+colour combination does not exist
 
-**Status:** Open, not fixed
+**Status:** FIXED
 **Severity:** High — the shopper is shown one thing and buys another
 **Found by:** Component tests, stage 5d
-**Pinned by:** `frontend-react/tests/unit/variant-selector.test.jsx` → `VariantSelector — the sparse catalogue` (two tests, both passing, pinning current behaviour)
+**Fixed in:** `frontend-react/src/cmps/VariantSelector.jsx` — colour is constrained by the chosen size, and the display follows the resolved variant
+**Regression tests:** `frontend-react/tests/unit/variant-selector.test.jsx` → `VariantSelector — the sparse catalogue` (five tests)
 
 ---
 
@@ -111,12 +112,73 @@ Worth recording as a method: **test data that is too tidy hides bugs.** A
 fixture where everything exists in every combination cannot exercise the code
 that decides what to do when something does not.
 
-## Not fixed
+## Resolution
 
-Per the project's bug policy: reproduce it, pin it, write it down, do not fix.
+Both approaches above, because each on its own leaves half the bug standing.
 
-The two pinned tests assert what the component does **today** and therefore
-pass — they are named so it is obvious they document a defect rather than
-endorse it. When the fix lands they should be rewritten to assert the correct
-behaviour, not merely deleted; the sparse fixture is the valuable part and
-should stay.
+**Constrain the second list.** `isColorAvailable` no longer asks whether a
+colour exists anywhere in the catalogue; it asks whether it exists *in the
+selected size*, using the `isVariantAvailable` that was already sitting there
+unused:
+
+```js
+function isColorAvailable(color) {
+  if (!selectedSize) return variants?.some(v => v.color === color && v.inStock)
+  return isVariantAvailable(selectedSize, color)
+}
+```
+
+The `!selectedSize` branch is not defensive padding — a product sold in
+colours only has nothing to constrain against, and without it every colour
+would be disabled.
+
+**Reconcile, by deriving rather than storing.** When a size change makes the
+chosen colour impossible, `effectiveColor` resolves to a colour that size
+actually comes in, and the swatch, the colour name and the variant handed to
+the parent all read from it:
+
+```js
+const effectiveColor = useMemo(() => {
+  if (isVariantAvailable(selectedSize, selectedColor)) return selectedColor
+  return colors.find(c => isVariantAvailable(selectedSize, c)) ?? selectedColor
+}, [variants, colors, selectedSize, selectedColor])
+```
+
+Two decisions inside that are worth stating, because both were the alternative
+and both are worse:
+
+- **Derived, not an effect that calls `setSelectedColor`.** Reconciling in a
+  `useEffect` leaves one render where the swatch and the resolved variant
+  disagree — which is precisely the defect, just shortened. Deriving means the
+  disagreement cannot exist at any point.
+- **The chosen colour stays in state.** Overwriting it would mean a shopper who
+  wanted red, looked at L, and came back to M would find blue. Keeping it means
+  red returns the moment a size has it — the intent is remembered rather than
+  quietly spent. `restores the shopper's colour when they return to a size that
+  has it` pins this.
+
+The `?? selectedColor` tail covers the case where nothing in the size is in
+stock. The chosen colour stands and the stock line says `אזל מהמלאי`; blanking
+the swatch would replace a wrong answer with no answer.
+
+Size remains constrained by the catalogue as a whole rather than by the chosen
+colour. Constraining both directions deadlocks — with M/red and L/blue,
+whichever axis moved first would disable the other — so size is the primary
+axis and colour follows it, which is the order shoppers pick in anyway.
+
+## What was checked before calling it done
+
+- **`ProductDetails.jsx`** is the only caller. It passes
+  `onVariantSelect={setSelectedVariant}` — a stable setter, so the notify
+  effect's dependency array behaves exactly as before — and reads
+  `selectedVariant` for stock and add-to-cart. The prop contract is unchanged.
+- **The eleven pre-existing tests still pass unmodified**, including `keeps the
+  colour when only the size changes`, which is the one most at risk from a fix
+  in this area: on a full matrix nothing should be reconciled at all.
+- **No SCSS change.** Colours unavailable in the selected size get the same
+  `unavailable` class and `disabled` attribute the component already used, so
+  there is no new state to style.
+
+Two tests were added beyond inverting the pinned pair: `initialVariant` naming
+a combination that does not exist (a stale link would otherwise move the bug to
+the URL), and the entirely-out-of-stock size.

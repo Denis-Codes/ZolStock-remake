@@ -195,40 +195,56 @@ describe('AddToCartBtn — adding', () => {
   })
 
   /**
-   * 🐛 KNOWN BUG (BUG-001): the quantity chosen on the product page never
-   * arrives.
-   *
-   * The source hardcodes it:
+   * Was BUG-001 (fixed). The source used to hardcode it:
    *
    *     dispatch(addToCart(product, 1, selectedVariant))
    *
-   * There is no quantity prop, so a caller has no way to ask for two — which
+   * There was no quantity prop, so a caller had no way to ask for two — which
    * is exactly what ProductDetails needs, since it renders a quantity stepper
-   * right beside this button. The shopper sets 3, clicks add, and gets 1.
+   * right beside this button. The shopper set 3, clicked add, and got 1.
    *
-   * This bug is ALREADY covered, by a Playwright test that drives a browser,
-   * loads a product page, clicks the stepper and reads the cart. That test
-   * takes seconds; this one takes milliseconds and names the cause rather than
-   * the symptom.
+   * The bug was ALSO covered by a Playwright test that drives a browser, loads
+   * a product page, clicks the stepper and reads the cart. That test takes
+   * seconds; this one takes milliseconds and names the cause rather than the
+   * symptom. Both were kept: the browser test proves ProductDetails passes the
+   * value, this one proves the button honours it.
    *
-   * That is the testing pyramid argument made concrete: **push every assertion
-   * to the cheapest layer that can hold it.** The browser test still earns its
-   * place — it also proves ProductDetails fails to pass a quantity at all —
-   * but the button's half of the bug belongs here.
+   * That is the testing pyramid argument made concrete — **push every
+   * assertion to the cheapest layer that can hold it** — and the reason to
+   * keep two tests for one bug when they fail for different reasons.
    *
-   * `it.fails()` asserts the CORRECT behaviour and expects it to fail today.
-   * When the prop is added this starts passing, Vitest reports it as an
-   * unexpected pass, and the marker comes out.
-   *
-   * (Playwright spells the same idea `test.fail()`. Two runners, two dialects.)
+   * This began life as `it.fails()`. When the prop was added, Vitest reported
+   * an unexpected pass, and the marker came out. That red was the signal, not
+   * a regression. (Playwright spells the same idea `test.fail()` — two
+   * runners, two dialects.)
    */
-  it.fails('BUG-001: respects a requested quantity', async () => {
+  it('respects a requested quantity', async () => {
     const { store, user } = renderWithStore(<AddToCartBtn product={PRODUCT} quantity={3} />)
 
     await user.click(screen.getByRole('button'))
 
     await waitFor(() => expect(cartOf(store)).toHaveLength(1))
     expect(cartOf(store)[0].quantity).toBe(3)
+  })
+
+  /**
+   * The other half of the fix, and the half the browser test cannot see.
+   *
+   * `quantity` defaults to 1 because ProductPreview — used in the listing and
+   * the homepage deals band — has no stepper and passes nothing. Making the
+   * prop required instead would have sent `undefined` from those call sites
+   * and quietly broken every add-to-cart outside the product page.
+   *
+   * A default is invisible until something depends on it, which is precisely
+   * when it needs a test.
+   */
+  it('defaults to 1 for the call sites that have no quantity control', async () => {
+    const { store, user } = renderWithStore(<AddToCartBtn product={PRODUCT} />)
+
+    await user.click(screen.getByRole('button'))
+
+    await waitFor(() => expect(cartOf(store)).toHaveLength(1))
+    expect(cartOf(store)[0].quantity).toBe(1)
   })
 })
 

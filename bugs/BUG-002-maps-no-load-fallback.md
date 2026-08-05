@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | **Resolved** — root cause removed in Stage 0.5 |
+| **Status** | **FIXED** — root cause removed in Stage 0.5, follow-up now closed |
 | **Severity** | Medium (was) |
 | **Area** | Frontend — branch locator |
 | **Referenced by** | `frontend-react/tests/e2e/branches.spec.js` (`@smoke`) |
@@ -38,18 +38,33 @@ bundled with the app rather than fetched at runtime, so:
 
 The failure mode that made an unbounded hang possible no longer exists.
 
-## Follow-up (not done, deliberately)
+## Follow-up — now done
 
-`branches.spec.js` still bounds the map assertion at 60 seconds:
+`branches.spec.js` bounded the map assertion at 60 seconds:
 
 ```js
 await expect(branchesPage.map).toBeVisible({ timeout: 60_000 });
 ```
 
-That generous timeout was a guard against this bug. It can now come down to the
-default, which would make a genuine regression fail fast instead of slowly.
+That generous timeout was a guard against this bug, deliberately left in place
+at the time so the dependency swap's diff stayed limited to the map itself.
 
-Left unchanged for now because test changes belong in the test stages (3–6), not
-in a dependency swap — keeping this stage's diff limited to the map itself. The
-current timeout is harmless: it is a ceiling, not a delay, so a passing test
-still completes immediately.
+It has now come down to the default:
+
+```js
+await expect(branchesPage.map).toBeVisible();
+```
+
+**Why this is a real improvement and not just tidying.** The old ceiling was
+harmless to a passing run — a timeout is a limit, not a delay, so a green test
+always finished immediately. What it cost was *diagnosis on failure*. With
+Leaflet bundled, a map that has not rendered after five seconds is a
+regression, not a slow network; waiting another 55 seconds to say so tells
+nobody anything and turns one broken test into a minute of CI.
+
+A timeout is an assertion about how long something should legitimately take.
+When the reason for a generous one is removed, leaving it behind quietly
+weakens the suite.
+
+Verified: all four `branches.spec.js` tests pass in chromium, the map assertion
+completing well inside the default.

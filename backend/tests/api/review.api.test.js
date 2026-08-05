@@ -28,6 +28,13 @@ import { socketService } from '../../services/socket.service.js'
  * It also makes the BUG-007 demonstration deliberate. Instead of relying on an
  * accidental crash, that test makes the broadcast throw on purpose — which is
  * both deterministic and a far better description of the real failure mode.
+ *
+ * Note that the crash described above no longer happens: socketService now
+ * no-ops when `gIo` is null rather than throwing. The mock stays because the
+ * reason for it never depended on that crash — these tests are about what
+ * happens to reviews, not about socket delivery — and because making the
+ * broadcast fail ON DEMAND is the only way to test the boundary that was
+ * added around it.
  */
 vi.mock('../../services/socket.service.js', () => ({
   socketService: {
@@ -61,18 +68,21 @@ vi.mock('../../services/socket.service.js', () => ({
  * anyone's time is wasted. Both defences now have positive tests below.
  *
  * ── Read this before the tests ────────────────────────────────────────────
- * `POST /api/review` and `DELETE /api/review/:id` both answer **400**, and
- * both do their work anyway. That is BUG-007: the handlers finish the database
- * write, then broadcast a socket event, and the broadcast throws when no
- * socket server is attached. The catch turns a completed write into a failure
- * response.
+ * `POST /api/review` and `DELETE /api/review/:id` used to answer **400** while
+ * doing their work anyway. That was BUG-007: the handlers finished the
+ * database write, then broadcast a socket event inside the same try/catch, and
+ * a broadcast failure turned a completed write into a failure response. It is
+ * fixed — the response is now sent before the broadcast, and a broadcast
+ * failure is logged and goes no further.
  *
- * So almost every assertion in this file is made against the DATABASE, not the
- * response. That is not a workaround — it is the only truthful source here,
- * and it is the sharpest illustration in the whole suite of why "assert on
- * state, not just the status code" is the rule. A test that stopped at
- * `expect(res.status).toBe(400)` would conclude that nothing happened. Three
- * things happened.
+ * Almost every assertion in this file is nonetheless made against the
+ * DATABASE rather than the response, and that stays. It was the only truthful
+ * source while the bug was open, and it is the sharpest illustration in the
+ * whole suite of why "assert on state, not just the status code" is the rule:
+ * a test that stopped at `expect(res.status).toBe(400)` would have concluded
+ * that nothing happened, when three things had. Keeping the state assertions
+ * means these tests would still tell the truth if the status code went wrong
+ * again.
  *
  * The rest of the file records, precisely, defences this route does not have,
  * so the gaps are written facts rather than things nobody has looked at.
@@ -139,27 +149,29 @@ describe('POST /api/review', () => {
   })
 
   /**
-   * 🐛 BUG-007 — a notification failure reported as a write failure.
+   * BUG-007, now fixed — a notification failure is no longer a write failure.
    *
-   * The controller writes the review, increments the score, issues a refreshed
-   * cookie, and THEN broadcasts — all inside one try/catch. So when the
-   * broadcast throws, the catch turns a completed write into
-   * `400 Failed to add review`.
+   * The controller used to write the review, increment the score, issue a
+   * refreshed cookie and THEN broadcast, all inside one try/catch. A throwing
+   * broadcast turned a completed write into `400 Failed to add review`, and
+   * the catch could not tell the two apart.
    *
-   * The failure is induced on purpose here. That is the honest way to
-   * demonstrate it: `mockImplementationOnce` makes the broadcast throw exactly
-   * once, so the test proves the CONFLATION — write succeeded, response says
-   * it failed — rather than depending on an environment where sockets happen
-   * to be missing.
+   * What that cost: the client showed "failed, please try again", the customer
+   * tried again, and there were now two identical reviews and +20 score. The
+   * misleading error actively encouraged the action that compounded it.
    *
-   * Both assertions belong in one test. Separated, each reads like a different
-   * feature; together, the contradiction IS the bug.
+   * The failure is induced on purpose — `mockImplementationOnce` makes the
+   * broadcast throw exactly once. That is what makes this a test of the
+   * BOUNDARY rather than of an environment where sockets happen to be missing,
+   * and it is why the test survives the fix: the broadcast can still fail for
+   * reasons nobody controls, and the contract is that the response does not
+   * change when it does.
    *
-   * What it costs: the client shows "failed, please try again", the customer
-   * tries again, and now there are two identical reviews and +20 score. The
-   * misleading error actively encourages the action that compounds it.
+   * All three assertions belong in one test. Separated, each reads like a
+   * different feature; together they are the statement that the write and its
+   * announcement are now independent.
    */
-  it('🐛 BUG-007: answers 400 when only the broadcast fails, after the write succeeded', async () => {
+  it('answers 200 when only the broadcast fails, because the write succeeded', async () => {
     const [author] = await seedUsers(makeUser({ username: 'author' }))
     const [subject] = await seedUsers(makeUser({ username: 'subject' }))
 
@@ -169,10 +181,34 @@ describe('POST /api/review', () => {
 
     const res = await as(author, request(app).post('/api/review').send(reviewBody(subject)))
 
-    expect(res.status).toBe(400)
-    // ...and yet:
+    expect(res.status).toBe(200)
+    expect(res.body.txt).toBe('Great service')
+    // The state that made the old 400 a lie, still asserted.
     expect(await countDocuments('review')).toBe(1)
     expect((await findUser({ _id: author._id })).score).toBe(110)
+  })
+
+  it('still answers 400 when the write itself fails', async () => {
+    /**
+     * The assertion that keeps the fix honest. Moving the broadcast past the
+     * response must not turn the catch into something that never fires — a
+     * handler that answers 200 unconditionally would satisfy every test above
+     * and be far worse than the bug it replaced.
+     *
+     * `aboutUserId` goes through `ObjectId.createFromHexString()` in the
+     * service, which throws on a string that is not a valid id — a genuine
+     * write failure, reached before any broadcast.
+     */
+    const [author] = await seedUsers(makeUser({ username: 'author' }))
+
+    const res = await as(
+      author,
+      request(app).post('/api/review').send({ aboutUserId: 'not-an-object-id', txt: 'Great service' })
+    )
+
+    expect(res.status).toBe(400)
+    expect(res.body.err).toBe('Failed to add review')
+    expect(await countDocuments('review')).toBe(0)
   })
 
   it('attributes the review to the signed-in user, not the request body', async () => {
@@ -183,8 +219,9 @@ describe('POST /api/review', () => {
      * Without it, anyone could post a glowing review signed as a competitor,
      * or an abusive one signed as a real customer.
      *
-     * Checked in the database because the response is a 400 with no body worth
-     * reading — see the test above.
+     * Checked in the database rather than in the response: the controller
+     * deletes `byUserId` from the body it sends back, so the response cannot
+     * answer this question at all.
      */
     const [author] = await seedUsers(makeUser({ username: 'author' }))
     const [subject] = await seedUsers(makeUser({ username: 'subject' }))
@@ -305,9 +342,11 @@ describe('DELETE /api/review/:id — ownership', () => {
    * delete criteria for anyone who is not an admin, so the query simply cannot
    * match someone else's row.
    *
-   * The stranger's review count assertion is the important half. A test that
-   * only checked the status code would learn nothing here, because every one
-   * of these responses is a 400 — see BUG-007.
+   * The review count is the assertion that matters. A stranger's delete now
+   * answers 400 ("Cannot remove review", because the criteria matched nothing)
+   * so the status code does say something — but a status code cannot prove the
+   * row is still there, and that is the only thing anyone actually cares
+   * about here.
    */
   it('refuses to delete a review the caller did not write', async () => {
     const [author] = await seedUsers(makeUser({ username: 'author' }))
@@ -320,6 +359,29 @@ describe('DELETE /api/review/:id — ownership', () => {
     await as(stranger, request(app).delete(`/api/review/${stored._id}`))
 
     expect(await countDocuments('review')).toBe(1)
+  })
+
+  it('does not retract the deletion when the broadcast fails', async () => {
+    /**
+     * The same boundary as on POST, checked on the other handler.
+     * `deleteReview` had the identical shape — remove, broadcast, one catch —
+     * so it gets its own row rather than an assumption that fixing one fixed
+     * both.
+     */
+    const [author] = await seedUsers(makeUser({ username: 'author' }))
+    const [subject] = await seedUsers(makeUser({ username: 'subject' }))
+
+    await as(author, request(app).post('/api/review').send(reviewBody(subject)))
+    const [stored] = await findReviews()
+
+    socketService.broadcast.mockImplementationOnce(() => {
+      throw new Error('socket layer unavailable')
+    })
+
+    const res = await as(author, request(app).delete(`/api/review/${stored._id}`))
+
+    expect(res.status).toBe(200)
+    expect(await countDocuments('review')).toBe(0)
   })
 
   it('lets the author delete their own review', async () => {

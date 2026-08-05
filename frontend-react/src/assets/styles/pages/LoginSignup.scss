@@ -121,6 +121,10 @@
   }
 }
 
+/* Login renders this as a single <p>; signup renders a <div> holding one <p>
+   per problem, because a validation failure can name more than one field.
+   Both are styled by the same block — the nested rule only has to undo the
+   browser's default paragraph margins. */
 .auth-error {
   margin: 0;
   padding: rem(10px) rem(12px);
@@ -132,6 +136,14 @@
   color: #b3261e;
   font-size: rem(13px);
   line-height: 1.5;
+
+  p {
+    margin: 0;
+
+    + p {
+      margin-top: rem(4px);
+    }
+  }
 }
 
 .auth-submit {

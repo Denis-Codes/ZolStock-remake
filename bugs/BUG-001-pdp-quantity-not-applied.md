@@ -2,10 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | Open — covered by an expected-fail test |
+| **Status** | **FIXED** |
 | **Severity** | Medium |
 | **Area** | Frontend — product details → cart |
-| **Covered by** | `frontend-react/tests/e2e/cart-flow.spec.js` (`@regression`) |
+| **Covered by** | `frontend-react/tests/e2e/cart-flow.spec.js` (`@regression`), `frontend-react/tests/unit/add-to-cart-btn.test.jsx` |
+
+> The report below is kept as written. The fix is recorded at the end.
 
 ## Symptom
 
@@ -68,3 +70,52 @@ fixed behaviour permanently.
 4. Check the other places `AddToCartBtn` is used — the product listing and the
    deals band on the homepage — since they render it without a quantity control
    and must keep defaulting to 1.
+
+---
+
+## The fix, as applied
+
+All four steps above, plus one thing the plan did not anticipate.
+
+**`src/cmps/AddToCartBtn.jsx`** — a `quantity` prop with a default, and the
+hardcoded `1` replaced:
+
+```js
+export function AddToCartBtn({ product, selectedVariant = null, quantity = 1, ... })
+...
+dispatch(addToCart(product, quantity, selectedVariant))
+```
+
+**`src/pages/ProductDetails.jsx`** — `quantity={quantity}` on the button. The
+state and the stepper already existed and were untouched.
+
+### The part step 4 was right to warn about
+
+`= 1` is the whole of that step, and it is the only thing standing between this
+fix and a much worse bug. `AddToCartBtn` is rendered in three places; two of
+them — `ProductPreview` in the listing and the homepage deals band — have no
+stepper and pass nothing. A **required** prop would have sent `undefined` into
+`addToCart` from every add-to-cart outside the product page.
+
+That would have been a strictly worse defect than the one being fixed, and it
+would have looked like a tidier signature.
+
+`add-to-cart-btn.test.jsx` now pins the default explicitly, because a default
+is invisible until something depends on it — which is exactly when it needs a
+test.
+
+### Markers removed, tests kept
+
+Both covering tests were already written and both had to be converted, not
+deleted:
+
+- `cart-flow.spec.js` — `test.fail(true, ...)` line removed.
+- `add-to-cart-btn.test.jsx` — `it.fails('BUG-001: respects a requested
+  quantity')` → `it('respects a requested quantity')`.
+
+The second one is worth noting: the unit test **failed on the first run after
+the fix**, reporting *expected to fail but passed*. That red was the designed
+signal arriving on schedule, not a regression — it is how the suite announces
+that a bug is gone. The two-test overlap was deliberate and both were kept,
+because they fail for different reasons: the browser test proves
+`ProductDetails` passes the value, the unit test proves the button honours it.

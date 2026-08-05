@@ -2,10 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | Open — covered by an expected-fail test |
+| **Status** | **FIXED** |
 | **Severity** | Low–Medium |
 | **Area** | Backend — cart line identity |
-| **Covered by** | `backend/tests/unit/cart-pricing.test.js` (`_variantKey`) |
+| **Covered by** | `backend/tests/api/cart.api.test.js` (merges by sku and ObjectId) |
+
+> The report below is kept as written. The fix is recorded at the end.
 
 ## Symptom
 
@@ -92,6 +94,81 @@ behaviour permanently.
    ObjectId and asserts a single line — the unit test above cannot see the
    resolution step, so it proves the key is normalised but not that `addItem`
    uses the normalised one.
+
+---
+
+## The fix, as applied
+
+**`backend/api/cart/cart.service.js` — `addItem()`**, two lines:
+
+```js
+const variantKey = _variantKey(product._id, variant)   // was: productId
+...
+productId: String(product._id),                        // was: String(productId)
+```
+
+The lookup one line above already had the resolved document. Normalising the
+stored `productId` as well was not in the original plan; reads go through
+`byIdOrSku` either way so both forms have always resolved, but a stored line
+whose `productId` disagrees with its own `variantKey` is a trap for whoever
+reads it next.
+
+### Step 3 — the decision about existing carts
+
+**Left alone. No migration.** Carts already holding sku-keyed lines keep
+working: they resolve, they price correctly, and they check out. What they will
+not do is merge with a new add of the same product, so such a shopper can still
+see the duplicate row once.
+
+The reason to accept that: the population is small (guest carts saved before
+the ObjectId migration and merged at sign-in), the consequence is cosmetic, and
+those lines drain naturally as people check out. A one-off migration would
+touch live cart documents to fix a duplicate row — more risk than the defect
+carries.
+
+Recording it because the report said choosing this silently is not defensible.
+Choosing it out loud is.
+
+### The test had to move layers, and that is the interesting part
+
+The original pin lived in `tests/unit/cart-pricing.test.js`:
+
+```js
+it.fails('BUG-003: gives one product one line regardless of which id form was used', () => {
+  expect(_variantKey('507f1f77bcf86cd799439011', null)).toBe(_variantKey('p1001', null))
+})
+```
+
+After the fix landed, **that test still failed** — correctly, and permanently.
+
+`_variantKey` is pure. It has no database, so it cannot know that `507f…011`
+and `p1001` name one product; only a lookup can. Two different strings, two
+different keys, and a faithful function should return exactly that. The
+assertion was pinned to a function that could never satisfy it.
+
+So an `it.fails` that can never flip is not a pinned bug — it is a test that
+someone eventually deletes out of irritation, taking the record of the bug with
+it.
+
+Both tests were rewritten rather than removed:
+
+- **Unit** — now asserts what *is* this function's job: the encoding is
+  literal, `not.toBe`, two ids are two lines. That property is precisely what
+  makes it safe to normalise upstream.
+- **API** — `tests/api/cart.api.test.js` → *merges a product added by sku and
+  by ObjectId into one line*. This layer has a database, so it can prove the
+  thing the unit test only gestured at. It asserts one line **and** a merged
+  quantity of 2 — one line holding 5 would mean the second add replaced the
+  first instead of merging.
+
+Mutation-checked: reverting `product._id` to `productId` turns the new API test
+red with *"expected to have a length of 1 but got 2"* — the duplicate row, in
+the failure message.
+
+**Worth recording as a method: pin a bug at the layer that can actually fix
+it.** A test at the wrong layer looks like coverage and passes review while
+asserting an impossibility. The question to ask when writing it is *"could the
+code under test satisfy this if it wanted to?"*
 
 ## Related
 

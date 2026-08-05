@@ -59,6 +59,7 @@ const Signup = lazy(() => import('./pages/Signup.jsx').then(m => ({ default: m.S
 import { rememberShoppingRoute } from './services/last-shopping-route.service'
 import { loadCart } from './store/actions/cart.actions'
 import { loadWishlist } from './store/actions/wishlist.actions'
+import { restoreSession } from './store/actions/user.actions'
 import { reconcilePersistedCatalogueState } from './services/catalogue-version.service'
 
 // Loading fallback component
@@ -90,14 +91,31 @@ export function RootCmp() {
 
   const isCheckout = location.pathname.startsWith('/checkout')
 
-  // Initialize cart and wishlist from localStorage on app load.
-  // The reconcile has to run first: it clears state left over from a previous
-  // catalogue, and loadCart/loadWishlist would otherwise read the stale values
-  // straight into the store before it got the chance.
+  // Initialize session, cart and wishlist on app load.
+  //
+  // Order matters twice here:
+  //
+  // 1. reconcilePersistedCatalogueState() clears state left over from a
+  //    previous catalogue. loadCart/loadWishlist would otherwise read the
+  //    stale values straight into the store before it got the chance.
+  // 2. restoreSession() is AWAITED before the loads (was BUG-005). Both of
+  //    them branch on whether anyone is signed in, and that answer now comes
+  //    from the server rather than from per-tab sessionStorage. Fire them in
+  //    parallel and a new tab races: the loads read "guest", pull the empty
+  //    localStorage cart, and the real cart never appears.
   useEffect(() => {
     reconcilePersistedCatalogueState()
-    dispatch(loadCart())
-    dispatch(loadWishlist())
+
+    let cancelled = false
+    restoreSession().then(() => {
+      // The component can unmount mid-flight in tests and on fast navigation;
+      // dispatching after that is a React warning and a wasted request.
+      if (cancelled) return
+      dispatch(loadCart())
+      dispatch(loadWishlist())
+    })
+
+    return () => { cancelled = true }
   }, [dispatch])
 
   return (

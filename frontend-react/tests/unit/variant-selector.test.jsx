@@ -189,29 +189,27 @@ describe('VariantSelector — availability', () => {
 
 describe('VariantSelector — the sparse catalogue', () => {
   /**
-   * 🐛 FOUND WHILE WRITING THIS FILE — see bugs/BUG-006.
+   * 🐛 FOUND WHILE WRITING THIS FILE, now fixed — see bugs/BUG-006.
    *
-   * Size and colour are two independent lists, and neither constrains the
-   * other. With a sparse catalogue that lets the shopper build a combination
-   * that does not exist:
+   * Size and colour were two independent lists, and neither constrained the
+   * other. With a sparse catalogue that let the shopper build a combination
+   * that did not exist:
    *
    *   variants:  M/red,  L/blue
    *   selection: L    +  red      ← no such variant
    *
-   * The component's resolution falls back through
-   * `variants.find(v => v.size === selectedSize)` and quietly returns L/blue.
-   * So the screen shows size L selected AND red selected, while the variant
-   * actually being added to the cart is blue.
+   * Resolution fell through `variants.find(v => v.size === selectedSize)` and
+   * quietly returned L/blue. The screen showed size L AND red selected while
+   * the variant going into the cart was blue — a red swatch, a blue parcel,
+   * and no stage after this one able to notice, because by the time the cart
+   * holds the variant the mistake is indistinguishable from a real choice.
    *
-   * The shopper is looking at a red swatch and buying a blue one. There is no
-   * warning, and no stage after this one can catch it — by the time the cart
-   * has the variant, the mistake is indistinguishable from a real choice.
-   *
-   * This test asserts what the component DOES today, not what it should do, so
-   * the suite stays green and the behaviour is written down. The assertion
-   * that it should not be possible belongs with the fix.
+   * These tests were written against that behaviour and were inverted when the
+   * fix landed. The sparse fixture is the valuable part: a fixture where every
+   * combination exists cannot exercise the code that decides what to do when
+   * one does not.
    */
-  it('currently resolves an impossible size+colour to a different variant', async () => {
+  it('cannot be put into a size+colour combination that does not exist', async () => {
     const user = userEvent.setup()
     const onVariantSelect = vi.fn()
 
@@ -222,16 +220,18 @@ describe('VariantSelector — the sparse catalogue', () => {
       expect.objectContaining({ size: 'M', color: 'red' })
     )
 
-    // Both buttons are enabled: L is in stock (in blue) and red is in stock
-    // (in M). Neither list knows the other's selection.
+    // L is in stock, so it stays selectable — the fix constrains colour, not
+    // size. Nothing here should make a real size unreachable.
     expect(sizeButton('L')).toBeEnabled()
     await user.click(sizeButton('L'))
 
-    // The screen now says L and red...
+    // Red does not exist in L, so it is no longer offered, and the selection
+    // has moved to the colour L actually comes in.
     expect(sizeButton('L')).toHaveClass('selected')
-    expect(colorButton('אדום')).toHaveClass('selected')
+    expect(colorButton('אדום')).toBeDisabled()
+    expect(colorButton('כחול')).toHaveClass('selected')
 
-    // ...and the variant handed to the parent is blue.
+    // And the variant handed to the parent is the one on screen.
     expect(onVariantSelect).toHaveBeenLastCalledWith(
       expect.objectContaining({ size: 'L', color: 'blue' })
     )
@@ -240,9 +240,9 @@ describe('VariantSelector — the sparse catalogue', () => {
   /**
    * The consequence, stated as its own test because it is the part a
    * non-technical reader needs: the colour on screen and the colour being
-   * bought disagree.
+   * bought are the same colour.
    */
-  it('shows a colour name that does not match the variant being bought', async () => {
+  it('shows the colour name of the variant actually being bought', async () => {
     const user = userEvent.setup()
     const onVariantSelect = vi.fn()
 
@@ -250,19 +250,81 @@ describe('VariantSelector — the sparse catalogue', () => {
 
     await user.click(sizeButton('L'))
 
-    const shown = screen.getByText('אדום', { selector: '.selected-color-name' })
     const [[resolved]] = onVariantSelect.mock.calls.slice(-1)
 
-    expect(shown).toBeInTheDocument()
-    expect(resolved.colorHe).toBe('כחול')
+    expect(screen.getByText(resolved.colorHe, { selector: '.selected-color-name' })).toBeInTheDocument()
+    expect(screen.queryByText('אדום', { selector: '.selected-color-name' })).toBeNull()
+  })
+
+  /**
+   * The half of the fix that is easy to leave out, and the reason the chosen
+   * colour is kept in state rather than overwritten when it becomes
+   * impossible.
+   *
+   * A shopper who wanted red and looked at L has not stopped wanting red.
+   * Discarding the choice on the way past would mean coming back to M and
+   * finding blue, which is a smaller version of the same complaint: the
+   * component deciding something on the shopper's behalf without saying so.
+   */
+  it('restores the shopper\'s colour when they return to a size that has it', async () => {
+    const user = userEvent.setup()
+    const onVariantSelect = vi.fn()
+
+    render(<VariantSelector variants={SPARSE} onVariantSelect={onVariantSelect} />)
+
+    await user.click(sizeButton('L'))
+    expect(colorButton('כחול')).toHaveClass('selected')
+
+    await user.click(sizeButton('M'))
+
+    expect(colorButton('אדום')).toHaveClass('selected')
+    expect(onVariantSelect).toHaveBeenLastCalledWith(
+      expect.objectContaining({ size: 'M', color: 'red' })
+    )
+  })
+
+  it('opens on a real variant even when asked for an impossible one', async () => {
+    /**
+     * `initialVariant` comes from a link, and a link can be stale — the
+     * combination it names may have sold out or never existed. The same
+     * constraint has to apply on first paint, not only after a click, or the
+     * bug simply moves to the URL.
+     */
+    const onVariantSelect = vi.fn()
+
+    render(
+      <VariantSelector
+        variants={SPARSE}
+        initialVariant={{ size: 'L', color: 'red' }}
+        onVariantSelect={onVariantSelect}
+      />
+    )
+
+    expect(sizeButton('L')).toHaveClass('selected')
+    expect(colorButton('כחול')).toHaveClass('selected')
+    expect(onVariantSelect).toHaveBeenLastCalledWith(
+      expect.objectContaining({ size: 'L', color: 'blue' })
+    )
+  })
+
+  it('leaves the selection alone when nothing in the size is in stock', async () => {
+    /**
+     * The edge the fix must not turn into a crash or a silent lie: there is no
+     * available colour to move to, so the chosen one stands and the stock line
+     * is what tells the shopper why. A component that blanked the swatch here
+     * would be replacing a wrong answer with no answer.
+     */
+    render(
+      <VariantSelector
+        variants={[
+          { size: 'M', color: 'red', colorHe: 'אדום', inStock: true, stockQty: 5 },
+          { size: 'L', color: 'blue', colorHe: 'כחול', inStock: false, stockQty: 0 },
+        ]}
+        initialVariant={{ size: 'L', color: 'blue' }}
+      />
+    )
+
+    expect(colorButton('כחול')).toHaveClass('selected')
+    expect(screen.getByText('אזל מהמלאי')).toBeInTheDocument()
   })
 })
-
-/**
- * ── Flagged, not changed ──────────────────────────────────────────────────
- * `isVariantAvailable(size, color)` is defined in the component and never
- * called. It is precisely the function that would fix the bug above — it
- * already knows whether a size+colour pair exists — so it reads like an
- * intention that was written and then not wired up. Left in place; noted here
- * because deleting it would remove the clue.
- */

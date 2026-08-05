@@ -24,14 +24,15 @@ test.describe('Cart - Happy Path', () => {
     await expect(cartPage.itemQuantity(titleA)).toHaveText('1');
   });
 
-  test('🐛 KNOWN BUG (BUG-001): adding a configured product (variant + quantity) from PDP reaches the cart correctly @regression', async ({ page }) => {
-    // BUG-001: quantity selected on the PDP is never applied to the cart —
-    // AddToCartBtn hardcodes quantity to 1 and ProductDetails.jsx never
-    // passes a quantity prop. See bugs/BUG-001-pdp-quantity-not-applied.md.
-    // Remove this line once the bug is fixed; if the fix is correct the
-    // test will then pass normally instead of being reported as expected-fail.
-    test.fail(true, 'BUG-001: PDP quantity is not applied when adding to cart');
-
+  test('adding a configured product (variant + quantity) from PDP reaches the cart correctly @regression', async ({ page }) => {
+    // Was BUG-001 (fixed): AddToCartBtn hardcoded quantity to 1 and
+    // ProductDetails had no quantity prop to pass into, so the stepper drove
+    // local display only. AddToCartBtn now takes `quantity` (defaulting to 1
+    // for the call sites with no stepper) and dispatches it.
+    //
+    // The test.fail() marker is gone rather than the test — this is now the
+    // permanent guard on the fixed behaviour.
+    // See bugs/BUG-001-pdp-quantity-not-applied.md.
     const productB = pickProductWithVariants();
     if (!productB) throw new Error('Test data: expected at least one product with variants');
 
@@ -56,7 +57,7 @@ test.describe('Cart - Happy Path', () => {
     if (targetVariant.size) {
       await expect(cartPage.itemVariantText(titleB)).toContainText(targetVariant.size);
     }
-    // This is the assertion BUG-001 breaks — cart shows "1" instead of "2".
+    // The assertion BUG-001 used to break — it showed "1".
     await expect(cartPage.itemQuantity(titleB)).toHaveText('2');
   });
 });
