@@ -17,7 +17,8 @@
         "seed:fresh": "node scripts/seed.js --fresh",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage"
+        "test:coverage": "vitest run --coverage",
+        "test:server": "node scripts/test-server.js"
     },
     "author": "Me",
     "license": "ISC",

@@ -32,6 +32,8 @@ dist-ssr
 # Playwright
 /test-results/
 /playwright-report/
+# The API suite writes its own report so the two do not overwrite each other.
+/playwright-report-api/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/

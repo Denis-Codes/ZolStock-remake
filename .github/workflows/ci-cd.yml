@@ -96,6 +96,61 @@ jobs:
       - name: Run frontend unit tests
         run: npm test
 
+  # Playwright driving the API over a real socket: 13 tests against a real
+  # Express server on a real port, backed by a throwaway in-memory MongoDB.
+  # Covers what in-process testing cannot — that the server actually starts,
+  # that session cookies survive a round trip, and that helmet's security
+  # headers reach the wire.
+  api-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend-react
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend-react/package-lock.json
+
+      # Same mongod binary as backend-tests, same cache. The server this suite
+      # talks to boots its own in-memory MongoDB — see
+      # backend/scripts/test-server.js.
+      - name: Cache the in-memory MongoDB binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: mongodb-binaries-${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # The backend's dependencies too: Playwright starts `npm run test:server`
+      # in ../backend, which needs express and mongodb-memory-server present.
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      # NOTE: no `playwright install`. These tests use the `request` fixture,
+      # which speaks HTTP from Node and never launches a browser — so the
+      # ~400MB of browser binaries the other jobs download are not needed here.
+      # That is most of why this job is the fastest of the Playwright three.
+      - name: Run API tests
+        run: npm run test:api
+
+      - name: Upload Playwright report (api)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api
+          path: frontend-react/playwright-report-api/
+          retention-days: 14
+
   # ── Tier 1: the browser tests ───────────────────────────────────────────
   # Fast tier — the small set of critical happy-path checks. Runs on every
   # single push, so it gives near-instant feedback without slowing down
@@ -240,7 +295,7 @@ jobs:
     # `regression` is deliberately absent: it only runs on pull requests, and
     # a job that never ran counts as "not satisfied", which would block every
     # deploy permanently.
-    needs: [backend-tests, frontend-unit, smoke, untagged]
+    needs: [backend-tests, frontend-unit, api-tests, smoke, untagged]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     concurrency:
