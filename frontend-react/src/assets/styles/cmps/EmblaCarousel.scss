@@ -16,6 +16,20 @@
 
 .embla__viewport {
   width: 100%;
+
+  /* The slab's corners are cut here rather than on the slide, so the clip
+     happens once for whichever slide is in view.
+     It starts at $bp-sm because that is where `main` starts applying its
+     gutter. The radius used to arrive at $bp-lg (1200px), which left the whole
+     480–1199 band showing an INSET, SQUARE-CORNERED hero — the same "rounded
+     corner against the screen edge, but backwards" artifact that
+     .section-separator was fixed for, still live on the largest object on the
+     page. Below $bp-sm the hero genuinely runs to the glass and stays at 0. */
+  overflow: hidden;
+
+  @include from($bp-sm) {
+    border-radius: $r-lg;
+  }
 }
 
 .embla__container {
@@ -35,19 +49,19 @@
 /* SLIDE                          */
 /* ============================= */
 
+/* The slide carries no padding of its own and no gap: both of its blocks reach
+   the slab's edges, and the type block owns its own inset. The old slide was a
+   padded grid holding a capped square well, which is what left the blue field
+   mostly empty — see the note under SIDE BY SIDE. */
 .hero-slide {
   display: grid;
   grid-template-columns: 1fr;
-  gap: rem(16px);
-  align-items: center;
+  gap: 0;
   width: 100%;
 
   background-color: $clr1;
   color: $clr4;
   text-decoration: none;
-
-  padding: rem(20px) rem(18px) rem(24px);
-  border-radius: 0;
 
   /* Colour only, at the system duration — the hero does not move on hover. */
   transition: background-color $dur $ease;
@@ -63,16 +77,18 @@
   }
 }
 
+/* Department artwork, not product photography — DESIGN.md's Don't Crop rule
+   covers the catalogue shots on a product card, and the category tiles already
+   cover this same set of images. So the well can go: the artwork runs the full
+   width of the slab instead of sitting as a 300px square with blue on all four
+   sides of it. 5:4 rather than 1:1 keeps the block close to the height it had
+   while letting it reach both edges; the subjects are centred with room to
+   spare in a 1024² frame, so nothing meaningful leaves the crop. */
 .hero-slide__media {
-  /* A square well rather than a crop: the artwork is 1024×1024 and fills the
-     frame exactly, so nothing is ever cut off. DESIGN.md, Don't Crop. */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 5 / 4;
   width: 100%;
-  max-width: rem(300px);
-  margin-inline: auto;
 
   background-color: $surface-sunken;
-  border-radius: $r-lg;
   overflow: hidden;
 
   img {
@@ -87,8 +103,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   gap: rem(10px);
   min-width: 0;
+
+  /* The type block's inset lives here now that the slide has none. */
+  padding: rem(24px) rem(20px) rem(28px);
 }
 
 .hero-slide__title {
@@ -179,18 +199,32 @@
 /* ============================= */
 /* SIDE BY SIDE                   */
 /* ============================= */
-/* From tablet up the artwork sits beside the type instead of above it, and
-   the panel leads in the reading direction (inline-start is the right edge). */
-/* From tablet up the artwork sits beside the type instead of above it. The
-   two columns are close to equal so the blue field never becomes a mostly
-   empty backdrop with a small picture stranded in it — the artwork carries its
-   half, and the type block sits centred in the other. */
+/* From tablet up the artwork sits beside the type: two halves, both reaching
+   the slab's edges, with the panel leading in the reading direction
+   (inline-start is the right edge).
+ *
+ * The previous version was a fractional grid (1.05fr / 1fr) holding a square
+ * well capped at 440–480px and pinned to the near side of its own column with
+ * `margin-inline: 0 auto`. Every part of that fought the field. Measured:
+ *
+ *   1440px — 140px of dead blue outboard of the artwork, and 574px of it
+ *            between the artwork and the type.
+ *   1920px — 356px dead outboard; the panel column ran 819px wide around a
+ *            type block about 90px wide.
+ *
+ * The wider track also held the narrower content, so the field grew emptier
+ * the more room it was given. Equal halves with no gap and no cap means
+ * neither block has slack to sit in, at any width. */
 @include from($bp-tablet-min) {
   .hero-slide {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    gap: clamp(rem(24px), 4vw, rem(56px));
-    padding: rem(28px) rem(32px);
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+
+    /* The slab states its own height rather than inheriting whatever the type
+       block happens to measure — without this the hero letterboxes to ~320px
+       at 1920. It also sets the artwork's crop: 1.3:1 at 1024 through 1.6:1 at
+       1920, all of which hold the subject. */
+    min-height: clamp(rem(360px), 30vw, rem(560px));
   }
 
   /* Both are pinned to row 1. The media comes first in the DOM so the phone
@@ -201,31 +235,43 @@
   .hero-slide__panel {
     grid-area: 1 / 1;
     gap: rem(16px);
+
+    /* Grows with the field. This is the one thing on the slide that should:
+       it is what keeps the headline off the slab's edge at 1920 and roughly
+       in line with the contained blocks below the hero. */
+    padding: clamp(rem(28px), 4vw, rem(56px)) clamp(rem(28px), 5vw, rem(96px));
   }
 
   .hero-slide__media {
     grid-area: 1 / 2;
-    /* Sized off the slide rather than pinned, so it grows with the field
-       instead of leaving a blue margin around itself. */
-    max-width: min(100%, rem(440px));
-    margin-inline: 0 auto;
+
+    /* Fills its half, top to bottom.
+       Dropping the ratio is not enough on its own: an in-flow `img` at
+       `width: 100%` resolves its own height against a parent that has none
+       yet, so the 1024² artwork drove the whole row square again — 662px tall
+       at 1440 and 883px at 1920, taller than the slab it was supposed to sit
+       inside. Taking the image out of flow leaves the frame with no intrinsic
+       height, so the slide's min-height and the type block decide the row.
+       Same fix, same reason, as .category-tile:last-child in HomePage.scss. */
+    position: relative;
+    aspect-ratio: auto;
+
+    img {
+      position: absolute;
+      inset: 0;
+    }
   }
 
+  /* DESIGN.md gives the Display role — which is this headline and nothing else
+     — a ceiling of 3.8rem. It was capped at rem(52px), below its own token, on
+     the one piece of type that has a half of the slab to fill. Same 3.4vw
+     slope, so nothing changes below 1530px. */
   .hero-slide__title {
-    font-size: clamp(rem(34px), 3.4vw, rem(52px));
+    font-size: clamp(rem(34px), 3.4vw, rem(60px));
   }
 }
 
 @include from($bp-lg) {
-  .hero-slide {
-    padding: clamp(rem(36px), 3vw, rem(56px));
-    border-radius: $r-lg;
-  }
-
-  .hero-slide__media {
-    max-width: min(100%, rem(480px));
-  }
-
   .hero-slide__price-tag {
     .whole {
       font-size: rem(34px);
@@ -243,13 +289,17 @@
 /* CONTROLS                       */
 /* ============================= */
 
+/* Tight to the slab it belongs to. At rem(12px) either side the row measured
+   78px tall — a full-width band of page background carrying four 10px dots,
+   sitting between the hero and the first section and reading as neither. The
+   targets stay 44px; only the slack around them goes. */
 .embla__controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: rem(12px);
 
-  padding-block: rem(12px);
+  padding-block: rem(6px) 0;
 }
 
 .embla__dots {

@@ -7,58 +7,103 @@
  * this page lives at /branches now — see BranchesPage.scss. */
 
 /* ============================= */
+/* PAGE RHYTHM */
+/* ============================= */
+/* Two intervals, deliberately far apart. A chapter boundary has to be
+   unmistakably larger than the gap between a head and the block it introduces,
+   and a heading needs more space above it than below it. These were 28px and
+   16px — close enough that nothing grouped, and a shopper scanning the page
+   could not tell which block a head belonged to. */
+$home-chapter-gap: clamp(rem(40px), 6vw, rem(72px));
+$home-head-gap: rem(20px);
+
+/* One measure for every contained block, so the deals shelf, the department
+   mosaic, the heads and the closing band share an edge and none of them grows
+   without limit.
+ *
+ * page-container's rem(1600px) let the deals card reach 322px at 1440 and
+ * 391px at 1920 — against a catalogue card track that tops out at rem(220px)
+ * everywhere else in the shop — and let the mosaic's feature tile reach
+ * 1600px square. At rem(1160px) the deals card lands at 281px and the
+ * department tile at 284px: the same module twice, at every width above the
+ * measure. Below it the measure does nothing and the page gutter is still the
+ * only inset, so The One Gutter Rule holds where it applies.
+ *
+ * The hero is deliberately outside this. It is a full-bleed brand field, not a
+ * contained block, and capping it would put blue margins around the one thing
+ * on the page that should own the full width. */
+$home-measure: rem(1160px);
+
+@mixin home-block {
+  width: 100%;
+  max-width: $home-measure;
+  margin-inline: auto;
+}
+
+/* ============================= */
 /* GALLERY (hero wrapper) */
 /* ============================= */
 .gallery {
   min-width: 0;
-  padding-block: rem(16px);
 
-  /* Runs edge to edge below the desktop breakpoint — the hero is the content,
-     so it gets the full screen width rather than a gutter. */
-  @include until($bp-lg) {
-    padding-block: 0;
-    padding-inline: 0;
+  /* Breathing room above the slab from $bp-sm up — the same boundary where
+     `main` starts applying its gutter and the hero becomes an inset object
+     rather than a full-bleed one. It used to arrive at $bp-lg, so between 480
+     and 1199 the hero was inset on three sides and flush against the header on
+     the fourth. Nothing below: the control row closes the hero group and the
+     chapter gap opens the next one. */
+  padding-block: 0;
+
+  @include from($bp-sm) {
+    padding-block-start: rem(16px);
   }
 }
 
 /* ============================= */
-/* SECTION SEPARATOR */
+/* SECTION HEAD */
 /* ============================= */
-/* Sized to the content it introduces, not to the viewport. It used to break
-   out to 100vw while the tiles and panels below stayed inset, so the band
-   overhung them on both sides. It is also a label, not a hero — the block
-   is now roughly half its old height. */
-.section-separator {
-  @include page-container;
+/* Type, not a band. This was a full-width blue slab with centred white text —
+   visually the same object as the hero above it, the eight tile labels below
+   it and the closing CTA at the foot, which left the page with five
+   interchangeable blocks of #1c41b4 and no hierarchy between a label and a
+   brand moment.
+ *
+ * The rule under the heading is ZolStock Blue rather than High-Voltage Yellow:
+ * #FFF200 against the #F2F4F7 page measures about 1.03:1, so a yellow rule
+ * would not have been visible at all. This is The Yellow Needs A Bed Rule
+ * doing its job — yellow stays a fill on a dark surface, which on this page
+ * means the price tag and the closing CTA. */
+.home-section-head {
+  @include home-block;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: $clr1;
-  border-radius: $r-md;
-  padding-block: rem(12px);
-  padding-inline: rem(16px);
-  margin-block: rem(28px) rem(16px);
+  margin-block: $home-chapter-gap $home-head-gap;
 
   h2 {
     margin: 0;
-    color: $clr4;
-    font-size: clamp(rem(15px), 1vw + rem(10px), rem(19px));
-    font-weight: 700;
-    letter-spacing: -0.01rem;
-    text-align: center;
+    color: $clr3;
+    font-size: clamp(rem(20px), 1.2vw + rem(14px), rem(28px));
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: rem(-0.4px);
+
+    /* A short mark rather than a full rule: it terminates the heading instead
+       of drawing a line across the page, which would reintroduce the divider
+       the band was. Square, like everything else at this scale. */
+    &::after {
+      content: '';
+      display: block;
+      width: rem(48px);
+      height: rem(4px);
+      margin-block-start: rem(10px);
+      background-color: $clr1;
+    }
   }
 
-  /* Full-bleed on a phone, matching the hero and the tiles either side.
-     This used to key off $bp-lg (1200px) while `<main>` only drops its gutter
-     at $bp-sm (480px), so across the whole 480–1199px band the band was inset
-     AND square-cornered — the exact "rounded corner against the screen edge"
-     artifact the rule exists to prevent, applied at the wrong boundary. */
+  /* Type never touches the glass. The head is the one block here that has to
+     pick up the phone inset even though the photographic blocks either side of
+     it deliberately bleed. */
   @include until($bp-sm) {
-    border-radius: 0;
-    margin-block: 0;
-    padding-block: rem(14px);
+    padding-inline: clamp(rem(8px), 3vw, rem(16px));
   }
 }
 
@@ -70,12 +115,23 @@
    proposition is the markdown. This is the shop's own card and the shop's own
    grid; nothing here is bespoke. */
 .home-deals {
-  @include page-container;
+  @include home-block;
+
+  /* The list's own rem(8px)/1.5rem padding is what the page's rhythm variables
+     are for here. Left in place it added 24px under the shelf that no value in
+     this file accounted for, so the interval below the band and the interval
+     above the next head disagreed with each other. */
+  .product-list {
+    padding-block: 0;
+  }
 
   /* Eight deals in four columns is two flush rows. The listing pages use
-     `auto-fit` because their product counts are arbitrary and a ragged last
+     `auto-fill` because their product counts are arbitrary and a ragged last
      row is honest there; on a curated band of exactly eight it read as broken
-     — 1440px gave six columns and left two cards orphaned in a second row. */
+     — 1440px gave six columns and left two cards orphaned in a second row.
+     The measure is what keeps those four columns at catalogue density: without
+     it the same card that renders at 165–220px on every listing page reached
+     391px here. */
   @include from($bp-md) {
     .product-list {
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -92,7 +148,7 @@
 }
 
 .home-block-error {
-  @include page-container;
+  @include home-block;
 
   display: flex;
   flex-direction: column;
@@ -151,9 +207,12 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: rem(8px);
 
-  @include page-container;
-  margin-top: rem(8px);
-  padding-bottom: rem(8px);
+  /* Same measure as the deals shelf, which is what stops the mosaic scaling
+     forever: at page-container's 1600px a single tile reached 796px square and
+     the feature tile 1600px. The tile and the deals card now land within 3px
+     of each other above the measure. The margin/padding pair the block used to
+     carry is gone — the head above it owns that interval now. */
+  @include home-block;
 }
 
 .category-tile {
@@ -186,9 +245,11 @@
  * the label had no line clamp, so a longer department name pushed white text
  * up out of the dark band into the light part of the image.
  *
- * The band is the same object as `.section-separator` above it: brand blue,
- * white text, fixed 8.6:1 whatever the photograph does. It also anchors eight
- * quiet neutral photographs to the brand, which the scrim never did. */
+ * The band is brand blue with white text at a fixed 8.6:1 whatever the
+ * photograph does, and it anchors eight quiet neutral photographs to the brand,
+ * which the scrim never did. It used to be the same object as the section head
+ * above it; now that the head is type, this is the page's only repeating blue
+ * fill and it reads as one device rather than as more of the same. */
 .category-tile-label {
   position: absolute;
   inset-inline: 0;
@@ -260,11 +321,13 @@
      tile is a desktop move: at 375px a double tile is a 375px-tall block that
      pushes six departments below the fold, and the leftover cell it creates
      leaves a hole at the end of the grid. Eight equal tiles is also the
-     shelf-scanning density the two-column rule exists for. */
+     shelf-scanning density the two-column rule exists for.
+     The mosaic keeps running to the glass here: it is photography, and on this
+     page the photographic blocks (hero, tiles) bleed while the blocks made of
+     type and cards (head, deals, closing band) take the small inset. */
   .category-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: rem(6px);
-    padding-inline: 0;
   }
 
   .category-tile:first-child,
@@ -291,15 +354,15 @@
    The block it replaces also carried a background photo hotlinked from
    zolstock.co.il, which PRODUCT.md forbids outright. */
 .home-close {
-  @include page-container;
+  @include home-block;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: rem(16px);
 
-  margin-block: rem(28px) rem(32px);
-  padding: clamp(rem(28px), 5vw, rem(48px)) clamp(rem(20px), 4vw, rem(40px));
+  margin-block: $home-chapter-gap rem(40px);
+  padding: clamp(rem(32px), 5vw, rem(56px)) clamp(rem(20px), 4vw, rem(40px));
 
   background-color: $clr1;
   border-radius: $r-md;
@@ -326,7 +389,7 @@
 
   @include until($bp-sm) {
     border-radius: 0;
-    margin-block: rem(20px) 0;
+    margin-block-end: 0;
   }
 }
 

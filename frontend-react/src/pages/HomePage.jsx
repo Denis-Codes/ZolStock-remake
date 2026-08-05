@@ -48,7 +48,12 @@ function HomePage() {
         <EmblaCarousel />
       </div>
 
-      <div className="section-separator">
+      {/* `.section-separator` was a full-width blue band with centred white
+          text — the same object as the hero above it and the closing CTA
+          below, so the page offered five slabs of #1c41b4 with no way to rank
+          them. A section head is a label, not a brand moment; it reads as type
+          now and the blue is left to mean something. */}
+      <div className="home-section-head">
         <h2>המבצעים הגדולים</h2>
       </div>
 
@@ -56,7 +61,7 @@ function HomePage() {
         <HomeDeals />
       </div>
 
-      <div className="section-separator">
+      <div className="home-section-head">
         <h2>קנייה לפי קטגוריה</h2>
       </div>
 
