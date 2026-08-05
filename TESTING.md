@@ -1,6 +1,6 @@
 # Testing ZolStock
 
-**647 automated tests across five suites, gating every deploy.**
+**655 automated tests across five suites, gating every deploy.**
 
 This page explains what runs, when, and — more usefully — *why there are five
 suites instead of one*. Each layer answers a question the others cannot.
@@ -14,7 +14,7 @@ suites instead of one*. Each layer answers a question the others cannot.
 | Backend unit | 263 | Vitest | Pricing rules, schemas, query building — no I/O at all | `cd backend && npm test` |
 | Backend API | 158 | Vitest + supertest | What happens to the **data** when a stranger sends a request | `cd backend && npm test` |
 | Test harness | 15 | Vitest | The fixtures and helpers everything else stands on | `cd backend && npm test` |
-| Frontend unit | 137 | Vitest + Testing Library | Components render and behave correctly in jsdom | `cd frontend-react && npm test` |
+| Frontend unit | 145 | Vitest + Testing Library | Components render and behave correctly in jsdom | `cd frontend-react && npm test` |
 | API over HTTP | 13 | Playwright `request` | Real server, real port, real cookie jar, real headers | `cd frontend-react && npm run test:api` |
 | Browser (local mode) | 54 | Playwright | The storefront as deployed to GitHub Pages | `cd frontend-react && npm run test:e2e` |
 | Full stack | 7 | Playwright | The real built bundle + real server + real database | `cd frontend-react && npm run test:fullstack` |
@@ -46,6 +46,19 @@ real. Two bugs in this repo were found precisely there:
 
 So each layer earns its place by catching something the layer below structurally
 cannot.
+
+### And the layer none of them replace
+
+**BUG-009** was found by signing up with a short password and reading the
+console. The server returned a precise per-field message; the form discarded it
+and advised a retry that could never succeed. Every suite here was green.
+
+They could not have caught it. A test asserts something someone thought to
+assert, and nobody had written down *"the message the server sent must reach
+the user"* — until watching the form fail made it obvious. The tests earn their
+place the minute afterwards, pinning it with a red/green signal for the fix.
+But a suite is a ratchet that stops known behaviour regressing. It is not a
+substitute for someone using the thing.
 
 ---
 
@@ -135,6 +148,7 @@ backed by a test that will notice when it changes.
 | BUG-006 — variant selector resolves an impossible combination | High | Open |
 | BUG-007 — review write succeeds, returns 400 | Medium (latent) | Open |
 | BUG-008 — auth errors are not JSON | Medium | Open |
+| BUG-009 — signup discards the server's validation message | Medium | Open |
 
 Expected-failure markers (`it.fails()` in Vitest, `test.fail()` in Playwright)
 keep open bugs visible instead of hiding them behind a skip. When the fix lands,
