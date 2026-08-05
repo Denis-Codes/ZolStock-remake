@@ -1,1 +1,0 @@
-import{C as r}from"./index-4c98b8d1.js";const o={checkout:e=>r.post("order",e),getMyOrders:()=>r.get("order"),getById:e=>r.get(`order/${e}`)};function s(){return{fullname:"",phone:"",city:"",street:"",houseNumber:"",floor:"",apartment:"",zip:""}}export{s as g,o};

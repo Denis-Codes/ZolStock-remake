@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="זול סטוק">
-  <!-- Brand blue field with the yellow zayin of זול סטוק. The letterform is
-       drawn as paths rather than <text> so it does not depend on a Hebrew
-       font being available wherever a favicon gets rasterised.
-       Colours are the frozen brand values, used as-is. -->
-  <rect width="64" height="64" rx="10" fill="#1c41b4"/>
-  <path d="M18 17h28v8H18z" fill="#FFF200"/>
-  <path d="M29 17h8v30h-8z" fill="#FFF200"/>
-</svg>
