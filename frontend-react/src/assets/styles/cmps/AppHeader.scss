@@ -1,93 +1,205 @@
 /* AppHeader.scss (REFAC + RESPONSIVE via central breakpoints) */
 
 /* ============================= */
-/* TOP BAR */
+/* MASTHEAD (the blue band) */
 /* ============================= */
 
-.top-wrap {
-  display: flex;
+/* The band used to be a slab: 128px of blue holding one 96px logo, under a
+   48px grey strip that carried two links — 176px of chrome above the bar the
+   shopper actually uses, and 1500px of empty blue either side of the mark at
+   1600px wide. It now carries the store's off-catalogue business at its own
+   edges (utility links on one side, the branch locator and the social accounts
+   on the other) and the strip is retired into it.
+
+   Equal `1fr` side columns keep the mark optically centred. Unlike the sticky
+   bar below — where content-sized columns are load-bearing, see its own note —
+   the middle here is a fixed-width logo, so symmetric columns cost nothing:
+   each side needs ~230px and gets 400px+ at the width where both are shown. */
+.masthead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  /* Each link cluster anchors to its own gutter, mirroring the bar below.
-     `space-evenly` floated them at arbitrary positions that matched nothing
-     else on the page. The left cluster (דרושים / זכיינות) is gone — both were
-     `href=""`, which reloads the page — so the remaining cluster sits against
-     the inline-start gutter on its own. */
-  justify-content: space-between;
-
-  padding-block: rem(2px);
-  @include page-gutter;
-
-  span {
-    color: #f5f5f5;
-    margin: 0 auto;
-  }
-
-  a {
-    color: $clr1;
-    transition: color 160ms ease, background-color 160ms ease;
-
-    &:hover {
-      color: $clr2;
-      background-color: $clr1;
-    }
-  }
-}
-
-.right-links,
-.left-links,
-.investors {
-  display: flex;
-  align-items: center;
-}
-
-.right-links,
-.left-links {
-  a {
-    /* Was `padding: 4px 1rem`, which rendered a 33.6px-tall target. The row is
-       44px now; the strip absorbs it by dropping its own block padding. */
-    display: inline-flex;
-    align-items: center;
-    min-height: rem(44px);
-    padding-inline: 1rem;
-    border-radius: $r-md;
-  }
-}
-
-/* ============================= */
-/* LOGO (big logo area) */
-/* ============================= */
-
-/* The band sizes itself to the logo plus equal padding. It previously fixed
-   `height: 6rem` around a 180px image and pulled it up with `padding-bottom:
-   5rem`, so the logo overflowed the band and overlapped the strip above it. */
-.logo-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: rem(16px);
 
   background-color: $clr1;
   padding-block: rem(16px);
 
-  /* Heights are the mark itself now. The old values wrapped ~42% vertical
+  @include page-gutter;
+}
+
+.masthead-logo {
+  display: block;
+  justify-self: center;
+  text-decoration: none;
+
+  /* Heights are the mark itself. The old values wrapped ~42% vertical
      transparency, so 146px of box only ever showed 85px of logo. */
   img {
     display: block;
-    height: rem(96px);
+    height: rem(80px);
     width: auto;
   }
+}
 
-  @include until($bp-md) {
-    img {
-      height: rem(80px);
+.masthead-utility,
+.masthead-services {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* First grid column, which in RTL is the right edge — the links hug the same
+   gutter the content below starts from. */
+.masthead-utility {
+  justify-content: flex-start;
+  gap: rem(2px);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: rem(44px);
+    padding-inline: rem(12px);
+    border-radius: $r-md;
+
+    /* White at 0.82 on the brand blue measures 6.28:1. Yellow on blue is
+       7.29:1 — this is the bed The Yellow Needs A Bed Rule asks for, so the
+       hover state can be the mark's own colour rather than a tint of white. */
+    color: rgba($clr4, 0.82);
+    font-size: rem(14px);
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: color $dur $ease;
+
+    &:hover {
+      color: $clr2;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr2;
+      outline-offset: rem(2px);
+    }
+  }
+}
+
+.masthead-services {
+  justify-content: flex-end;
+  gap: rem(12px);
+
+  /* Outlined, not filled. A blue fill disappears against a blue band, and a
+     yellow fill would make the branch locator the brightest object above the
+     fold — a job the price tag owns. The outline also drops the old off-scale
+     14px radius onto $r-md, per The Radius Is Flat Rule. */
+  .branches-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(8px);
+
+    height: rem(44px);
+    padding-inline: rem(18px);
+    border: rem(1px) solid rgba($clr4, 0.38);
+    border-radius: $r-md;
+
+    background: transparent;
+    color: $clr4;
+
+    font-size: rem(15px);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition: color $dur $ease, border-color $dur $ease;
+
+    &:hover {
+      color: $clr2;
+      border-color: $clr2;
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid $clr2;
+      outline-offset: rem(2px);
+    }
+
+    .svg-inline--fa {
+      height: rem(15px);
     }
   }
 
-  @include until($bp-sm) {
-    padding-block: rem(12px);
+  /* Bare glyphs beside the outlined locator, so the band has one CTA and two
+     quieter exits rather than three outlined objects in a row. */
+  .socials {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(2px);
 
-    img {
-      height: rem(64px);
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: rem(44px);
+      height: rem(44px);
+      border-radius: 50%;
+
+      font-size: rem(17px);
+      color: rgba($clr4, 0.82);
+
+      transition: color $dur $ease;
+
+      &:hover {
+        color: $clr2;
+      }
+
+      &:focus-visible {
+        outline: rem(2px) solid $clr2;
+        outline-offset: rem(2px);
+      }
     }
+  }
+}
+
+/* 480-1024: the band keeps all three zones, at a step down in size. */
+@include until($bp-md) {
+  .masthead {
+    padding-block: rem(14px);
+  }
+
+  .masthead-logo img {
+    height: rem(68px);
+  }
+
+  .masthead-utility a {
+    padding-inline: rem(10px);
+    font-size: rem(13px);
+  }
+
+  .masthead-services {
+    gap: rem(8px);
+
+    .branches-btn {
+      padding-inline: rem(14px);
+      font-size: rem(14px);
+    }
+  }
+}
+
+/* Below 600 the band is the mark alone. Everything its edges carry already has
+   a home on a phone — אודות, צור קשר and סניפים are in the drawer, the social
+   accounts are in the footer — so nothing is lost by dropping them here. */
+@include until($bp-tablet-min) {
+  .masthead {
+    grid-template-columns: 1fr;
+    padding-block: rem(12px);
+  }
+
+  .masthead-utility,
+  .masthead-services {
+    display: none;
+  }
+
+  .masthead-logo img {
+    height: rem(60px);
   }
 }
 
@@ -112,16 +224,26 @@
   background: $surface;
   box-shadow: $shadow-header;
 
-  /* Two clusters, each hugging its own page gutter, at every width. The old
-     three-column grid existed only to hold a permanent search field between
-     them — which could never be centred (nav needs ~535px, actions ~326px)
-     and starved the nav until it collided with the field. With search moved
-     behind a toggle there is no middle column to balance, so the bar is
-     symmetric by construction and needs no width-specific grid at all. */
-  display: flex;
+  /* Three columns: the mark, the departments, the shopper's own controls.
+     Content-sized on both sides with the departments taking the middle — the
+     inverse of the arrangement that failed here before, where a fixed-width
+     search field sat in the middle and `1fr` side columns starved the nav
+     until it collided with the field. Here the sides are `auto`, so neither
+     can starve, and the middle is the one thing that should absorb width.
+
+     As two flex clusters against opposite gutters, every pixel the departments
+     did not need collected into a single hole beside them: 220px at 1600 and
+     514px at 1920, and 507px at 1100 where the nav was not rendered at all.
+     The same slack now splits evenly either side of the nav, which reads as
+     air around the bar's centre of gravity rather than as a gap in it. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: rem(16px);
+
+  /* Grows with the viewport like the nav's own rhythm does, rather than
+     holding at 16px — at 1024, where the departments are tightest, a fixed
+     16px column gap was 32px taken off the one track that needed it. */
+  gap: clamp(rem(10px), 1vw, rem(20px));
 
   /* The bar took its whole height from its tallest child — a 52px nav row in a
      54px bar, so the yellow hover fill ran edge to edge and the bar read as
@@ -134,6 +256,25 @@
   /* חשוב: כדי שילדים בתוך flex יוכלו להצטמצם ולא לשבור */
   > * {
     min-width: 0;
+  }
+
+  /* Pinned, not auto-placed. Below the nav breakpoint `.nav-wrap` is
+     `display: none` and auto-placement walked the action cluster into the
+     `1fr` middle track, where it stretched to 285px of a 375px bar — it only
+     looked right because its own `justify-content: flex-end` re-hugged the
+     gutter from inside. Naming the columns keeps the empty middle empty. */
+  .header-start {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .nav-wrap {
+    grid-column: 2;
+  }
+
+  .header-left-actions {
+    grid-column: 3;
+    justify-self: end;
   }
 
   /* ============================= */
@@ -158,19 +299,17 @@
     text-decoration: none;
     flex: 0 0 auto;
 
-    /* hidden without taking space */
-    width: 0;
+    /* It reserves its slot at rest and only fades in. Animating `width` from 0
+       instead meant the start column changed size on scroll, which with a
+       centred nav would drag all eight departments sideways as the mark
+       arrived — and it needed a negative margin to cancel the flex gap the
+       collapsed item still consumed. A fixed slot needs neither. */
+    width: rem(50px);
     overflow: hidden;
     opacity: 0;
-    transform: translateY(rem(-6px)) scale(0.96);
     pointer-events: none;
 
-    /* cancels the flex `gap` while collapsed, since a width:0 item still
-       consumes one full gap next to it in a flex row */
-    margin-inline-end: -0.875rem;
-
-    transition: opacity 260ms ease, transform 260ms ease, width 260ms ease;
-    transform-origin: right center;
+    transition: opacity 260ms ease;
 
     /* Sized to sit inside the 44px control row rather than above it. At 54px
        the mark was the tallest thing in the bar and dictated the header's
@@ -254,20 +393,16 @@
 
   .nav-wrap {
     display: block;
-    flex: 1 1 auto;
     min-width: 0;
-    max-width: rem(1400px);
 
     overflow: visible;
 
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-
-    /* The `transform` above creates a stacking context (any value but `none`
-       does), which traps the dropdown menu's `z-index: 9999` inside this
-       element. The nav layer therefore declares its own z-index rather than
-       relying on DOM order against the other header children. */
+    /* The collapse animation's `transform: translateY(0)` used to sit here and
+       created a stacking context (any value but `none` does), trapping the
+       dropdown's `z-index: 9999` inside this element. The transform is gone
+       with the collapse, but the z-index stays declared: it is what keeps open
+       menus above the search overlay's layer, and removing it puts them back
+       underneath. */
     position: relative;
     z-index: 20;
   }
@@ -279,10 +414,14 @@
   nav {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 1rem;
+    justify-content: center;
 
-    font-size: clamp(rem(13px), 0.5vw + rem(11px), rem(16px));
+    /* Type, padding and gap all grow with the viewport instead of stepping at
+       a breakpoint. The old fixed 1rem gap and 12px padding, against a font
+       that reached its 16px ceiling at 1000px wide, froze the nav at 801px —
+       so every pixel past 1440 became slack rather than legibility. */
+    gap: clamp(rem(8px), 1vw - rem(2px), rem(22px));
+    font-size: clamp(rem(13px), 0.52vw + rem(7.7px), rem(17px));
 
     overflow: visible;
     white-space: normal;
@@ -328,13 +467,13 @@
       align-items: center;
 
       height: rem(52px);
-      padding: 0 rem(12px);
-      border-radius: rem(4px);
+      padding-inline: clamp(rem(8px), 0.8vw, rem(20px));
+      border-radius: $r-sm;
 
       font-weight: 600;
       white-space: nowrap;
 
-      transition: height 220ms ease, padding 220ms ease;
+      transition: height 220ms ease;
     }
 
     a {
@@ -515,79 +654,28 @@
   /* LEFT ACTIONS */
   /* ============================= */
 
+  /* Four 44px boxes at one flat 12px gap read as four unrelated controls.
+     They are not: account, wishlist and cart all report the shopper's own
+     state — two of them carry count badges — while search is a mode that
+     opens a panel. Tight inside the trio, one clear step out to search. */
   .header-left-actions {
     display: inline-flex;
     align-items: center;
-    gap: rem(12px);
+    gap: rem(4px);
     justify-content: flex-end;
 
     min-width: 0;
   }
 
-  .locations {
-    display: inline-flex;
-    align-items: center;
-
-    .branches-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: rem(10px);
-
-      padding: rem(12px) rem(18px);
-      border: none;
-      border-radius: rem(14px);
-
-      background-color: $clr1;
-      color: #fff;
-
-      font-size: rem(16px);
-      font-weight: 600;
-      cursor: pointer;
-
-      transition: background-color $dur $ease;
-
-      &:hover {
-        background-color: darken($clr1, 8%);
-      }
-
-      &:focus-visible {
-        outline: rem(3px) solid rgba(229, 57, 53, 0.35);
-        outline-offset: rem(2px);
-      }
-
-      .svg-inline--fa {
-        height: rem(16px);
-      }
-    }
+  /* Inline-end is the left side here, i.e. toward the trio. */
+  .search-toggle {
+    margin-inline-end: rem(12px);
   }
 
-  .socials {
-    display: inline-flex;
-    align-items: center;
-    gap: rem(10px);
-
-    a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      /* 44px is the system's floor for anything you can press. These were
-         36px — readable, but a miss under a thumb. */
-      width: rem(44px);
-      height: rem(44px);
-      border-radius: 50%;
-
-      font-size: rem(18px);
-      color: $clr1;
-
-      transition: color 160ms ease, background-color 160ms ease;
-
-      &:hover {
-        color: $clr2;
-        background-color: $clr1;
-      }
-    }
-  }
+  /* The branch locator and the social accounts used to live here. They are in
+     the masthead band now — they are store business, not the shopper's own
+     state, and pulling them out is what leaves this bar with four icons and
+     room for the department nav further down the width range. */
 
   .user-info {
     display: flex;
@@ -619,9 +707,7 @@
 
 .app-header.is-scrolled {
   .mini-logo {
-    width: auto;
     opacity: 1;
-    transform: translateY(0) scale(1);
     pointer-events: auto;
   }
 
@@ -633,53 +719,19 @@
   }
 }
 
-/* Cancel mini-logo's flex gap only where nav is visible (desktop, >= $bp-lg).
-   A width:0 flex item still consumes one full `gap` next to it, so on
-   mobile (where nav-wrap is hidden anyway) this must NOT apply — it was
-   causing horizontal overflow on phones. */
-@include from($bp-lg) {
-  .app-header .mini-logo {
-    margin-inline-end: -0.875rem;
-  }
-
-  .app-header.is-scrolled .mini-logo {
-    margin-inline-end: 0;
-  }
-}
-
 /* ============================= */
 /* RESPONSIVE LAYERS (central breakpoints) */
 /* ============================= */
 
-/* <= 1024: tighten + horizontal scroll for categories */
+/* Below the nav breakpoint the mark's reserved slot goes with the nav — the
+   start column is the hamburger alone, and a 50px hole beside it on a phone
+   is 50px of a 375px bar. */
 @include until($bp-md) {
   .app-header {
     gap: rem(10px);
   }
 
-  .app-header .nav-wrap {
-    max-width: 100%;
-  }
-
-  .app-header nav {
-    white-space: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .app-header nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .app-header .locations .branches-btn {
-    padding: rem(10px) rem(14px);
-    font-size: rem(14px);
-  }
-
-  /* Social links belong to the footer once the bar is icon-dense; keeping
-     them here below the nav breakpoint gives the left cluster six items. */
-  .app-header .socials {
+  .app-header .mini-logo {
     display: none;
   }
 }
@@ -691,17 +743,6 @@
   .app-header {
     padding-inline: rem(10px);
     gap: rem(8px);
-  }
-
-  .app-header .socials {
-    display: none;
-  }
-
-  /* Below 480 the bar carries search + wishlist + cart only. Branches moves
-     into the drawer rather than shrinking to an unlabelled pin competing
-     with three other icons. */
-  .app-header .locations {
-    display: none;
   }
 
   .app-header nav .dropdown-menu {
@@ -717,23 +758,27 @@
 
 /* >= 2560: more air */
 @include from($bp-ultra-min) {
-  .top-wrap {
+  /* NOTE: `clamp(20rem, 4vw, 12rem)` has its minimum above its maximum, so it
+     resolves to a flat 20rem and overrides page-gutter's own ultra branch.
+     Carried across unchanged from `.top-wrap` — the gutter scale is Stage 3's
+     subject, and changing it here would put two stages in one diff. */
+  .masthead {
     padding-block: 2rem;
     padding-inline: clamp(20rem, 4vw, 12rem);
+  }
+
+  .masthead-logo img {
+    height: rem(104px);
   }
 
   .app-header {
     padding-inline: clamp(20rem, 4vw, 12rem);
   }
-
-  .app-header .nav-wrap {
-    max-width: rem(1600px);
-  }
 }
 
 /* >= 3840: even more air on true 4K */
 @include from($bp-4k-min) {
-  .top-wrap {
+  .masthead {
     padding-inline: clamp(60rem, 4vw, 12rem);
   }
 
@@ -746,11 +791,16 @@
 /* BREAKPOINT: categories -> hamburger */
 /* ============================= */
 
-/* Collapses at $bp-lg (1200px), which is where the header genuinely runs
-   out of room: nav 535 + search 220 (min) + actions 326 + gutters/gaps
-   ≈ 1197px. Previously 97.5rem (1560px), which was set high to dodge the
-   nav/search collision now fixed by the content-sized grid above. */
-@include until($bp-lg) {
+/* Collapses at $bp-md (1024px), not $bp-lg. The 1200 figure was set against a
+   bar that also carried the branch CTA and two social links — 326px of left
+   cluster against the nav's frozen 801px, which genuinely did run out of room
+   at ~1197px. With those three moved into the masthead the cluster is 212px,
+   and the nav's own scale now condenses with the viewport instead of holding
+   at its 16px ceiling, so eight departments fit inside 1024 with room to
+   spare. Between 1024 and 1200 that turns a 437-507px hole in the bar into
+   the store's whole breadth, on exactly the landscape tablets and small
+   laptops that sat in it. Below 1024 the drawer takes over. */
+@include until($bp-md) {
   /* hide categories + show hamburger */
   .app-header .nav-wrap {
     display: none;
@@ -758,16 +808,6 @@
 
   .app-header .hamburger-btn {
     display: inline-flex;
-  }
-
-  /* The utility links are the strip's only content, so the strip goes with
-     them rather than leaving an empty white band above the logo. */
-  .top-wrap {
-    display: none;
-  }
-
-  .app-header {
-    gap: rem(10px);
   }
 }
 

@@ -1,89 +1,104 @@
 /* ============================= */
 /* APP FOOTER                     */
 /* ============================= */
-/* Labelled link columns beside a brand block, closing on a thin legal bar —
-   the shape large retailers converge on, because it lets someone scan for one
-   thing (a branch, a policy, a category) without reading a sentence. The
-   previous markup had all seven links set to `display: none`, so the footer
-   rendered as two social icons and a credit line. */
+/* A centred brand lockup over three labelled link groups, closing on a thin
+   legal bar — the shape large retailers converge on, because it lets someone
+   scan for one thing (a branch, a policy, a category) without reading a
+   sentence.
+
+   The mark leads at every width, so the phone and the desktop share one
+   structure rather than two arrangements that have to be kept in step. The
+   previous layout used named grid areas ("brand cols" / "social cols") that
+   the responsive rules then tried to override with `grid-template-columns:
+   1fr` — which does nothing, because the areas keep declaring two columns.
+   Below 1024px that starved the brand track to 86px. There are two stacked
+   blocks now and no areas at all, so the class of bug is gone with them. */
 
 .app-footer {
   background-color: $clr3;
 
-  /* Brand strip, pinned as a top edge rather than tiled behind the content. */
-  background-image: url(https://zolstock.co.il/wp-content/themes/zolstock/images/footerstrip.jpg);
+  /* Hazard strip along the top edge, drawn rather than fetched. It used to be
+     a 1951x10 JPEG served from zolstock.co.il — a live third-party request on
+     every page, in a navy/gold pair (#3a53a3 / #fbc411) that is neither of the
+     brand marks. Same 10px band, in the real blue and yellow, with no asset
+     and no network. The angle and period are measured off the original rather
+     than guessed: its bands step -0.67px in x per row and repeat every 15.75px
+     across, which is 124deg at a 13px period. The 1px steps between the stops
+     feather the diagonal; hard stops alias badly at this angle. */
+  background-image: repeating-linear-gradient(
+    124deg,
+    $clr1 0 rem(6px),
+    $clr2 rem(7px) rem(12px),
+    $clr1 rem(13px)
+  );
   background-repeat: repeat-x;
+  background-size: 100% rem(10px);
   background-position: top center;
 
-  padding-block-start: rem(56px);
   color: $clr4;
 }
 
+/* `page-gutter` alone, no `page-container`. The container capped the footer at
+   1600px while the header and `<main>` are gutter-only, so above 1600 the
+   three stopped agreeing: at 1920 the footer's content started 160px inboard
+   of the header above it. Capping bought nothing here anyway — the
+   composition is centred, so a wider box only widens the air around it. */
 .footer-main {
-  @include page-container;
   @include page-gutter;
 
-  display: grid;
-  grid-template-columns: minmax(rem(200px), rem(280px)) 1fr;
-  grid-template-areas:
-    "brand  cols"
-    "social cols";
-  grid-template-rows: auto 1fr;
-  gap: clamp(rem(20px), 5vw, rem(72px));
-
-  padding-block: rem(32px) rem(36px);
-}
-
-.footer-brand  { grid-area: brand; }
-.footer-social { grid-area: social; }
-.footer-cols   { grid-area: cols; }
-
-.footer-social h3 {
-  margin: 0 0 rem(12px);
-  font-size: rem(14px);
-  font-weight: 700;
-  color: $clr4;
+  padding-block: clamp(rem(36px), 4vw, rem(56px)) clamp(rem(28px), 3vw, rem(44px));
 }
 
 /* ============================= */
-/* BRAND BLOCK                    */
+/* BRAND LOCKUP                   */
 /* ============================= */
+/* Logo and accounts as one centred block. They used to sit in separate grid
+   rows either side of a `1fr` track that the link columns stretched, which
+   pushed them 72px apart at 1440px and left the social icons floating in the
+   middle of nothing. Nothing labels the two accounts: under the mark, two
+   named social glyphs are their own heading. */
 
 .footer-brand {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: rem(14px);
+  align-items: center;
+  gap: rem(18px);
+
+  margin-block-end: clamp(rem(32px), 4vw, rem(56px));
 }
 
+/* The mark grows with the viewport rather than holding one size. A centred
+   composition is framed by the air around it, and at 1920px a 56px lockup
+   over a 570px cluster left the frame doing all the talking. */
 .footer-logo img {
   display: block;
-  height: rem(56px);
+  height: clamp(rem(48px), 4.6vw, rem(76px));
   width: auto;
-}
-
-.footer-tagline {
-  margin: 0;
-  font-size: rem(14px);
-  line-height: 1.5;
-  color: rgba($clr4, 0.72);
 }
 
 /* ============================= */
 /* LINK COLUMNS                   */
 /* ============================= */
 
+/* Content-sized tracks centred as one cluster, from the moment the groups
+   become columns at all. Equal fractions of the container put ~40px of Hebrew
+   text in the middle of a 500px track, so at 1920px the three headings sat
+   378px apart and read as three separate things rather than one index — and
+   at 768px the outer two ran to the gutters while the lockup above them was
+   centred. Sizing the tracks to their content puts the slack outside the
+   cluster, where it is the same air that frames the mark. */
 .footer-cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(rem(20px), 3vw, rem(40px));
+  grid-template-columns: repeat(3, minmax(0, max-content));
+  justify-content: center;
+  gap: clamp(rem(28px), 5vw, rem(56px));
 }
 
 .footer-col {
   min-width: 0;
 
   h3 {
-    margin: 0 0 rem(14px);
+    margin: 0 0 rem(10px);
     font-size: rem(14px);
     font-weight: 700;
     letter-spacing: rem(0.3px);
@@ -92,7 +107,6 @@
 
   ul {
     display: grid;
-    gap: rem(9px);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -105,10 +119,23 @@
     display: none;
   }
 
-  a {
-    display: inline-block;
+  /* The rhythm between rows is the target box, not a gap: a 14px link is a
+     21px tap target, and spacing it with `gap` leaves dead pixels between
+     rows that look tappable and are not. Desktop sits at 34px because the
+     pointer is precise there and eight departments at 44px is a 350px
+     column; the accordion below raises it to the 44px floor, which is where
+     the thumb actually is. */
+  a,
+  .footer-pending {
+    display: inline-flex;
+    align-items: center;
+    min-height: rem(34px);
+
     font-size: rem(14px);
     line-height: 1.5;
+  }
+
+  a {
     color: rgba($clr4, 0.72);
     text-decoration: none;
 
@@ -123,6 +150,30 @@
       outline-offset: rem(3px);
       border-radius: $r-sm;
     }
+  }
+}
+
+/* Eight departments as one list ran to twice the height of the group beside
+   it — 559px of footer at 768px, most of it one long column. Split from the
+   width where the groups become columns at all, so wherever the three sit
+   side by side they end within two rows of each other.
+
+   Four rows filled down and then across, not across and then down: row flow
+   interleaves the taxonomy odd/even (כלי בית, טקסטיל, נקיון, צעצועים beside
+   מתנות, יצירה, אפייה, כלי עבודה), which is not a list anyone can scan. The
+   accordion below keeps its single column — one of three drawers opening into
+   two columns would read as a different kind of control. */
+@include from($bp-tablet-min) {
+  .footer-col--wide ul {
+    grid-template-rows: repeat(4, auto);
+    grid-auto-flow: column;
+    column-gap: rem(28px);
+  }
+}
+
+@include from($bp-md) {
+  .footer-cols {
+    gap: clamp(rem(56px), 8vw, rem(132px));
   }
 }
 
@@ -188,11 +239,12 @@
 }
 
 /* Pages that do not exist yet. Rendered as text rather than as a link, so
-   nobody clicks into a dead end — and so what is outstanding stays visible. */
+   nobody clicks into a dead end — and so what is outstanding stays visible.
+   0.52 rather than 0.45: against $clr3 that lands at 4.66:1, where 0.45
+   measured 3.91:1 and failed the floor. Still visibly quieter than a live
+   link at 0.72 (7.40:1), which is the whole job of the value. */
 .footer-pending {
-  font-size: rem(14px);
-  line-height: 1.5;
-  color: rgba($clr4, 0.45);
+  color: rgba($clr4, 0.52);
   cursor: default;
 }
 
@@ -203,15 +255,17 @@
 .app-footer .socials {
   display: flex;
   align-items: center;
-  gap: rem(10px);
+  gap: rem(12px);
 
   a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    width: rem(38px);
-    height: rem(38px);
+    /* 44px, not the 38px this used to be: it is the system's touch floor and
+       these two are the only controls in the lockup. */
+    width: rem(44px);
+    height: rem(44px);
     border-radius: 50%;
     border: rem(1px) solid rgba($clr4, 0.28);
     color: $clr4;
@@ -238,7 +292,14 @@
 /* ============================= */
 /* LEGAL BAR                      */
 /* ============================= */
+/* The rule is full bleed, matching the strip at the top edge, so the footer is
+   bounded by two edge-to-edge lines; the border sits outside the padding, so
+   the gutter insets the copy without shortening the rule.
 
+   Centred rather than pushed to opposite ends. `space-between` under a centred
+   composition put two 12px lines 1300px apart with nothing between them —
+   the same slack-collects-in-one-hole failure the header nav was rebuilt to
+   avoid. */
 .footer-bottom {
   @include page-gutter;
 
@@ -246,9 +307,9 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: rem(6px) rem(16px);
+  gap: rem(4px) rem(24px);
 
   padding-block: rem(16px);
 
@@ -263,29 +324,20 @@
 /* RESPONSIVE                     */
 /* ============================= */
 
-@include until($bp-md) {
+/* One column, and the link groups become accordions: a phone gets three
+   tappable headings instead of eighteen links it has to scroll past.
+   $bp-tablet-min is the same 600px that `COLUMNS_MQ` in AppFooter.jsx keys
+   off — the JS decides whether a heading is a button, this decides how the
+   group is dressed, and the two have to change at the same pixel. They did
+   not: this block used to sit at $bp-sm (480px), so 480-600px rendered three
+   collapsed `+` headings side by side as three columns. */
+@include until($bp-tablet-min) {
   .footer-main {
-    grid-template-columns: 1fr;
-    gap: rem(28px);
-  }
-}
-
-@include until($bp-sm) {
-  .app-footer {
-    padding-block-start: rem(44px);
-  }
-
-  .footer-main {
-    padding-inline: rem(16px);
-    padding-block: rem(24px) rem(28px);
+    padding-block: rem(32px) rem(20px);
   }
 
-  /* One column, and the link groups become accordions: a phone gets four
-     tappable headings instead of fourteen links it has to scroll past. */
-  .footer-main {
-    grid-template-columns: 1fr;
-    grid-template-areas: "brand" "cols" "social";
-    gap: rem(20px);
+  .footer-brand {
+    margin-block-end: rem(28px);
   }
 
   .footer-cols {
@@ -296,38 +348,21 @@
   .footer-col {
     border-block-end: rem(1px) solid rgba($clr4, 0.14);
 
+    &:first-child {
+      border-block-start: rem(1px) solid rgba($clr4, 0.14);
+    }
+
     h3 {
       margin: 0;
     }
-  }
 
-  .footer-col ul {
-    padding-block: rem(2px) rem(14px);
-  }
+    ul {
+      padding-block: rem(2px) rem(12px);
+    }
 
-  .footer-brand,
-  .footer-social {
-    align-items: center;
-    text-align: center;
-  }
-
-  .footer-social {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .app-footer .socials {
-    justify-content: center;
-  }
-
-  .footer-logo img {
-    height: rem(50px);
-  }
-
-  .footer-bottom {
-    padding-inline: rem(16px);
-    justify-content: center;
-    text-align: center;
+    a,
+    .footer-pending {
+      min-height: rem(44px);
+    }
   }
 }

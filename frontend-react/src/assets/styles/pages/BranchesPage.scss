@@ -62,19 +62,34 @@
   padding: rem(16px);
 }
 
-/* Side by side, the list matches the map's height and scrolls inside its own
+/* Side by side, the panel is a fixed height and the list scrolls inside its own
    column. This is the ONLY place a nested scroll is acceptable — see the
-   mobile block, where it is explicitly undone. */
+   mobile block, where it is explicitly undone.
+ *
+ * The row is sized, not merely floored. With `min-height` alone the grid row
+ * still grew to whatever the accordion measured — the summaries are ~56px each
+ * before a single region opens — so expanding a region pushed the row past
+ * 760px, stretched the map column beside it and dragged the page down with it.
+ * A fixed track means opening a region can only ever scroll the list.
+ *
+ * The cap also moved off .MuiAccordionDetails-root and onto the column. The old
+ * rule left two scrollers stacked inside one another (details inside menu), and
+ * scrolled the branch rows while their region heading stayed pinned mid-panel.
+ * One scroller over the whole column reads as a single list. */
 @include from($bp-lg) {
   .branches-menu,
   .map-container {
-    min-height: rem(420px);
-    overflow: hidden;
+    height: rem(560px);
   }
 
-  .branches-menu .MuiAccordionDetails-root {
-    max-height: rem(420px);
+  .branches-menu {
     overflow-y: auto;
+    /* A list that has hit its end should not hand the wheel to the page. */
+    overscroll-behavior: contain;
+  }
+
+  .map-container {
+    overflow: hidden;
   }
 }
 

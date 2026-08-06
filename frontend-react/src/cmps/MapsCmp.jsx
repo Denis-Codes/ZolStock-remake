@@ -55,12 +55,37 @@ const pinIconActive = L.icon({
 function MapCamera({ regions, selectedRegionId, selectedBranchId, markers }) {
   const map = useMap()
 
+  /* The country's centre is not the network's centre. `israelCenter` is the
+     geographic middle of Israel, but 58 of the 74 shops sit north of Jerusalem
+     and the southern third of the frame is empty Negev — so a hardcoded
+     center/zoom parked the pins against the top edge of the panel.
+   *
+     Fitting the markers' own bounds centres on the shops instead, and it is
+     computed from the panel's real dimensions, so it stays right at any width,
+     height or aspect ratio rather than being tuned for one of them. */
+  const allBounds = React.useMemo(() => {
+    if (!markers.length) return null
+    return L.latLngBounds(markers.map(b => [b.lat, b.lng]))
+  }, [markers])
+
+  const fitAll = React.useCallback(() => {
+    if (!allBounds) return
+    // Not animated: this is the resting view, not a move between two views.
+    map.fitBounds(allBounds, { padding: [28, 28], animate: false })
+  }, [map, allBounds])
+
   React.useEffect(() => {
     const region = regions.find(r => r.id === selectedRegionId)
-    if (!region) return
+
+    // Collapsing the open region used to leave the camera wherever that region
+    // had put it. Nothing selected now means the whole network again.
+    if (!region) {
+      fitAll()
+      return
+    }
 
     map.flyTo(region.center ?? israelCenter, region.zoom ?? 10, { duration: 0.6 })
-  }, [map, regions, selectedRegionId])
+  }, [map, regions, selectedRegionId, fitAll])
 
   React.useEffect(() => {
     if (!selectedBranchId) return
@@ -73,21 +98,36 @@ function MapCamera({ regions, selectedRegionId, selectedBranchId, markers }) {
     })
   }, [map, selectedBranchId, markers])
 
+  /* Read through a ref so re-measuring does not need the selection in its
+     dependency list — otherwise every pin click would tear down and re-register
+     the resize listener. */
+  const selectionRef = React.useRef(null)
+  selectionRef.current = { selectedRegionId, selectedBranchId }
+
   /* Leaflet measures its container once, on mount. The branch locator is a
      flex column that settles after first paint, and on the desktop two-column
      layout it is measured before the accordion beside it has sized — leaving
      the map rendering into stale dimensions with grey gaps where tiles should
      be. Re-measuring on the next frame, and on resize, keeps it correct. */
   React.useEffect(() => {
-    const raf = requestAnimationFrame(() => map.invalidateSize())
-    const onResize = () => map.invalidateSize()
+    const resync = () => {
+      map.invalidateSize()
 
-    window.addEventListener('resize', onResize)
+      // A new size fits a different area, so the resting view is recomputed —
+      // but only while it IS the resting view. Re-fitting after a resize would
+      // otherwise pull the camera off the region or branch someone picked.
+      const { selectedRegionId: regionId, selectedBranchId: branchId } = selectionRef.current
+      if (!regionId && !branchId) fitAll()
+    }
+
+    const raf = requestAnimationFrame(resync)
+
+    window.addEventListener('resize', resync)
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener('resize', resync)
     }
-  }, [map])
+  }, [map, fitAll])
 
   return null
 }

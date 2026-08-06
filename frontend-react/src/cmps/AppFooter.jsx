@@ -8,8 +8,13 @@ import logo from '../assets/styles/img/logo-trimmed.png'
 import { DEPARTMENTS, departmentPath } from '../services/taxonomy.service'
 
 // Below this width the link groups collapse into accordions, so the footer
-// is a short list of headings instead of a wall of links. Keep in step with
-// `$bp-tablet-min` in _breakpoints.scss.
+// is a short list of headings instead of a wall of links.
+//
+// This is `$bp-tablet-min` (600px) and AppFooter.scss keys its accordion
+// styling to the same variable. The two used to disagree — this said 600px
+// while the stylesheet dressed the accordion only below `$bp-sm` (480px) —
+// so every viewport in between rendered three collapsed `+` headings laid
+// out as three columns.
 const COLUMNS_MQ = '(min-width: 37.5rem)'
 
 // Only routes that actually exist are wired up. The legal pages have never
@@ -19,6 +24,13 @@ const SECTIONS = [
   {
     id: 'categories',
     title: 'קטגוריות',
+    // Eight departments against six and four in its siblings, so as a single
+    // list this group ran twice the height of the column beside it and the
+    // block ended badly ragged. `wide` splits it into two sub-columns once
+    // there is room for them, which lands all three groups within two rows
+    // of each other. The taxonomy is the real chain's and is not editable,
+    // so balancing has to happen in the layout rather than in the content.
+    wide: true,
     links: DEPARTMENTS.map(({ slug, labelHe }) => ({
       to: departmentPath(slug),
       label: labelHe,
@@ -70,19 +82,46 @@ export function AppFooter() {
   return (
     <footer className="app-footer full">
       <div className="footer-main">
+        {/* The mark and the accounts lead the footer at every width, so the
+            phone and the desktop share one structure instead of two
+            arrangements that have to be kept in step. The tagline that used
+            to sit under the logo is gone: `logo-trimmed.png` already carries
+            "כשמחיר וחוויה נפגשים" inside the lockup, so the line printed it a
+            second time 20px below itself. */}
         <div className="footer-brand">
           <Link to="/" className="footer-logo" aria-label="לדף הבית">
             <img src={logo} alt="זול סטוק" />
           </Link>
-          <p className="footer-tagline">כשמחיר וחוויה נפגשים</p>
+
+          <div className="socials">
+            <a
+              href="https://www.facebook.com/zolstock/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="זול סטוק בפייסבוק"
+            >
+              <FontAwesomeIcon icon={faFacebookF} />
+            </a>
+            <a
+              href="https://www.instagram.com/zol_stock/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="זול סטוק באינסטגרם"
+            >
+              <FontAwesomeIcon icon={faInstagram} />
+            </a>
+          </div>
         </div>
 
         <nav className="footer-cols" aria-label="ניווט תחתון">
-          {SECTIONS.map(({ id, title, links, pending }) => {
+          {SECTIONS.map(({ id, title, links, pending, wide }) => {
             const isOpen = isColumns || openId === id
+            const classNames = ['footer-col', wide && 'footer-col--wide', isOpen && 'is-open']
+              .filter(Boolean)
+              .join(' ')
 
             return (
-              <section key={id} className={`footer-col ${isOpen ? 'is-open' : ''}`}>
+              <section key={id} className={classNames}>
                 {isColumns ? (
                   <h3>{title}</h3>
                 ) : (
@@ -116,28 +155,6 @@ export function AppFooter() {
             )
           })}
         </nav>
-
-        <div className="footer-social">
-          <h3>עקבו אחרינו</h3>
-          <div className="socials">
-            <a
-              href="https://www.facebook.com/zolstock/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="זול סטוק בפייסבוק"
-            >
-              <FontAwesomeIcon icon={faFacebookF} />
-            </a>
-            <a
-              href="https://www.instagram.com/zol_stock/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="זול סטוק באינסטגרם"
-            >
-              <FontAwesomeIcon icon={faInstagram} />
-            </a>
-          </div>
-        </div>
       </div>
 
       <div className="footer-bottom">

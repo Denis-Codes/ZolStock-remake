@@ -139,23 +139,47 @@ export function AppHeader() {
 
   return (
     <>
-      <div className="top-wrap full">
-        <div className="right-links">
+      {/* The blue band is the masthead now, not a slab holding one logo. It
+          carries the store's off-catalogue business at its own edges — the two
+          utility links on the inline-start side, the branch locator and the
+          social accounts on the other — which leaves the sticky bar below it
+          to the catalogue and to the shopper's own state.
+
+          The separate grey utility strip that used to sit above it is retired
+          into this band: it was 48px of chrome for two links.
+
+          דרושים and זכיינות used to sit in that strip as `href=""`, which
+          reloads the current page, and again in the drawer as links to /jobs
+          and /franchise, which match no route. Neither page exists and
+          PRODUCT.md records that whether they will is undecided, so the
+          cluster is gone rather than pointing at a dead end. */}
+      <div className="masthead full">
+        <div className="masthead-utility">
           <NavLink to="about">אודות</NavLink>
           <NavLink to="chat">צור קשר</NavLink>
         </div>
 
-        {/* דרושים and זכיינות used to sit here as `href=""`, which reloads the
-            current page, and again in the drawer as links to /jobs and
-            /franchise, which match no route. Neither page exists and PRODUCT.md
-            records that whether they will is undecided, so the cluster is gone
-            rather than pointing at a dead end. */}
-      </div>
-
-      <div className="logo-wrap full">
-        <NavLink to="/" className="logo">
+        <NavLink to="/" className="masthead-logo" aria-label="לדף הבית">
           <img src={logo} alt="zolstock logo" />
         </NavLink>
+
+        <div className="masthead-services">
+          {/* A link, not a button running `navigate()`: the locator is a real
+              destination, so middle-click and open-in-new-tab work. */}
+          <NavLink to="/branches" className="branches-btn">
+            <span>סניפים</span>
+            <FontAwesomeIcon icon={faLocationDot} />
+          </NavLink>
+
+          <div className="socials">
+            <a href="https://www.facebook.com/zolstock/" target="_blank" rel="noopener noreferrer" aria-label="פייסבוק">
+              <FontAwesomeIcon icon={faFacebookF} />
+            </a>
+            <a href="https://www.instagram.com/zol_stock/" target="_blank" rel="noopener noreferrer" aria-label="אינסטגרם">
+              <FontAwesomeIcon icon={faInstagram} />
+            </a>
+          </div>
+        </div>
       </div>
 
       <div ref={logoSentinelRef} className="logo-sentinel full" />
@@ -175,29 +199,36 @@ export function AppHeader() {
             <img src={logo} alt="zolstock logo" />
           </NavLink>
 
-          {/* `aria-hidden={isScrolled}` used to live here, from when the nav
-              collapsed on scroll. It does not collapse any more, so this hid a
-              visible, focusable, eight-item category nav from assistive tech
-              the moment the page moved. */}
-          <div className="nav-wrap">
-            <nav>
-              {DEPARTMENTS.map(({ slug, labelHe }) => (
-                <HeaderNavDropdown
-                  key={slug}
-                  id={slug}
-                  to={departmentPath(slug)}
-                  label={labelHe}
-                  subcats={categorySubcats[slug] || []}
-                  openDropdown={openDropdown}
-                  setOpenDropdown={setOpenDropdown}
-                  onNavigate={onNavToCategoryOrSubcategory}
-                />
-              ))}
+        </div>
 
-              {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+        {/* The nav is the bar's own middle column, not a tail on the start
+            cluster. As a flex tail it could only sit against the inline-start
+            gutter, which left every pixel the departments did not need as one
+            hole opposite them — 507px at 1100 and 514px at 1920. It is a grid
+            column now, so the slack splits evenly either side of it.
 
-            </nav>
-          </div>
+            `aria-hidden={isScrolled}` used to live here, from when the nav
+            collapsed on scroll. It does not collapse any more, so this hid a
+            visible, focusable, eight-item category nav from assistive tech
+            the moment the page moved. */}
+        <div className="nav-wrap">
+          <nav>
+            {DEPARTMENTS.map(({ slug, labelHe }) => (
+              <HeaderNavDropdown
+                key={slug}
+                id={slug}
+                to={departmentPath(slug)}
+                label={labelHe}
+                subcats={categorySubcats[slug] || []}
+                openDropdown={openDropdown}
+                setOpenDropdown={setOpenDropdown}
+                onNavigate={onNavToCategoryOrSubcategory}
+              />
+            ))}
+
+            {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+
+          </nav>
         </div>
 
         <div className="header-left-actions">
@@ -244,24 +275,6 @@ export function AppHeader() {
 
           <WishlistIcon />
           <CartIcon />
-
-          {/* A link, not a button running `navigate()`: the locator is a real
-              destination, so middle-click and open-in-new-tab work. */}
-          <div className="locations">
-            <NavLink to="/branches" className="branches-btn">
-              <span>סניפים</span>
-              <FontAwesomeIcon icon={faLocationDot} />
-            </NavLink>
-          </div>
-
-          <div className="socials">
-            <a href="https://www.facebook.com/zolstock/" target="_blank" rel="noopener noreferrer" aria-label="פייסבוק">
-              <FontAwesomeIcon icon={faFacebookF} />
-            </a>
-            <a href="https://www.instagram.com/zol_stock/" target="_blank" rel="noopener noreferrer" aria-label="אינסטגרם">
-              <FontAwesomeIcon icon={faInstagram} />
-            </a>
-          </div>
         </div>
 
         <SearchOverlay
